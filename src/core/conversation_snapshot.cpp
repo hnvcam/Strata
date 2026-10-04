@@ -206,6 +206,21 @@ bool conversation_kv_restore(const ConversationKv& image, const QsaState& st, co
         if (!src[i]->visit(0, src[i]->size(), [&](const uint8_t* p, size_t n, size_t at) {
                 return transfer(static_cast<uint8_t*>(dst[i]) + at, p, n, error);
             })) return false;
+    return conversation_kv_restore_finish(st, g, upto, error);
+}
+
+bool conversation_kv_layout(const QsaState& st, const ModelGeometry& g, int64_t upto, bool index,
+                            ConversationKvLayout& result, std::string& error) {
+    Layout l{};
+    if (!layout(st, g, upto, index, l, error) || !valid(st, l, upto, error)) return false;
+    result = {l.format, l.cells, g.n_head_kv, g.head_dim, l.page_size, l.pooled_rows, g.idx_key_dim,
+              pools(st), {l.data, l.value_data, l.scales, l.value_scales, l.pooled}};
+    for (size_t i = 0; i < result.sizes.size(); ++i)
+        if (result.sizes[i] && !result.pools[i]) { error = "missing snapshot target pool"; return false; }
+    return true;
+}
+
+bool conversation_kv_restore_finish(const QsaState& st, const ModelGeometry& g, int64_t upto, std::string& error) {
     // VRAM slots still contain the outgoing conversation. Resolve must refill
     // them from the restored authoritative pools before any attention reads.
     if (st.kv_mode == 1) strata::kernels::kv_stream_reset(st.map, nullptr);

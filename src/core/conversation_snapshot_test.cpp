@@ -1,4 +1,8 @@
 #include "strata/core/conversation_snapshot.hpp"
+#include "strata/core/prompt_disk_snapshot.hpp"
+#include "strata/core/on_device.hpp"
+#include <memory>
+#include <chrono>
 #include "strata/kernels/kv_q4.hpp"
 #include <cuda_runtime.h>
 
@@ -193,11 +197,127 @@ void full_session(int fmt, int mode, int experts) {
     check(spare==a.checkpoints[0].dead,"checkpoint rebuilds spare row over a later completed block");
     check(ss.ple_prev[0]==2 && ss.ple_prev[1]==3,"checkpoint PLE token window");
 }
+
+void disk_roundtrip(int devices) {
+    const int second_device = devices > 1 ? 1 : 0;
+    std::array<std::unique_ptr<Fixture>, 2> main;
+    std::array<SessionState, 2> sessions;
+    std::array<ConversationStateSizes, 2> sizes;
+    std::vector<DiskPromptTarget> targets;
+    std::vector<int32_t> ids(9);
+    for (size_t j = 0; j < ids.size(); ++j) ids[j] = int32_t(j + 1);
+    std::string error;
+    for (int i = 0; i < 2; ++i) {
+        const OnDevice on(i == 0 ? 0 : second_device);
+        main[i] = std::make_unique<Fixture>(kKvInt8, 0);
+        auto& g = main[i]->g;
+        g.n_layers = 8; g.ssm_state_size = 2; g.ssm_v_heads = 2; g.ssm_conv_channels = 8;
+        auto& ss = sessions[i];
+        ss.max_cells = 96; ss.layer_lo = i * 4; ss.layer_hi = (i + 1) * 4;
+        ss.gdn_alloc = 3; ss.qsa_ord0 = i; ss.qsa_alloc = 1;
+        // Global QSA ordinals; each carve owns exactly one state.
+        ss.qsa_states = new QsaState[2]; ss.qsa_states[i] = main[i]->state;
+        check(conversation_session_sizes(g, ss, sizes[i], error), "disk split-stage size");
+        main[i]->alloc(ss.gdn_state, sizes[i].gdn); main[i]->alloc(ss.ple_hist, sizes[i].ple);
+        main[i]->alloc(ss.qsa_states[i].idx_tail, sizes[i].tail);
+        main[i]->alloc(ss.qsa_states[i].idx_dead, sizes[i].dead);
+        main[i]->alloc(ss.qsa_states[i].idx_block_pos, sizes[i].block_pos);
+        main[i]->fill(uint8_t(31 + i));
+        for (const auto& [ptr, n] : std::vector<std::pair<void*, size_t>>{
+                {ss.gdn_state,sizes[i].gdn},{ss.ple_hist,sizes[i].ple},{ss.qsa_states[i].idx_tail,sizes[i].tail},
+                {ss.qsa_states[i].idx_dead,sizes[i].dead},{ss.qsa_states[i].idx_block_pos,sizes[i].block_pos}})
+            cuda_check(cudaMemset(ptr, 31 + i, n));
+        cuda_check(cudaMemcpy(ss.qsa_states[i].idx_pooled + (ids.size()/4)*g.idx_key_dim,
+                              ss.qsa_states[i].idx_dead, sizes[i].dead, cudaMemcpyDeviceToDevice));
+        targets.push_back({i == 0 ? 0 : second_device, &ss});
+    }
+    std::unique_ptr<Fixture> draft;
+    {
+        const OnDevice on(second_device);
+        draft = std::make_unique<Fixture>(kKvInt8, 2); draft->fill(77);
+    }
+    DiskPromptState captured;
+    check(prompt_disk_snapshot_save(captured, targets, main[0]->g, draft->state, ids, {}, true, error),
+          "capture both split GPUs and draft");
+    const auto root = std::filesystem::temp_directory_path() / ("strata-disk-gpu-" +
+            std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const auto identity = prompt_disk_sha256("GPU fixture");
+    PromptDiskCache cache(root, identity, 100000000, 3, 96);
+    std::vector<int64_t> tokens(ids.begin(), ids.end()); tokens.push_back(10);
+    const auto key = cache.keys(tokens, {}, true, {9})[0].hash;
+    check(cache.store(key, captured, error), "serialize split GPU snapshot");
+    auto loaded = cache.load(key, error);
+    check(bool(loaded), "read split GPU snapshot");
+    DiskPromptFile source;
+    check(prompt_disk_stream_source(source, targets, main[0]->g, draft->state, ids, {}, true, error),
+          "describe streaming GPU source without full host snapshot");
+    check(cache.store_stream(key, source, error), "write GPU source through fixed buffer");
+    auto streamed = cache.load_stream(key, error);
+    check(bool(streamed), "validate streaming file without full host snapshot");
+    for (int i = 0; i < 2; ++i) {
+        const OnDevice on(targets[i].device);
+        main[i]->fill(177);
+        cuda_check(cudaMemset(sessions[i].gdn_state, 177, sizes[i].gdn));
+    }
+    {
+        const OnDevice on(second_device); draft->fill(177);
+    }
+    auto invalid = *loaded;
+    invalid.stages[1].kv[0].k.pop_back();
+    check(prompt_disk_snapshot_restore(invalid, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
+          "bad second GPU rejected before writing first GPU");
+    {
+        const OnDevice on(0);
+        uint8_t first = 0; cuda_check(cudaMemcpy(&first, sessions[0].gdn_state, 1, cudaMemcpyDefault));
+        check(first == 177, "invalid late-stage payload leaves first GPU untouched");
+    }
+    auto bad_stream = *streamed;
+    --bad_stream.stages[1].kv[0].data[0].size;
+    check(prompt_disk_stream_restore(bad_stream, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
+          "bad streaming second GPU rejected before writing first GPU");
+    check(prompt_disk_stream_restore(*streamed, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
+          "restore split GPUs and MTP from streaming disk file");
+    DiskPromptState stream_again;
+    check(prompt_disk_snapshot_save(stream_again, targets, main[0]->g, draft->state, ids, {}, true, error),
+          "recapture streaming restore for byte comparison");
+    for (size_t i = 0; i < 2; ++i)
+        check(stream_again.stages[i].running.gdn == captured.stages[i].running.gdn &&
+              stream_again.stages[i].running.ple == captured.stages[i].running.ple &&
+              stream_again.stages[i].running.tails == captured.stages[i].running.tails &&
+              stream_again.stages[i].running.dead == captured.stages[i].running.dead &&
+              stream_again.stages[i].running.block_pos == captured.stages[i].running.block_pos &&
+              equal(stream_again.stages[i].kv[0], captured.stages[i].kv[0]), "streaming restores original state bytes");
+    check(equal(stream_again.draft, captured.draft), "streaming restores original MTP bytes");
+    check(prompt_disk_snapshot_restore(*loaded, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
+          "restore both split GPUs and draft from disk");
+    DiskPromptState again;
+    check(prompt_disk_snapshot_save(again, targets, main[0]->g, draft->state, ids, {}, true, error), "recapture restored split GPUs");
+    for (size_t i = 0; i < 2; ++i) {
+        check(again.stages[i].running.gdn == captured.stages[i].running.gdn &&
+              again.stages[i].running.ple == captured.stages[i].running.ple &&
+              again.stages[i].running.tails == captured.stages[i].running.tails &&
+              again.stages[i].running.dead == captured.stages[i].running.dead &&
+              again.stages[i].running.block_pos == captured.stages[i].running.block_pos &&
+              equal(again.stages[i].kv[0], captured.stages[i].kv[0]), "restored split GPU bytes equal captured state");
+        check(sessions[i].ple_prev[0] == 8 && sessions[i].ple_prev[1] == 9, "split GPU PLE token history restored");
+    }
+    check(equal(again.draft, captured.draft), "restored MTP bytes equal captured state");
+    std::filesystem::remove_all(root);
+    {
+        const OnDevice on(second_device); draft.reset();
+    }
+    for (int i = 0; i < 2; ++i) {
+        const OnDevice on(targets[i].device); delete[] sessions[i].qsa_states; main[i].reset();
+    }
+    std::printf("disk snapshot roundtrip: %d GPU(s), 2 stage carves\n", devices > 1 ? 2 : 1);
+}
+
 }
 
 int main() {
     int devices=0;
     if (cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
+    disk_roundtrip(devices);
     for (int fmt : std::array<int,4>{kKvF16,kKvInt8,kKvQ4,3}) for (int mode : {0,1,2}) {
         if (fmt==3 && mode!=0) continue;
         Fixture f(fmt,mode);

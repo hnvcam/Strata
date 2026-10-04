@@ -615,6 +615,45 @@ sizes and K/V bytes reused during capture. `STRATA_SNAPSHOT_FULL_CAPTURE=1` disa
 retention for diagnostic comparisons. Snapshots are not
 persisted across restarts.
 
+**Persistent prompt prefixes (opt-in).** Set `"prompt_cache_disk": ".strata-prompt-cache"`,
+`"prompt_cache_disk_mib": 16384` and `"prompt_cache_disk_days": 3` in `strata-<model>.json`.
+The equivalent engine arguments are `--prompt-cache-disk PATH --prompt-cache-disk-mib 16384
+--prompt-cache-disk-days 3`. The default is off; when a path is supplied, the default cap is 8192 MiB
+and the inactivity limit is three days. A cap of 0 or `--prompt-cache 0` disables persistence.
+
+This works for any API client. The engine hashes cumulative rendered token prefixes, including image
+identity and steering mode, at each chat-message boundary and just before the final prompt token.
+A message's state depends on everything before it, so a hash of that message alone is insufficient.
+The deepest matching disk entry is restored only when it beats the live or parked RAM prefix;
+only the remaining tokens pass through the model. Each entry contains all main-layer K/V, recurrent
+state, indexer state, PLE history and MTP K/V. Layer splits save each device's own layer range and
+validate every range before restoring any device. Files survive engine restarts. Exact repeat requests
+still process the final prompt token to begin generation.
+
+Files live under `PATH/prompt-v1`, with owner-only permissions on Linux. They contain prompt token
+IDs and model state. They are versioned, checksummed and published by rename; incomplete, corrupt or
+incompatible entries are misses. The namespace includes the engine build, arguments, Strata runtime
+environment, and model artifact identity. Artifact identity uses canonical paths, sizes and modification
+times; files up to 1 MiB are also content hashed. Replacing large weights while preserving both size
+and modification time requires clearing this directory. Changes to KV format, RoPE, MTP vocabulary,
+steering files or GPU placement invalidate the previous namespace.
+
+Use refreshes the entry's inactivity deadline, including matching prefixes already reused in RAM.
+Expired entries and abandoned temporary writes are removed at engine startup and on requests.
+Least recently used files are also removed when the disk cap is exceeded. Each prefix is a complete snapshot, so shared K/V pages are
+duplicated between files. The cap covers completed entries; a write temporarily needs additional disk
+space. Save and restore stream the payload through a fixed 64 KiB transfer buffer plus token/image
+metadata; they do not allocate another complete snapshot in RAM. The checksum and every stage's
+metadata are validated before any restore writes. An oversized entry, metadata allocation failure
+or disk write failure skips persistence. This can avoid repeated prefill after restarts or conversation
+switches, but adds snapshot transfers and SSD writes on misses.
+It does not make decoding faster. A short prefix can cost more to save/load than to prefill; no end-to-end
+speedup has been measured for this implementation. Linux/CUDA synthetic round-trip tests cover two
+GPU stages; Windows/HIP runtime coverage remains separate. A correctness smoke test on 2026-10-04
+with the i5-13500, RTX 5070 Ti + RTX 4060, 64 GB RAM, IQ4_XS, INT8 KV, 131072-token context,
+layer split at 4 and all 248320 draft tokens reused 45 of a 46-token prompt after a conversation switch
+through OpenAI Chat Completions and after an engine restart through Anthropic Messages.
+
 **Current limits (v1):** one request at a time, and one conversation cached at a time (switching between two chats
 re-reads the other one unless the opt-in cache above is enabled); images only when set up with them (below); no video. **Temperature / top_p / top_k / min_p /
 seed** are honored per request (OpenAI and Anthropic fields); with the default adaptive expert tier a sampled result

@@ -18,6 +18,8 @@
 #include "strata/core/expert_cache.hpp"
 #include "strata/core/conversation_snapshot.hpp"
 #include "strata/core/conversation_memory.hpp"
+#include "strata/core/prompt_disk_cache.hpp"
+#include "strata/core/prompt_disk_snapshot.hpp"
 #include "strata/core/coupled_draft.hpp"
 #include "strata/core/expert_source.hpp"
 #include "strata/core/pinned.hpp"
@@ -406,6 +408,9 @@ struct Options {
     int64_t conversation_cache_mib = 0; // opt-in host RAM for independent conversations
     int conversation_cache_slots = 4;
     int64_t conversation_cache_min_free_mib = 2560;
+    std::string prompt_cache_disk;
+    int64_t prompt_cache_disk_mib = 8192;
+    int prompt_cache_disk_days = 3;
     /// --serve: also keep a checkpoint every N freshly read prompt tokens (0 = only at the last turn boundary)
     int64_t prompt_cache_every = 16384;
     /// --serve: a prompt read from token 0 is also checkpointed at its first turn boundary - the end of the system
@@ -516,6 +521,9 @@ void usage() {
                  "  --conversation-cache-mib N  --serve: RAM budget for parked conversations (default 0 = off)\n"
                  "  --conversation-cache-slots N  --serve: at most N parked conversations (default 4)\n"
                  "  --conversation-cache-min-free-mib N  --serve: physical RAM floor when parking (default 2560)\n"
+                 "  --prompt-cache-disk PATH  --serve: persistent cumulative prompt prefixes (default off)\n"
+                 "  --prompt-cache-disk-mib N  disk byte cap in MiB (default 8192; 0 = off)\n"
+                 "  --prompt-cache-disk-days N  expire after N days without use (default 3)\n"
                  "  --prompt-cache-every N  --serve: also checkpoint every N fresh prompt tokens (default 16384, 0 = off)\n"
                  "  --turn-token ID      --serve: the token that opens a chat turn (default 248045, <|im_start|>)\n"
                  "  --short-read N       --serve: read at most N fresh text tokens through the decode windows instead\n"
@@ -1232,6 +1240,20 @@ int main(int argc, char** argv) {
         else if (a == "--serve") o.serve = true;
         else if (a == "--vision") o.vision = true;
         else if (a == "--prompt-cache") o.prompt_cache = std::max(0, std::atoi(next("--prompt-cache")));
+        else if (a == "--prompt-cache-disk") o.prompt_cache_disk = next("--prompt-cache-disk");
+        else if (a == "--prompt-cache-disk-mib" || a == "--prompt-cache-disk-days") {
+            const std::string value = next(a.c_str());
+            int64_t number = 0;
+            const auto parsed = std::from_chars(value.data(), value.data() + value.size(), number);
+            const int64_t limit = a == "--prompt-cache-disk-days" ? INT32_MAX : INT64_MAX / (1024 * 1024);
+            if (parsed.ec != std::errc{} || parsed.ptr != value.data() + value.size() ||
+                number < (a == "--prompt-cache-disk-days" ? 1 : 0) || number > limit) {
+                std::fprintf(stderr, "%s needs an integer within range\n", a.c_str());
+                return 2;
+            }
+            if (a == "--prompt-cache-disk-days") o.prompt_cache_disk_days = int(number);
+            else o.prompt_cache_disk_mib = number;
+        }
         else if (a == "--conversation-cache-mib" || a == "--conversation-cache-slots" ||
                  a == "--conversation-cache-min-free-mib") {
             const std::string value = next(a.c_str());
@@ -4644,6 +4666,64 @@ int main(int argc, char** argv) {
         strata::core::ConversationCache conversations(
             o.prompt_cache > 0 ? (size_t) o.conversation_cache_mib * 1024 * 1024 : 0,
             (size_t) o.conversation_cache_slots);
+        std::vector<std::string> disk_options{STRATA_VERSION, __DATE__, __TIME__};
+        for (int ai = 1; ai < argc; ++ai) {
+            const std::string a = argv[ai];
+            if (a == "--prompt-cache-disk" || a == "--prompt-cache-disk-mib" || a == "--prompt-cache-disk-days") {
+                ++ai;
+                continue;
+            }
+            disk_options.push_back(a);
+        }
+        // Include effective per-device allocation and resolved RoPE options via
+        // the command line/build identity, plus all actual model artifacts.
+        std::vector<std::filesystem::path> disk_artifacts{argv[0], o.pack, o.mtp};
+        for (const auto& f : o.native_shards) disk_artifacts.emplace_back(f);
+        for (const auto& f : o.native_head_shards) disk_artifacts.emplace_back(f);
+        for (const auto& f : o.native_dense_gguf) disk_artifacts.emplace_back(f);
+        for (const auto& f : {o.ple_gguf, o.embd_gguf}) if (!f.empty()) disk_artifacts.emplace_back(f);
+        for (const auto& f : o.cvec_files) disk_artifacts.emplace_back(f.first);
+        strata::core::PromptDiskCache disk(
+            o.prompt_cache > 0 ? o.prompt_cache_disk : "",
+            o.prompt_cache_disk.empty() ? "" : strata::core::prompt_disk_identity(disk_options, disk_artifacts),
+            uint64_t(o.prompt_cache_disk_mib) * 1024 * 1024, o.prompt_cache_disk_days, ss.max_cells);
+        if (!o.prompt_cache_disk.empty())
+            std::fprintf(stderr, "strata serve: disk prompt cache: %s; cap=%lld MiB idle_days=%d stages=%zu\n",
+                         disk.enabled() ? "enabled" : "disabled (options or artifact identity unavailable)",
+                         (long long) o.prompt_cache_disk_mib, o.prompt_cache_disk_days, stages.size() + 1);
+        std::vector<strata::core::DiskPromptKey> disk_keys;
+        std::vector<strata::core::DiskPromptTarget> disk_targets{{0, &ss}};
+        for (auto& st : stages) disk_targets.push_back({st->dev, &st->ss});
+        auto disk_save = [&](int64_t L) -> bool {
+            const auto key = std::find_if(disk_keys.begin(), disk_keys.end(), [&](const auto& k) { return k.tokens == L; });
+            if (key == disk_keys.end() || disk.contains(key->hash)) return true;
+            size_t estimate = 0;
+            if (!strata::core::prompt_disk_snapshot_bytes(disk_targets, g, mtp.kv_state(), L, req_imgs.size(), estimate, err)) {
+                std::fprintf(stderr, "strata serve: disk prompt cache: skip save (%s)\n", err.c_str());
+                err.clear();
+                return true;
+            }
+            if (estimate > uint64_t(o.prompt_cache_disk_mib) * 1024 * 1024) return true;
+            try {
+                const auto t0 = Clock::now();
+                strata::core::DiskPromptFile image;
+                std::vector<int32_t> prefix(cur.begin(), cur.begin() + L);
+                std::vector<ImgKey> images;
+                for (const auto& k : req_imgs) if (k.start < L) images.push_back(k);
+                if (!strata::core::prompt_disk_stream_source(image, disk_targets, g, mtp.kv_state(),
+                        prefix, images, cvec_cached, err)) return false;
+                std::string io_error;
+                const bool stored = disk.store_stream(key->hash, image, io_error);
+                if (!stored && !err.empty()) return false;
+                std::fprintf(stderr, "strata serve: disk prompt cache: %s %lld tokens bytes=%zu in %.1f ms%s%s\n",
+                             stored ? "saved" : "skipped", (long long) L, estimate,
+                             std::chrono::duration<double, std::milli>(Clock::now() - t0).count(),
+                             io_error.empty() ? "" : "; ", io_error.c_str());
+            } catch (const std::bad_alloc&) {
+                std::fprintf(stderr, "strata serve: disk prompt cache: skip save (host allocation failed)\n");
+            }
+            return true;
+        };
         // Save only on a switch/rewind, not on each continuing request. No graph
         // addresses change: all parked images live in ordinary host vectors.
         auto park_current = [&](size_t held) -> bool {
@@ -5344,8 +5424,43 @@ int main(int argc, char** argv) {
                     }
             }
             const auto parked = conversations.best(ids, req_imgs, want_cvec);
+            disk_keys.clear();
+            if (disk.enabled()) {
+                disk.prune();
+                std::vector<int64_t> boundaries;
+                if (o.turn_token >= 0)
+                    for (int64_t i = 1; i < n - 1; ++i)
+                        if (ids[size_t(i)] == o.turn_token) boundaries.push_back(i);
+                if (n > 1) boundaries.push_back(n - 1);
+                disk_keys = disk.keys(ids, req_imgs, want_cvec, boundaries);
+            }
+            std::optional<strata::core::DiskPromptFile> disk_incoming;
+            int64_t disk_resume = 0;
+            std::string disk_hit;
+            for (auto it = disk_keys.rbegin(); it != disk_keys.rend(); ++it) {
+                if (it->tokens <= std::max(resume, parked.tokens)) break;
+                if (!disk.contains(it->hash)) continue;
+                std::string io_error;
+                auto image = disk.load_stream(it->hash, io_error);
+                if (!image) {
+                    if (!io_error.empty()) std::fprintf(stderr, "strata serve: disk prompt cache: discarded (%s)\n", io_error.c_str());
+                    continue;
+                }
+                if (image->cvec != want_cvec || int64_t(image->stages[0].ids.size()) != it->tokens ||
+                    !starts_with(image->stages[0].ids, image->stages[0].images) ||
+                    !strata::core::prompt_disk_stream_validate(*image, disk_targets, g, mtp.kv_state(), err)) {
+                    disk.discard(it->hash);
+                    std::fprintf(stderr, "strata serve: disk prompt cache: incompatible entry discarded\n");
+                    err.clear();
+                    continue;
+                }
+                disk_resume = it->tokens;
+                disk_hit = it->hash;
+                disk_incoming = std::move(image);
+                break;
+            }
             std::optional<strata::core::SavedConversation> incoming;
-            if (parked.tokens > resume) incoming.emplace(conversations.take(parked.index));
+            if (!disk_incoming && parked.tokens > resume) incoming.emplace(conversations.take(parked.index));
             // Reject the entire image before parking/overwriting the outgoing
             // state. Invalid entries can safely fall back to its existing prefix.
             if (incoming && !strata::core::conversation_snapshot_validate(*incoming, ss, g, mtp.kv_state(), err)) {
@@ -5355,7 +5470,8 @@ int main(int argc, char** argv) {
             }
             // Preserve the outgoing branch before any checkpoint rewind, reset,
             // or incoming restore overwrites the positional state it requires.
-            if ((!from_live || incoming) && !park_current(incoming ? incoming->bytes() : 0)) {
+            if ((!from_live || incoming || disk_incoming) && !park_current(
+                    incoming ? incoming->bytes() : disk_incoming ? disk_incoming->bytes() : 0)) {
                 std::printf("ERR %s\n", err.c_str());
                 return 1;
             }
@@ -5394,6 +5510,26 @@ int main(int argc, char** argv) {
                              std::chrono::duration<double, std::milli>(Clock::now() - t0).count(),
                              conversations.size(), conversations.bytes());
             }
+            if (disk_incoming) {
+                const auto t0 = Clock::now();
+                if (strata::core::prompt_disk_stream_restore(*disk_incoming, disk_targets, g, mtp.kv_state(), err) !=
+                    strata::core::ConversationRestore::restored) {
+                    std::printf("ERR restoring disk prompt state: %s\n", err.c_str());
+                    return 1; // Transfer failure cannot resume partially applied state.
+                }
+                live = std::move(disk_incoming->stages[0].ids);
+                live_imgs = std::move(disk_incoming->stages[0].images);
+                checks.clear();
+                cvec_cached = disk_incoming->cvec;
+                resume = disk_resume;
+                from_live = true;
+                std::fprintf(stderr, "strata serve: disk prompt cache: restored %lld tokens in %.1f ms; key=%s\n",
+                             (long long) resume, std::chrono::duration<double, std::milli>(Clock::now() - t0).count(),
+                             disk_hit.c_str());
+                disk_incoming.reset();
+            }
+            // RAM and disk hits both count as use of their cumulative prefixes.
+            for (const auto& k : disk_keys) if (k.tokens <= resume && disk.contains(k.hash)) disk.touch(k.hash);
             if (want_cvec != cvec_cached) {
                 live_ok = false;
                 checks.clear();
@@ -5693,7 +5829,11 @@ int main(int argc, char** argv) {
                         break;
                     }
             int64_t at = read_from;
-            for (const int64_t to : {reread_to, root_at, turn_at, n - 1}) {
+            std::vector<int64_t> read_stops{reread_to, root_at, turn_at, n - 1};
+            for (const auto& k : disk_keys) if (k.tokens > read_from) read_stops.push_back(k.tokens);
+            std::sort(read_stops.begin(), read_stops.end());
+            read_stops.erase(std::unique(read_stops.begin(), read_stops.end()), read_stops.end());
+            for (const int64_t to : read_stops) {
                 if (to <= at) continue;
                 err.clear();
                 const bool win = windows_ok(at, to);
@@ -5732,6 +5872,10 @@ int main(int argc, char** argv) {
                 at = to;
                 if ((to == turn_at || to == root_at) && !checkpoint_at(to)) {
                     std::printf("ERR saving a conversation checkpoint failed\n");
+                    return 1;
+                }
+                if (!disk_save(to)) {
+                    std::printf("ERR capturing disk prompt state: %s\n", err.c_str());
                     return 1;
                 }
             }

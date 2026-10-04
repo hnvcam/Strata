@@ -805,6 +805,22 @@ class DraftCounts(unittest.TestCase):
         self.assertEqual((m["totals"]["drafts_offered"], m["totals"]["drafts_accepted"]), (17, 10))
 
 
+class DiskPromptConfig(unittest.TestCase):
+    def test_defaults_leave_engine_arguments_unchanged(self):
+        self.assertEqual(engine_args({"args": ["--kv", "int8"]}), ["--kv", "int8"])
+
+    def test_disk_settings_and_layer_split_reach_engine(self):
+        cfg = {"args": ["--kv", "int8"], "gpu": [1, 0], "layer_split": 4,
+               "prompt_cache_disk": "/cache", "prompt_cache_disk_mib": 16384, "prompt_cache_disk_days": 3}
+        self.assertEqual(engine_args(cfg), ["--kv", "int8", "--layer-split", "4", "--prompt-cache-disk", "/cache",
+                                            "--prompt-cache-disk-mib", "16384", "--prompt-cache-disk-days", "3"])
+
+    def test_explicit_engine_flags_take_precedence(self):
+        args = ["--prompt-cache-disk", "/explicit", "--prompt-cache-disk-mib", "0", "--prompt-cache-disk-days", "7"]
+        cfg = {"args": args, "prompt_cache_disk": "/cache", "prompt_cache_disk_mib": 16384, "prompt_cache_disk_days": 3}
+        self.assertEqual(engine_args(cfg), args)
+
+
 class LearnedProfile(unittest.TestCase):
     """#477: "expert_profile_save" in the config: the engine saves its learned profile there, and the next start
     begins from it when it is a profile of the same model; without the key the arguments are unchanged."""

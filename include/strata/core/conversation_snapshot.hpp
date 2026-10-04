@@ -24,6 +24,18 @@ bool conversation_kv_validate(const ConversationKv& image, const QsaState& state
                               int64_t upto, bool include_index, std::string& error);
 bool conversation_kv_restore(const ConversationKv& image, const QsaState& state, const ModelGeometry& g,
                              int64_t upto, bool include_index, std::string& error);
+// Metadata and authoritative source/target spans for fixed-buffer disk I/O.
+// Does not copy payloads or allocate host snapshots.
+struct ConversationKvLayout {
+    int format = 0;
+    int64_t cells = 0, heads = 0, head_dim = 0, page_size = 0, pooled_rows = 0, idx_dim = 0;
+    std::array<void*, 5> pools{};
+    std::array<size_t, 5> sizes{};
+};
+bool conversation_kv_layout(const QsaState& state, const ModelGeometry& g, int64_t upto,
+                            bool include_index, ConversationKvLayout& result, std::string& error);
+bool conversation_kv_restore_finish(const QsaState& state, const ModelGeometry& g, int64_t upto,
+                                    std::string& error);
 // Diagnostic read-back after a synchronized restore. Uses 64 KiB of stack
 // workspace, compares authoritative bytes and resident draft-ring pages, and
 // fingerprints the authoritative payload only. Never changes model state.

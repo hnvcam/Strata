@@ -798,6 +798,12 @@ def engine_args(cfg: dict) -> list[str]:
     # opt-in: an auto split runs on the first card alone when it holds every profiled expert and the KV
     if len(gpu_list(cfg)) > 1 and cfg.get("split_skip_if_fits") and "--split-skip-if-fits" not in args:
         args.append("--split-skip-if-fits")
+    if cfg.get("prompt_cache_disk") and "--prompt-cache-disk" not in args:
+        args += ["--prompt-cache-disk", str(cfg["prompt_cache_disk"])]
+    for key, flag in (("prompt_cache_disk_mib", "--prompt-cache-disk-mib"),
+                      ("prompt_cache_disk_days", "--prompt-cache-disk-days")):
+        if cfg.get(key) is not None and flag not in args:
+            args += [flag, str(cfg[key])]
     return learned_profile_args(cfg, args)
 
 

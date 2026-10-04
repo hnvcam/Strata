@@ -1,0 +1,33 @@
+loading the model (the first start takes a minute or two) ...
+[strata] layer split across GPUs [1, 0] (2)
+[strata] starting the engine: reading the model's weights ...
+[strata] loading the experts into RAM (tens of GB) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] still starting (28 s) - please wait ...
+[strata] experts loaded: 55.43 GiB at 2.31 GiB/s (43 s so far)
+[strata] filling the GPU's expert cache (16 experts, 0.03 GiB of VRAM) ...
+[strata] almost ready ...
+/home/hnvcam/Workplace/Strata/.venv/lib/python3.12/site-packages/psutil/__init__.py:2049: RuntimeWarning: available memory stats couldn't be determined and was set to 0
+  ret = _psplatform.virtual_memory()
+ready: http://127.0.0.1:1112/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 131072 tokens)
+       open http://127.0.0.1:1112/ in a browser to chat; close this window to stop the model
+[strata] reading the prompt: 21 of 22 tokens, 1 s so far
+[strata] answering: 17 of max 96 tokens, 18.3 tok/s, 2 s
+[strata] answering: 40 of max 96 tokens, 20.7 tok/s, 3 s
+[strata] answering: 58 of max 96 tokens, 19.7 tok/s, 4 s
+[strata] answering: 80 of max 96 tokens, 20.3 tok/s, 5 s
+[strata] done: 95 tokens in 6 s (21.1 tok/s) (stop, cancel=False), expert cache 1.4% hit
+[strata] answering: 7 of max 96 tokens, 20.5 tok/s, 1 s
+[strata] answering: 40 of max 96 tokens, 27.7 tok/s, 2 s
+[strata] answering: 62 of max 96 tokens, 25.4 tok/s, 3 s
+[strata] answering: 90 of max 96 tokens, 25.9 tok/s, 4 s
+[strata] done: 96 tokens in 4 s (26.5 tok/s) (length, cancel=False), expert cache 3.7% hit
+[strata] answering: 6 of max 96 tokens, 26.7 tok/s, 1 s
+[strata] answering: 37 of max 96 tokens, 29.3 tok/s, 2 s
+[strata] answering: 66 of max 96 tokens, 28.4 tok/s, 3 s
+[strata] answering: 93 of max 96 tokens, 27.9 tok/s, 4 s
+[strata] done: 96 tokens in 4 s (27.9 tok/s) (length, cancel=False), expert cache 5.0% hit
+
+[strata] stopping (Ctrl+C again to end the engine at once) ...
+[strata] stopped

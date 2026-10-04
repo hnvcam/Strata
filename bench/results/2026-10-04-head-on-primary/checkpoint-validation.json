@@ -1,0 +1,13 @@
+{
+  "identical_choices": [
+    true,
+    true,
+    true
+  ],
+  "return_prompt_reused_tokens": [
+    0,
+    15,
+    15
+  ],
+  "method": "Fixed eight experts per layer; adaptation disabled. Same English request, Python continuation, then Vietnamese branch from the English turn."
+}

@@ -1,0 +1,7 @@
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 406 tokens = 0 reused + 406 read in 3561 ms (114.0 tok/s), 951 generated in 22992 ms (41.4 tok/s), drafts accepted 485 of 652, 1 checkpoints
+strata serve: decode expert cache hit rate: 66.1% (303346 hits / 458936 lookups)
+strata serve: CUDA1: 52836 expert entries, 15846 active layer launches, 516.0 MiB returned (3966.4 MiB with full rows) in this request; host 426 ms staging+launching, 154 ms waiting for it in this request

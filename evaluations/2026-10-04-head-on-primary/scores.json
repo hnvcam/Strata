@@ -1,0 +1,13 @@
+{
+  "note": "Subjective unchanged-rubric scores, one sampled task per placement; previous scores reused from saved evidence. Hardware placement does not by itself establish a general quality ranking.",
+  "marketing": {
+    "helper": 88,
+    "four-layers": 75,
+    "head-primary": 72
+  },
+  "python": {
+    "helper": 51,
+    "four-layers": 56,
+    "head-primary": 43
+  }
+}

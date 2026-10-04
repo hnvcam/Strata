@@ -1,0 +1,128 @@
+Based on the provided source code and product facts, here is the proposal for integrating the external Q4_K_M MTP sidecar into Strata.
+
+### 1. Current Incompatibility Analysis
+
+The current Strata MTP runtime (`tools/mtp_rt.py`, `src/core/mtp.cpp`) is strictly coupled to a specific internal binary format derived from Q2_0 quantized experts and Q8_0/BF16 dense weights. The external sidecar (`mtp-Qwen3.8-Flash-Next-shared-Q4_K_M.gguf`) is incompatible for three primary reasons:
+
+**A. Expert Format and Layout Mismatch**
+*   **Current State:** `tools/mtp_rt.py` (lines 48–58) expects experts in a fused `gate_up_proj` layout, quantized to **Q2_0** (type 42). It converts these into a custom "blob" layout (`experts.bin`) defined in `include/strata/kernels/cpu/expert.hpp` (lines 35–51). This blob interleaves gate/up rows and separates codes from scales specifically for the legacy Q2_0 CPU VNNI kernel and the GPU hit kernel.
+*   **Sidecar State:** The sidecar uses **Q4_K** (type 12) for gate/up and **Q8_0** (type 8) for down projections. The shapes are `[2560,640,512]` (gate/up) and `[640,2560,512]` (down).
+*   **Conflict:** The current loader (`src/core/mtp.cpp`, lines 180–200) hardcodes the size of `experts.bin` based on `strata::kernels::cpu::BLOB` (1,382,400 bytes per expert). Q4_K/Q8_0 experts have different block geometries (144 bytes/256 values vs 18 bytes/64 values) and cannot be mapped to this fixed-size blob without a complete rewrite of the expert storage and kernel dispatch.
+
+**B. Dense Weight Quantization and Naming**
+*   **Current State:** `tools/mtp_rt.py` (lines 29–31, 92–96) converts specific dense tensors (attention, shared expert) to **Q8_0** and others to **BF16**. It writes `dense.txt` with kinds `q8_0`, `bf16`, or `f32`. The runtime (`src/core/mtp.cpp`, lines 201–204) explicitly checks for the presence of these Q8_0 tensors.
+*   **Sidecar State:** The sidecar contains mixed quantizations: Q4_K, Q6_K, Q8_0, Q5_0, and F32. It uses different naming conventions (e.g., `blk.48.ffn_gate_exps.weight` vs `mtp.layers.0.mlp.experts.gate_up_proj`).
+*   **Conflict:** The current `mtp_rt.py` does not know how to parse or convert Q4_K/Q6_K/Q5_0 tensors into the `dense.bin` format expected by the engine. The engine's `iq_mmvq` kernels (referenced in `include/strata/kernels/iq_kernels.hpp`) support these types, but the *loader* (`mtp.cpp`) currently only loads the pre-converted `dense.bin` which assumes Q8_0/BF16.
+
+**C. Architecture and Tensor Mapping**
+*   **Current State:** The code assumes a specific tensor name mapping (e.g., `mtp.layers.0.mlp.experts.gate_up_proj`).
+*   **Sidecar State:** Uses `blk.48.*` naming and `qwen4exp` architecture metadata. The `eh_proj` weight shape `[5120,2560]` implies a concatenation of embedding and hidden inputs, which differs from the separate `fc_embedding` and `fc_hidden` weights expected by the current runtime (`src/core/mtp.cpp`, line 201).
+
+### 2. Proposed Conversion and Runtime Changes
+
+To support the sidecar while retaining Q2 support, a **dual-path loader** approach is required. We cannot simply "add a 4-bit option" to the packer; the runtime must understand the native GGUF quantization blocks.
+
+#### Phase 1: New Conversion Tool (`tools/mtp_rt_native.py`)
+Create a new tool (or extend `mtp_rt.py` with a `--native` flag) that bypasses the Q2_0 blob conversion and instead prepares a **Native GGUF-backed Runtime**.
+
+1.  **Input:** Read the external GGUF directly using `tools/gguf_reader.py` (which already supports Q4_K/Q8_0 types in `BLOCK_GEOMETRY`).
+2.  **Tensor Extraction & Renaming:**
+    *   Map `blk.48.*` names to Strata's internal expected names (e.g., `blk.48.self_attn.q_proj.weight` -> `self_attn.q_proj.weight`).
+    *   Handle the `eh_proj` split: If the sidecar provides a fused `[5120, 2560]` projection, split it into `fc_embedding` and `fc_hidden` equivalents or update the runtime to accept a fused input. Given the current runtime expects separate `fc_embedding` and `fc_hidden`, splitting is safer for minimal runtime changes.
+3.  **Expert Handling (The Critical Change):**
+    *   **Do NOT** convert to the legacy `experts.bin` blob.
+    *   Instead, extract the raw Q4_K/Q8_0 expert blocks from the GGUF.
+    *   Write them to a new file `experts_native.bin` in a layout compatible with `strata::kernels::native_expert_grouped` (defined in `include/strata/kernels/iq_kernels.hpp`).
+    *   The layout for `native_expert_grouped` expects `[gate rows | up rows | down rows]` per expert, with raw GGUF blocks. This is different from the interleaved Q2_0 blob.
+4.  **Dense Weight Handling:**
+    *   Write dense weights to `dense_native.bin`.
+    *   Update `dense.txt` to include the actual GGML type ID (e.g., `12` for Q4_K, `8` for Q8_0) instead of just `q8_0`/`bf16`.
+    *   Ensure alignment (256 bytes) for GPU memory mapping.
+
+#### Phase 2: Runtime Loader Updates (`src/core/mtp.cpp`)
+Modify the MTP loader to detect the format version.
+
+1.  **Format Detection:**
+    *   Check for a marker in `dense.txt` or a new `mtp.meta` file. If `kind` is an integer (GGML type ID) rather than a string (`q8_0`), assume Native Mode.
+2.  **Dense Loading:**
+    *   If Native Mode: Load `dense_native.bin`.
+    *   Update the `Tensor` struct parsing to handle integer types.
+    *   Replace calls to `q8()` (which assumes Q8_0) with a generic `get_tensor(type, offset)` that returns a pointer to the raw data.
+    *   Update kernel calls (e.g., `iq_mmvq`) to pass the correct `ggml_type` for each tensor. The existing `iq_mmvq` in `include/strata/kernels/iq_kernels.hpp` already supports Q4_K, Q5_K, Q8_0, etc.
+3.  **Expert Loading:**
+    *   If Native Mode: Load `experts_native.bin`.
+    *   Calculate size based on `native_expert_layout` (lines 1423–1435 in `iq_kernels.cu`) rather than `cpu::BLOB`.
+    *   Replace `moe_grouped_s2` (legacy Q2_0 kernel) with `native_expert_grouped` (lines 1442+ in `iq_kernels.cu`).
+    *   Ensure `native_expert_supported` checks pass for Q4_K/Q8_0 at the given dimensions (H=2560, FF=640). Note: `native_expert_supported` requires `n_embd % 256 == 0` (2560 % 256 = 0, OK) and `n_ff % qd == 0`. For Q8_0 down, `qd=32`, `640 % 32 = 0` (OK).
+
+#### Phase 3: Kernel Compatibility Checks
+*   **Q4_K Support:** `include/strata/kernels/iq_kernels.hpp` line 2 confirms Q4_K support for "Unsloth's UD-Q4_K_XL". The `dq_dispatch` in `iq_kernels.cu` (line 1244) handles type 12 (Q4_K).
+*   **Mixed Precision:** The sidecar uses Q4_K for gate/up and Q8_0 for down. `native_expert_grouped` accepts `NativeExpertLayout` with separate `gu_type` and `d_type`. This is supported.
+*   **Dense MMVQ:** `iq_mmvq` supports Q4_K. The runtime must pass the correct type ID for each dense tensor.
+
+### 3. Reusable Helpers and Kernels
+
+*   **`tools/gguf_reader.py`:** Already parses Q4_K/Q8_0 headers and geometries. Use this to validate the sidecar before conversion.
+*   **`include/strata/kernels/iq_kernels.hpp`:**
+    *   `native_expert_layout`: Calculate correct byte offsets for Q4_K/Q8_0 experts.
+    *   `native_expert_grouped`: The GPU kernel to execute the mixed-precision experts.
+    *   `iq_mmvq`: The GPU kernel for dense Q4_K/Q8_0 projections.
+*   **`src/core/mtp.cpp`:** The existing memory arena management (`Bump` allocator) can be reused, but the size calculations must be updated to reflect the larger Q4_K/Q8_0 weights.
+
+### 4. Compatibility Checks
+
+1.  **Dimension Validation:**
+    *   Verify `H=2560`, `FF=640`, `NE=512`.
+    *   Check `native_expert_supported(12, 8, 2560, 640)` returns true.
+2.  **Tensor Name Mapping:**
+    *   Ensure all required tensors (`self_attn.*`, `mlp.shared_expert.*`, `mlp.gate.weight`) exist in the sidecar under the mapped names.
+    *   Handle the `eh_proj` split: Verify the sidecar's `eh_proj` can be split into `fc_embedding` and `fc_hidden` or that the runtime is updated to use the fused version.
+3.  **Quantization Type Consistency:**
+    *   Ensure `dense.txt` accurately reflects the GGML type IDs.
+    *   Verify that `iq_mmvq` is called with the correct type for each tensor (e.g., Q4_K for attention, Q8_0 for shared expert if applicable).
+
+### 5. Memory Implications (RTX 5070 Ti 16GB + RTX 4060 8GB)
+
+*   **Current Q2_0 MTP:** ~0.71 GB (experts) + ~0.18 GB (dense) = ~0.9 GB.
+*   **New Q4_K_M MTP:**
+    *   **Experts:** Q4_K is ~4.5 bits/weight. Q2_0 is ~2.25 bits/weight.
+        *   Q2_0 Expert Size: 1.38 MB/expert * 512 = ~706 MB.
+        *   Q4_K Expert Size: Gate/Up (Q4_K) + Down (Q8_0).
+            *   Gate/Up: 2 * 2560 * 640 * (4.5/8) bytes ≈ 1.84 MB/expert.
+            *   Down: 2560 * 640 * (8/8) bytes ≈ 1.64 MB/expert.
+            *   Total per expert: ~3.48 MB.
+            *   Total Experts: 3.48 MB * 512 ≈ **1.78 GB**.
+    *   **Dense:** Q4_K/Q6_K/Q8_0 mix. Likely ~1.5x–2x the size of the Q8_0/BF16 dense set. Estimate **0.3–0.4 GB**.
+    *   **Total MTP VRAM:** ~2.1–2.2 GB.
+*   **Impact:**
+    *   The MTP drafter increases from ~0.9 GB to ~2.2 GB.
+    *   **RTX 5070 Ti (16 GB):** Should comfortably fit the main model (IQ4_XS) + the larger drafter.
+    *   **RTX 4060 (8 GB):** If the drafter is loaded on the 4060 (as per `src/program/generate.cpp` line 2293, drafter loads on the last stage), 2.2 GB is significant. Combined with the main model's KV cache and weights, this may push the 4060 to its limit, potentially requiring `--split-skip-if-fits` logic to keep the drafter on the 5070 Ti or reducing context length.
+    *   **Host RAM:** The conversion tool will need to hold the full GGUF in memory or stream it. 64 GB RAM is sufficient.
+
+### 6. Validation Needed Before Activation
+
+1.  **Unit Test: `native_expert_layout`**
+    *   Verify that the calculated byte offsets for Q4_K/Q8_0 experts match the raw GGUF block positions.
+2.  **Integration Test: `moe_grouped_s2` vs `native_expert_grouped`**
+    *   Run a single forward pass with the new loader. Compare the output logits of the MTP layer against a reference implementation (e.g., llama.cpp) using the same sidecar.
+    *   **Critical:** Verify that the Q4_K dequantization in `iq_mmvq` and `native_expert_grouped` produces bitwise identical results to the reference.
+3.  **Acceptance Rate Benchmark**
+    *   Measure the draft acceptance rate of the Q4_K_M sidecar vs the Q2_0 sidecar. The goal is higher acceptance, but it must not crash.
+4.  **Memory Leak Check**
+    *   Ensure that the new `dense_native.bin` and `experts_native.bin` are correctly freed and that the `Bump` allocator does not overflow.
+
+### 7. What Cannot Be Concluded Without Testing
+
+1.  **Performance Impact:** While Q4_K is larger, it may be faster or slower than Q2_0 depending on memory bandwidth vs compute intensity. The `native_expert_grouped` kernel may have different occupancy characteristics than the legacy Q2_0 kernel.
+2.  **Numerical Stability:** The interaction between Q4_K experts and Q8_0 dense layers in the MTP head might introduce different rounding errors than the Q2_0/Q8_0 mix. This could affect draft acceptance rates in subtle ways.
+3.  **Exact VRAM Footprint:** The estimate of 2.2 GB is based on theoretical block sizes. Actual VRAM usage depends on CUDA memory alignment, fragmentation, and the specific implementation of `native_expert_grouped` scratch buffers.
+4.  **Sidecar Correctness:** We assume the external sidecar is correctly formatted. Without running `gguf_reader.py` on the actual file, we cannot be certain that all tensor shapes and types match the description (e.g., if `eh_proj` is actually split or fused in a way that breaks the loader).
+
+### Summary of Proposal
+
+1.  **Do not modify** `tools/mtp_pack.py` to output Q4_K. It is for Q2_0.
+2.  **Create** `tools/mtp_rt_native.py` to convert the external GGUF to `dense_native.bin` and `experts_native.bin` using `gguf_reader.py`.
+3.  **Update** `src/core/mtp.cpp` to detect "Native" mode and use `native_expert_grouped` and `iq_mmvq` with dynamic GGML types.
+4.  **Reuse** existing `iq_kernels` which already support Q4_K/Q8_0.
+5.  **Validate** memory usage on the 8 GB card and numerical correctness against llama.cpp.

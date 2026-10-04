@@ -1,0 +1,260 @@
+{
+  "5070-alone": {
+    "status": "complete",
+    "pilot": false,
+    "label": "5070 Ti alone",
+    "short": {
+      "requests": 6,
+      "generated_tokens": 2827,
+      "decode_ms": 67959.0,
+      "decode_tok_s": 41.59861092717668,
+      "drafts_accepted": 1609,
+      "drafts_offered": 2000,
+      "draft_acceptance": 0.8045,
+      "expert_hit_rate": 0.6155057074829332
+    },
+    "by_language": {
+      "english": {
+        "requests": 2,
+        "generated_tokens": 872,
+        "decode_ms": 19437.2,
+        "decode_tok_s": 44.86242874488095,
+        "drafts_accepted": 462,
+        "drafts_offered": 654,
+        "draft_acceptance": 0.7064220183486238,
+        "expert_hit_rate": 0.7146226748495
+      },
+      "code": {
+        "requests": 2,
+        "generated_tokens": 1024,
+        "decode_ms": 26762.5,
+        "decode_tok_s": 38.262494161606725,
+        "drafts_accepted": 727,
+        "drafts_offered": 789,
+        "draft_acceptance": 0.9214195183776933,
+        "expert_hit_rate": 0.450831589404935
+      },
+      "vietnamese": {
+        "requests": 2,
+        "generated_tokens": 931,
+        "decode_ms": 21759.3,
+        "decode_tok_s": 42.78630286819889,
+        "drafts_accepted": 420,
+        "drafts_offered": 557,
+        "draft_acceptance": 0.7540394973070018,
+        "expert_hit_rate": 0.6765739724233787
+      }
+    },
+    "long": {
+      "cache_n": 0,
+      "prompt_n": 9851,
+      "prompt_ms": 14614.9,
+      "prompt_per_token_ms": 1.484,
+      "prompt_per_second": 674.0,
+      "predicted_n": 256,
+      "predicted_ms": 4587.0,
+      "predicted_per_token_ms": 17.918,
+      "predicted_per_second": 55.8,
+      "draft_n": 0,
+      "draft_n_accepted": 0
+    },
+    "cache": {
+      "primary_slots": 2513,
+      "primary_gib": 5.66,
+      "secondary_slots": 0,
+      "secondary_gib": 0
+    }
+  },
+  "5070-4060-auto": {
+    "status": "complete",
+    "pilot": false,
+    "label": "5070 Ti + 4060, auto (K=47)",
+    "short": {
+      "requests": 6,
+      "generated_tokens": 2752,
+      "decode_ms": 67568.5,
+      "decode_tok_s": 40.72903793927644,
+      "drafts_accepted": 1570,
+      "drafts_offered": 1938,
+      "draft_acceptance": 0.8101135190918473,
+      "expert_hit_rate": 0.6726796899500179
+    },
+    "by_language": {
+      "english": {
+        "requests": 2,
+        "generated_tokens": 848,
+        "decode_ms": 19455.1,
+        "decode_tok_s": 43.58754259808482,
+        "drafts_accepted": 442,
+        "drafts_offered": 631,
+        "draft_acceptance": 0.7004754358161648,
+        "expert_hit_rate": 0.7754030330816364
+      },
+      "code": {
+        "requests": 2,
+        "generated_tokens": 1024,
+        "decode_ms": 27551.800000000003,
+        "decode_tok_s": 37.16635573719321,
+        "drafts_accepted": 728,
+        "drafts_offered": 789,
+        "draft_acceptance": 0.9226869455006337,
+        "expert_hit_rate": 0.508853179124183
+      },
+      "vietnamese": {
+        "requests": 2,
+        "generated_tokens": 880,
+        "decode_ms": 20561.6,
+        "decode_tok_s": 42.79822581900242,
+        "drafts_accepted": 400,
+        "drafts_offered": 518,
+        "draft_acceptance": 0.7722007722007722,
+        "expert_hit_rate": 0.7359584565798113
+      }
+    },
+    "long": {
+      "cache_n": 0,
+      "prompt_n": 9851,
+      "prompt_ms": 35015.1,
+      "prompt_per_token_ms": 3.554,
+      "prompt_per_second": 281.3,
+      "predicted_n": 256,
+      "predicted_ms": 6659.7,
+      "predicted_per_token_ms": 26.014,
+      "predicted_per_second": 38.4,
+      "draft_n": 178,
+      "draft_n_accepted": 143
+    },
+    "cache": {
+      "primary_slots": 3452,
+      "primary_gib": 7.71,
+      "secondary_slots": 19,
+      "secondary_gib": 0.06
+    }
+  },
+  "5070-4060-k44": {
+    "status": "complete",
+    "pilot": true,
+    "label": "5070 Ti + 4060, four layers on 4060 (K=44, pilot)",
+    "short": {
+      "requests": 3,
+      "generated_tokens": 1393,
+      "decode_ms": 36802.2,
+      "decode_tok_s": 37.85099803816077,
+      "drafts_accepted": 792,
+      "drafts_offered": 960,
+      "draft_acceptance": 0.825,
+      "expert_hit_rate": 0.6488178915516757
+    },
+    "by_language": {
+      "english": {
+        "requests": 1,
+        "generated_tokens": 442,
+        "decode_ms": 10553.0,
+        "decode_tok_s": 41.88382450488013,
+        "drafts_accepted": 246,
+        "drafts_offered": 313,
+        "draft_acceptance": 0.7859424920127795,
+        "expert_hit_rate": 0.7398927392739274
+      },
+      "code": {
+        "requests": 1,
+        "generated_tokens": 512,
+        "decode_ms": 14517.3,
+        "decode_tok_s": 35.26826613764268,
+        "drafts_accepted": 364,
+        "drafts_offered": 392,
+        "draft_acceptance": 0.9285714285714286,
+        "expert_hit_rate": 0.48461987795329414
+      },
+      "vietnamese": {
+        "requests": 1,
+        "generated_tokens": 439,
+        "decode_ms": 11731.9,
+        "decode_tok_s": 37.41934384029867,
+        "drafts_accepted": 182,
+        "drafts_offered": 255,
+        "draft_acceptance": 0.7137254901960784,
+        "expert_hit_rate": 0.7239643130002046
+      }
+    },
+    "long": null,
+    "cache": {
+      "primary_slots": 3475,
+      "primary_gib": 7.72,
+      "secondary_slots": 18,
+      "secondary_gib": 0.05
+    }
+  },
+  "5070-4060-tuned-safe": {
+    "status": "complete",
+    "pilot": false,
+    "label": "5070 Ti + 4060, 1152 MiB reserve (tuned)",
+    "short": {
+      "requests": 6,
+      "generated_tokens": 2802,
+      "decode_ms": 66139.0,
+      "decode_tok_s": 42.36532151982945,
+      "drafts_accepted": 1572,
+      "drafts_offered": 1945,
+      "draft_acceptance": 0.8082262210796916,
+      "expert_hit_rate": 0.6799673363086624
+    },
+    "by_language": {
+      "english": {
+        "requests": 2,
+        "generated_tokens": 841,
+        "decode_ms": 18063.9,
+        "decode_tok_s": 46.55694506723354,
+        "drafts_accepted": 441,
+        "drafts_offered": 597,
+        "draft_acceptance": 0.7386934673366834,
+        "expert_hit_rate": 0.7881278752569378
+      },
+      "code": {
+        "requests": 2,
+        "generated_tokens": 1024,
+        "decode_ms": 25887.9,
+        "decode_tok_s": 39.55515897388355,
+        "drafts_accepted": 733,
+        "drafts_offered": 787,
+        "draft_acceptance": 0.9313850063532402,
+        "expert_hit_rate": 0.508719556185785
+      },
+      "vietnamese": {
+        "requests": 2,
+        "generated_tokens": 937,
+        "decode_ms": 22187.199999999997,
+        "decode_tok_s": 42.23155693372756,
+        "drafts_accepted": 398,
+        "drafts_offered": 561,
+        "draft_acceptance": 0.7094474153297683,
+        "expert_hit_rate": 0.7415456175202287
+      }
+    },
+    "long": {
+      "cache_n": 0,
+      "prompt_n": 9851,
+      "prompt_ms": 58403.7,
+      "prompt_per_token_ms": 5.929,
+      "prompt_per_second": 168.7,
+      "predicted_n": 256,
+      "predicted_ms": 6657.3,
+      "predicted_per_token_ms": 26.005,
+      "predicted_per_second": 38.5,
+      "draft_n": 168,
+      "draft_n_accepted": 135
+    },
+    "cache": {
+      "primary_slots": 3495,
+      "primary_gib": 7.8,
+      "secondary_slots": 51,
+      "secondary_gib": 0.15
+    }
+  },
+  "5070-4060-tuned": {
+    "status": "failed",
+    "pilot": false,
+    "label": "5070 Ti + 4060, 1024 MiB reserve (failed)",
+    "error": "Out of memory while instantiating verification graphs"
+  }
+}

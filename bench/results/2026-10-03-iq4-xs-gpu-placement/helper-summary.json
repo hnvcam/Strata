@@ -1,0 +1,90 @@
+{
+  "5070-alone": {
+    "label": "5070 Ti alone, initial",
+    "tokens": 2827,
+    "decode_ms": 67959.0,
+    "decode_tok_s": 41.59861092717668,
+    "long_prompt_s": 14.6149,
+    "long_prompt_tok_s": 674.0,
+    "long_decode_tok_s": 55.8,
+    "long_drafts_offered": 0,
+    "draft_acceptance": 0.8045,
+    "helper_entries": [],
+    "by_language": {
+      "english": 44.86242874488095,
+      "code": 38.262494161606725,
+      "vietnamese": 42.78630286819889
+    }
+  },
+  "5070-alone-check": {
+    "label": "5070 Ti alone, recheck",
+    "tokens": 2827,
+    "decode_ms": 67817.1,
+    "decode_tok_s": 41.685651553959104,
+    "long_prompt_s": 41.4526,
+    "long_prompt_tok_s": 237.6,
+    "long_decode_tok_s": 38.2,
+    "long_drafts_offered": 175,
+    "draft_acceptance": 0.8045,
+    "helper_entries": [],
+    "by_language": {
+      "english": 45.18439065843813,
+      "code": 37.990932632875506,
+      "vietnamese": 43.172606957699195
+    }
+  },
+  "5070-head-mtp-4060-experts": {
+    "label": "5070 Ti head/MTP + 4060 expert cache",
+    "tokens": 2792,
+    "decode_ms": 59896.4,
+    "decode_tok_s": 46.613819862295564,
+    "long_prompt_s": 41.6983,
+    "long_prompt_tok_s": 236.2,
+    "long_decode_tok_s": 43.7,
+    "long_drafts_offered": 173,
+    "draft_acceptance": 0.8111392405063291,
+    "helper_entries": [
+      {
+        "request": "english-1",
+        "entries": 18810,
+        "layer_launches": 6209
+      },
+      {
+        "request": "code-1",
+        "entries": 19791,
+        "layer_launches": 5869
+      },
+      {
+        "request": "vietnamese-1",
+        "entries": 16606,
+        "layer_launches": 6455
+      },
+      {
+        "request": "english-2",
+        "entries": 18057,
+        "layer_launches": 5885
+      },
+      {
+        "request": "code-2",
+        "entries": 19860,
+        "layer_launches": 5825
+      },
+      {
+        "request": "vietnamese-2",
+        "entries": 17407,
+        "layer_launches": 6556
+      }
+    ],
+    "by_language": {
+      "english": 51.341042562208635,
+      "code": 42.12778212037685,
+      "vietnamese": 48.23724334640632
+    }
+  },
+  "comparison": {
+    "pooled_single_decode_tok_s": 41.64208575736083,
+    "helper_decode_gain": 0.11939205288380417,
+    "helper_vs_initial_prompt_time": 2.853136182936592,
+    "helper_vs_recheck_prompt_time": 1.0059272518491
+  }
+}

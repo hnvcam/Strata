@@ -1,0 +1,37 @@
+{
+  "id": "chatcmpl-fb50df2bc86640a187d8044e",
+  "object": "chat.completion",
+  "created": 1791091435,
+  "model": "qwen3.8-flash-next-iq4_xs",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "### 9. Final Deliverable: Corrected Proposal & Review Summary\n\n**Status:** The previous proposal is **rejected** due to architectural incompatibility. The following is the corrected, source-verified proposal.\n\n#### 1. Core Incompatibility (Verified)\n*   **Runtime Coupling:** `src/core/mtp.cpp` is hard-coded to the **Q2_0** expert format. It uses `moe_grouped_s2` (line 533) and allocates memory based on `strata::kernels::cpu::BLOB` (line 182), which is defined in `include/strata/kernels/cpu/expert.hpp` (line 45) specifically for Q2_0 (18 bytes/64 values).\n*   **Kernel Mismatch:** The MTP runtime does **not** call `native_expert_grouped` (from `iq_kernels.hpp`). It uses specialized Q2_0 kernels. Therefore, simply pointing the loader at Q4_K data will cause memory corruption or kernel crashes.\n*   **Dense Tensor Rigidity:** The loader (`src/core/mtp.cpp` lines 201–204) explicitly requires `q8_0` for key dense tensors. The forward pass uses `bf16_gemv_fp32_mmvf` and `shared_expert` with hardcoded `GGML_Q8_0` types (line 536). It does not support Q4_K/Q6_K/Q5_0 dense tensors.\n\n#### 2. Corrected Proposal: Lossy Conversion Path\nSince modifying the C++ runtime is out of scope for a \"proposal and review\" and the runtime is not modular, the only viable path is to **convert the sidecar to the native Q2_0 format** during the Python preprocessing step.\n\n**Step 1: New Converter Tool (`tools/mtp_rt_from_sidecar.py`)**\n*   **Input:** `mtp-Qwen3.8-Flash-Next-shared-Q4_K_M.gguf`.\n*   **Expert Processing:**\n    1.  Read `blk.48.ffn_gate_exps.weight` (Q4_K), `blk.48.ffn_up_exps.weight` (Q4_K), and `blk.48.ffn_down_exps.weight` (Q8_0).\n    2.  **Dequantize** these tensors to FP32 using `gguf-py` or `ggml` reference dequantizers.\n    3.  **Re-quantize** the FP32 data to **Q2_0** using the existing `q2_0` function from `tools/mtp_pack.py` (lines 58–82). This ensures the output matches the `experts.bin` format expected by `src/core/mtp.cpp`.\n    4.  **Relayout:** Interleave gate/up rows and separate codes/scales into the `experts.bin` blob format defined in `include/strata/kernels/cpu/expert.hpp` (lines 48–51).\n*   **Dense Tensor Processing:**\n    1.  Map sidecar names (`blk.48.attn_q_norm`) to runtime names (`self_attn.q_norm`).\n    2.  **Dequantize** Q4_K/Q6_K/Q5_0 dense tensors to FP32.\n    3.  **Re-quantize** to **Q8_0** (for tensors in the `Q8` list in `mtp_rt.py`) or convert to **BF16** (for others), matching the `dense.bin` format.\n    4.  **Hyper-Connections:** Dequantize Q4_K/Q5_0 HC tensors to FP32 and convert to **BF16**.\n*   **Norm Handling:**\n    1.  Sidecar norms have `+1` offset.\n    2.  `tools/mtp_rt.py` adds `+1.0` (line 86).\n    3.  **Action:** The converter must **subtract 1.0** from the sidecar norms before writing them to `dense.bin` (as F32), so that when `mtp_rt.py` (or the new converter's equivalent logic) adds `+1.0`, the result is correct. Alternatively, if bypassing `mtp_rt.py`, write raw weights and ensure the runtime expects raw. Given the existing pipeline, subtracting 1.0 is safer.\n\n**Step 2: Runtime Changes**\n*   **None.** The existing `src/core/mtp.cpp` remains unchanged.\n\n**Step 3: Validation**\n*   **Acceptance Rate:** Compare the draft acceptance rate of the Q2_0-converted sidecar vs. the original Q2_0 MTP.\n*   **VRAM:** Verify that the total VRAM usage (weights + `arena_` + `state_arena_`) fits on the RTX 4060 (8 GB) when the drafter is on the last stage.\n\n#### 3. What Cannot Be Concluded Without Testing\n1.  **Precision Benefit:** Whether the Q4_K sidecar, when converted to Q2_0, yields better acceptance than the original Q2_0 MTP. The conversion is lossy, so the benefit may be negligible or negative.\n2.  **Performance:** The overhead of dequantizing Q4_K to FP32 and re-quantizing to Q2_0 in Python may be significant.\n3.  **Kernel Efficiency:** The Q2_0 kernels are highly optimized. The Q4_K sidecar's precision advantage is lost in conversion.\n\n#### 4. Alternative: Full Runtime Rewrite (High Effort)\nIf the Q4_K precision is critical, a full rewrite of `src/core/mtp.cpp` is required to:\n1.  Replace `moe_grouped_s2` with `native_expert_grouped`.\n2.  Replace `bf16_gemv_fp32_mmvf` with `iq_mmvq`.\n3.  Update the loader to support Q4_K/Q6_K/Q5_0 types.\n4.  Update `dense.txt` parsing to handle new kinds.\nThis is a major engineering effort and not recommended for a simple sidecar import.\n\n#### 5. Conclusion\nThe external Q4_K_M sidecar is **not directly compatible** with Strata's current MTP runtime. The only low-risk proposal is to **convert the sidecar to Q2_0** during preprocessing, accepting the precision loss. Direct integration requires a major rewrite of the MTP runtime."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 32954,
+    "completion_tokens": 1427,
+    "total_tokens": 34381,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 32954,
+    "prompt_ms": 143660.7,
+    "prompt_per_token_ms": 4.359,
+    "prompt_per_second": 229.4,
+    "predicted_n": 1427,
+    "predicted_ms": 34875.5,
+    "predicted_per_token_ms": 24.44,
+    "predicted_per_second": 40.9,
+    "draft_n": 1038,
+    "draft_n_accepted": 923
+  }
+}

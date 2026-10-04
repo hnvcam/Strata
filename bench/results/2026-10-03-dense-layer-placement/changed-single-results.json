@@ -1,0 +1,240 @@
+{
+  "name": "changed-single",
+  "config": {
+    "exe": "/home/hnvcam/Workplace/Strata/build/strata",
+    "args": [
+      "--pack",
+      "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+      "--native",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "--ple-gguf",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "--expert-profile",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "512",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--vram-reserve-mib",
+      "1248",
+      "--pcie-frac",
+      "0.20",
+      "--spec-min-p",
+      "0.70",
+      "--suffix-draft",
+      "0",
+      "--adapt-every",
+      "0"
+    ],
+    "cwd": "/home/hnvcam/Workplace/Strata",
+    "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq4_xs",
+    "log": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-dense-layer-placement/changed-single-engine.log",
+    "lib_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "port": 1112,
+    "draft_vocab": "full",
+    "gpu": 0,
+    "gpus_asked": true,
+    "host": "127.0.0.1"
+  },
+  "runs": [
+    {
+      "label": "0",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain how a refrigerator works in three sentences."
+          }
+        ],
+        "max_tokens": 96,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-bb49b4ddd24c45b69aafb7d6",
+        "object": "chat.completion",
+        "created": 1791043522,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "A refrigerator works by circulating a special chemical called a refrigerant through a closed loop of coils, where it absorbs heat from the interior air as it evaporates into a gas. This warm gas is then compressed by a motor, which raises its temperature significantly before it passes through condenser coils on the outside of the unit. Finally, the hot gas releases its heat into the surrounding room air and condenses back into a liquid, ready to repeat the cycle and keep the inside cool."
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 22,
+          "completion_tokens": 96,
+          "total_tokens": 118,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 22,
+          "prompt_ms": 2058.7,
+          "prompt_per_token_ms": 93.577,
+          "prompt_per_second": 10.7,
+          "predicted_n": 96,
+          "predicted_ms": 3963.0,
+          "predicted_per_token_ms": 41.281,
+          "predicted_per_second": 24.2,
+          "draft_n": 73,
+          "draft_n_accepted": 51
+        }
+      },
+      "wall_s": 6.0627684720002435,
+      "engine_log": "strata verify: captured the 4-token window (upload no error, sync no error)\nstrata verify: captured the 3-token window (upload no error, sync no error)\nstrata verify: captured the 2-token window (upload no error, sync no error)\nstrata verify: captured the 1-token window (upload no error, sync no error)\nstrata serve: prompt 22 tokens = 0 reused + 22 read in 2059 ms (10.7 tok/s), 96 generated in 3963 ms (24.2 tok/s), drafts accepted 51 of 73, 1 checkpoints\nstrata serve: decode expert cache hit rate: 13.4% (6998 hits / 52260 lookups)\n"
+    },
+    {
+      "label": "1",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists."
+          }
+        ],
+        "max_tokens": 96,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-7019731422104b42b1eee124",
+        "object": "chat.completion",
+        "created": 1791043528,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list, list2: list) -> list:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    Args:\n        list1: First sorted list.\n        list2: Second sorted list.\n    \n    Returns:\n        A new sorted list containing all elements from both input lists.\n    \"\"\"\n    merged = []\n    i, j = 0, 0"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 22,
+          "completion_tokens": 96,
+          "total_tokens": 118,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 22,
+          "prompt_ms": 594.8,
+          "prompt_per_token_ms": 27.036,
+          "prompt_per_second": 37.0,
+          "predicted_n": 96,
+          "predicted_ms": 2796.0,
+          "predicted_per_token_ms": 29.125,
+          "predicted_per_second": 34.3,
+          "draft_n": 71,
+          "draft_n_accepted": 69
+        }
+      },
+      "wall_s": 3.4435994220002613,
+      "engine_log": "strata serve: prompt 22 tokens = 0 reused + 22 read in 595 ms (37.0 tok/s), 96 generated in 2796 ms (34.3 tok/s), drafts accepted 69 of 71, 1 checkpoints\nstrata serve: decode expert cache hit rate: 16.7% (7096 hits / 42553 lookups)\n"
+    },
+    {
+      "label": "2",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Giải thích sự khác nhau giữa RAM và SSD bằng tiếng Việt."
+          }
+        ],
+        "max_tokens": 96,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-0a56132a70b84dc78a33140b",
+        "object": "chat.completion",
+        "created": 1791043532,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Chào bạn, đây là giải thích chi tiết và dễ hiểu về sự khác nhau giữa **RAM** (Random Access Memory) và **SSD** (Solid State Drive) bằng tiếng Việt.\n\nMặc dù cả hai đều là bộ nhớ dùng để lưu trữ dữ liệu trong máy tính, nhưng chúng có **chức năng, tốc độ và cách hoạt động hoàn toàn khác nhau**.\n\n---\n\n### 1. Tóm tắt nhanh bằng phép so sánh đời thường\n\n"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 25,
+          "completion_tokens": 96,
+          "total_tokens": 121,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 25,
+          "prompt_ms": 673.5,
+          "prompt_per_token_ms": 26.94,
+          "prompt_per_second": 37.1,
+          "predicted_n": 96,
+          "predicted_ms": 2992.5,
+          "predicted_per_token_ms": 31.172,
+          "predicted_per_second": 32.1,
+          "draft_n": 71,
+          "draft_n_accepted": 57
+        }
+      },
+      "wall_s": 3.6851481269986834,
+      "engine_log": "strata serve: prompt 25 tokens = 0 reused + 25 read in 673 ms (37.1 tok/s), 96 generated in 2992 ms (32.1 tok/s), drafts accepted 57 of 71, 1 checkpoints\nstrata serve: decode expert cache hit rate: 24.3% (11776 hits / 48472 lookups)\n"
+    }
+  ],
+  "load_s": 39.029205732000264,
+  "startup_log": "strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.78 s (1006 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.66 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+  "gpu_snapshot": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 14922 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n",
+  "status": "complete"
+}

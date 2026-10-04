@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "task": "marketing",
+      "stage": 1,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "726202acaca22139d3e6ca3d87a89a7764d966219db5427a1fdfe91fb44d2f5a"
+    },
+    {
+      "task": "python",
+      "stage": 1,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "9ae9142775eb7c0a076924d5f845992675ce5df97a5355081d4c709aef8e442b"
+    },
+    {
+      "task": "python",
+      "stage": 2,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "d9b14ba6ce180f56ce5b1e9fc50659562c32deeb142730f34079c97c0aaca70c"
+    },
+    {
+      "task": "python",
+      "stage": 3,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "afa67f5edfc8a7051142bd8c3bdc5dd582b8fe424fb1c43131550054514911ef"
+    },
+    {
+      "task": "python",
+      "stage": 4,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "0853fa3e8e286a49f6c9f38d311d18725c9a5443517e17a032676144ec5738f5"
+    },
+    {
+      "task": "python",
+      "stage": 5,
+      "external_messages_identical": true,
+      "explicit_settings_match_with_prior_min_p_default": true,
+      "unchanged_answer_after_min_p_correction": true,
+      "output_sha256": "9d57862eca6305510a4b830e9889bffc6970ac91411cb4ce8d3bcf371502d18b"
+    }
+  ],
+  "input_files_identical": true,
+  "active_request_sampling_verified_from_slots": true,
+  "all_responses_complete_without_reasoning_content": true,
+  "word_count": 818,
+  "scores": {
+    "marketing": 84,
+    "python": 35
+  },
+  "metrics": {
+    "marketing": {
+      "requests": 1,
+      "wall_s_sum": 26.031,
+      "output_tokens": 994,
+      "generation_ms": 23760.227,
+      "weighted_decode_tokens_per_s": 41.83,
+      "draft_tokens": 1182,
+      "accepted_draft_tokens": 600,
+      "draft_acceptance_percent": 50.76,
+      "cached_prompt_tokens": 402,
+      "processed_prompt_tokens": 4
+    },
+    "python": {
+      "requests": 5,
+      "wall_s_sum": 315.798,
+      "output_tokens": 16081,
+      "generation_ms": 312259.17,
+      "weighted_decode_tokens_per_s": 51.5,
+      "draft_tokens": 12918,
+      "accepted_draft_tokens": 11773,
+      "draft_acceptance_percent": 91.14,
+      "cached_prompt_tokens": 155805,
+      "processed_prompt_tokens": 399
+    }
+  },
+  "production_files_unchanged": true,
+  "server_speculative_types": "none,draft-mtp",
+  "server_n_ctx": 110592,
+  "limitations": "Different model architecture, quantization recipe, llama.cpp build, context size, MTP drafter, and cached prompt state; identical source/system/user prompts and equivalent named sampling controls do not make this an isolated model ablation."
+}

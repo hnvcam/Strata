@@ -1,0 +1,717 @@
+{
+  "started_at": "2026-10-04T10:12:58+0700",
+  "status": "complete",
+  "hashes_before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata/build/strata": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
+    "/home/hnvcam/Workplace/Strata/tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_fetch.py": "c8c64c20f035535b309b7eae69004dc5d0b27b0899dc1b8f626f275837884d5a",
+    "/home/hnvcam/Workplace/Strata/setup.py": "7979d29b35c9d3942db4ffe2afa453f049f61d160d7f19405be030d79bb1085e",
+    "/home/hnvcam/Workplace/Strata/serve/server.py": "4c9174b84faa5a17d3145d781e5d0c1e612f4709d36f096128074d422b71dda0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/iq_kernels.hpp": "2b8f5a08be7c7a501e8af7103d7d3ce412295c4467bbfd08b8dc0d02cea7c70d",
+    "/home/hnvcam/Workplace/Strata/include/strata/core/mtp.hpp": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+    "/home/hnvcam/Workplace/Strata/src/core/mtp.cpp": "11fbacd4f062c888226601a57ee86c5dc6627d36693b622793f97c4116e8b673",
+    "/home/hnvcam/Workplace/Strata/src/kernels/cuda/iq_kernels.cu": "07fe5567a7fc75a079dcc7887975dffe490607564c16ad884423b903ab08a537",
+    "/home/hnvcam/Workplace/Strata/src/program/generate.cpp": "7c2980610031371349f9d3640ca9ab6ec1ec4324f6762cb5470027fed5f608cf"
+  },
+  "saved_input_hashes": {
+    "test-inputs.json": "babed6735b045d486a4070f3548bb7e7891f9f5f881b03c2697bbfa3475328ca",
+    "scope-clarification.json": "c5155636301531998ec6953c9f7e2b41a5b5d63775e7b0c4a2a7ba2f53888105",
+    "source-snapshot.md": "aece8873b55c9f71420db2a644ddfa82933c242c520d4a61c5fce85f60cc1a74",
+    "source-manifest.json": "4525d90564077a2987a4795975efe4653ac42635878eaf76c798bdc2cbfab7a8",
+    "rubric.json": "54c2eaf75221583c2b38e72bde43857fc976ade5d357640c733408ab2954c890",
+    "review-facts.json": "6b974fc09c4c23879de1e1d0f42e3051e148d979148b1ea961d7059456d3d904"
+  },
+  "sampling": {
+    "temperature": 0.2,
+    "top_p": 0.95,
+    "top_k": 20,
+    "seed": 1234,
+    "reasoning_effort": "none",
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "configs": {
+    "helper": {
+      "exe": "/home/hnvcam/Workplace/Strata/build/strata",
+      "args": [
+        "--pack",
+        "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+        "--native",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "--ple-gguf",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "--expert-profile",
+        "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "512",
+        "--spec",
+        "4",
+        "--mtp",
+        "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--vram-reserve-mib",
+        "1248",
+        "--pcie-frac",
+        "0.20",
+        "--spec-min-p",
+        "0.70",
+        "--suffix-draft",
+        "0",
+        "--expert-cache-device1",
+        "2800"
+      ],
+      "cwd": "/home/hnvcam/Workplace/Strata",
+      "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq4_xs",
+      "log": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/helper-engine.log",
+      "lib_dirs": [
+        "/usr/local/cuda/bin",
+        "/usr/local/cuda/lib64"
+      ],
+      "port": 1112,
+      "draft_vocab": "full",
+      "gpu": 0,
+      "gpus_asked": true,
+      "host": "127.0.0.1",
+      "env": {
+        "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+        "CUDA_VISIBLE_DEVICES": "0,1"
+      }
+    },
+    "four-layers": {
+      "exe": "/home/hnvcam/Workplace/Strata/build/strata",
+      "args": [
+        "--pack",
+        "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+        "--native",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "--ple-gguf",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "--expert-profile",
+        "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "512",
+        "--spec",
+        "4",
+        "--mtp",
+        "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--vram-reserve-mib",
+        "1248",
+        "--pcie-frac",
+        "0.20",
+        "--spec-min-p",
+        "0.70",
+        "--suffix-draft",
+        "0"
+      ],
+      "cwd": "/home/hnvcam/Workplace/Strata",
+      "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq4_xs",
+      "log": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/four-layers-engine.log",
+      "lib_dirs": [
+        "/usr/local/cuda/bin",
+        "/usr/local/cuda/lib64"
+      ],
+      "port": 1112,
+      "draft_vocab": "full",
+      "gpu": [
+        1,
+        0
+      ],
+      "gpus_asked": true,
+      "host": "127.0.0.1",
+      "layer_split": 4
+    }
+  },
+  "phases": [
+    {
+      "setup": "helper",
+      "phase": "initial",
+      "runs": [
+        {
+          "setup": "helper",
+          "task": "marketing",
+          "stage": 1,
+          "stem": "helper-marketing-1",
+          "input_sha256": "75cb3f3df4447f18471eb1ba9e47725df9b79c9c342ca0829eda67a2bb0469d7",
+          "wall_s": 26.740231325999957,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 406,
+            "prompt_ms": 3561.4,
+            "prompt_per_token_ms": 8.772,
+            "prompt_per_second": 114.0,
+            "predicted_n": 951,
+            "predicted_ms": 22992.3,
+            "predicted_per_token_ms": 24.177,
+            "predicted_per_second": 41.4,
+            "draft_n": 652,
+            "draft_n_accepted": 485
+          }
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 1,
+          "stem": "helper-python-1",
+          "input_sha256": "f1b06f72a869b91b3fc97fa443f619546a072c097ee6d60d614a834c652925d3",
+          "wall_s": 220.86828987299987,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 24796,
+            "prompt_ms": 129963.4,
+            "prompt_per_token_ms": 5.241,
+            "prompt_per_second": 190.8,
+            "predicted_n": 3718,
+            "predicted_ms": 90334.2,
+            "predicted_per_token_ms": 24.296,
+            "predicted_per_second": 41.2,
+            "draft_n": 2616,
+            "draft_n_accepted": 2227
+          }
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 2,
+          "stem": "helper-python-2",
+          "input_sha256": "c882c04d07d5e5172812acf2af086c2cc1a2c76b0e2b65618ace7899bd21e320",
+          "wall_s": 105.76537538399998,
+          "finish_reason": "length",
+          "timings": {
+            "cache_n": 28514,
+            "prompt_n": 67,
+            "prompt_ms": 1630.8,
+            "prompt_per_token_ms": 24.34,
+            "prompt_per_second": 41.1,
+            "predicted_n": 4096,
+            "predicted_ms": 103424.0,
+            "predicted_per_token_ms": 25.25,
+            "predicted_per_second": 39.6,
+            "draft_n": 2914,
+            "draft_n_accepted": 2522
+          }
+        }
+      ],
+      "load_s": 57.050905146000105,
+      "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 1.11 s (706 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 1.83 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+      "status": "complete_with_truncation",
+      "error": "Stage-2 output cap; original record retained, paired continuation planned",
+      "elapsed_s_including_stop": 414.572423457
+    },
+    {
+      "setup": "four-layers",
+      "phase": "initial",
+      "runs": [
+        {
+          "setup": "four-layers",
+          "task": "marketing",
+          "stage": 1,
+          "stem": "four-layers-marketing-1",
+          "input_sha256": "75cb3f3df4447f18471eb1ba9e47725df9b79c9c342ca0829eda67a2bb0469d7",
+          "wall_s": 31.36743020699987,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 406,
+            "prompt_ms": 3145.9,
+            "prompt_per_token_ms": 7.749,
+            "prompt_per_second": 129.1,
+            "predicted_n": 1190,
+            "predicted_ms": 27985.8,
+            "predicted_per_token_ms": 23.517,
+            "predicted_per_second": 42.5,
+            "draft_n": 812,
+            "draft_n_accepted": 576
+          }
+        },
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": 1,
+          "stem": "four-layers-python-1",
+          "input_sha256": "f1b06f72a869b91b3fc97fa443f619546a072c097ee6d60d614a834c652925d3",
+          "wall_s": 202.51874790800002,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 24796,
+            "prompt_ms": 115173.1,
+            "prompt_per_token_ms": 4.645,
+            "prompt_per_second": 215.3,
+            "predicted_n": 3485,
+            "predicted_ms": 86765.1,
+            "predicted_per_token_ms": 24.897,
+            "predicted_per_second": 40.2,
+            "draft_n": 2444,
+            "draft_n_accepted": 2124
+          }
+        },
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": 2,
+          "stem": "four-layers-python-2",
+          "input_sha256": "c882c04d07d5e5172812acf2af086c2cc1a2c76b0e2b65618ace7899bd21e320",
+          "wall_s": 96.59532702200022,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 28282,
+            "prompt_n": 66,
+            "prompt_ms": 1975.1,
+            "prompt_per_token_ms": 29.926,
+            "prompt_per_second": 33.4,
+            "predicted_n": 3612,
+            "predicted_ms": 94070.2,
+            "predicted_per_token_ms": 26.044,
+            "predicted_per_second": 38.4,
+            "draft_n": 2507,
+            "draft_n_accepted": 2154
+          }
+        }
+      ],
+      "load_s": 52.27652022899974,
+      "startup_log": "strata generate: layer split across 2 GPUs: CUDA0, then CUDA1 (split 4)\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 141 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (1007 canonical tensors skipped)\nstrata generate: 26 native projection matrices, 272.27 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: layer split: CUDA1 loads dense weights for layers 4-47: 1300.82 MiB canonical + 2729.30 MiB native (shared weights retained)\nstrata generate: layer split: CUDA1 holds its layer weights; 11.15 GiB free before its session\nstrata generate: layer split: CUDA0 loads dense weights for layers 0-3: 141.20 MiB canonical + 272.27 MiB native (shared weights retained)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata generate: layer split: CUDA1 holds its weights, session [4, 48) and the head; 8.93 GiB free\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.69 s (1132 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 4060, compute capability 8.9\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 1.84 GiB/s\nstrata generate: expert cache auto: 6.77 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1712 slots\nstrata generate: expert cache 2048 slots, 4.99 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2048 of 2048 slots from the profile; slot 0 verified\nstrata generate: layer split: CUDA1 runs layers 4-47, expert cache 2939 slots (6.58 GiB), 2939 of its 22528 profiled pairs; slot 0 verified\nstrata generate: layer split: CUDA0 runs layers 0-3\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 4987 resident experts, decided on the device\nstrata serve: the prompt path borrows 172 CUDA0 cache slots (0.41 GiB)\nstrata serve:   CUDA1 prompt path borrows 183 of its 2939 slots (0.41 GiB)\nstrata hc: CUDA1: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata serve: layer split: layers 0-3 (CUDA0), 4-47 (CUDA1), one hand-off per window\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 1556 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 15386 MiB, 16303 MiB, 50\n1, NVIDIA GeForce RTX 4060, 6298 MiB, 8188 MiB, 42\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 386.92411809199984
+    },
+    {
+      "setup": "helper",
+      "phase": "stage2-continuation-and-final",
+      "runs": [
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": "2-continuation-1",
+          "stem": "helper-python-2-continuation-1",
+          "input_sha256": "a4e5f809268aa45fcd9868bdbe3c5ac5925afde2f567b80d88a4553112979b21",
+          "wall_s": 200.74798957699977,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 32715,
+            "prompt_ms": 156938.4,
+            "prompt_per_token_ms": 4.797,
+            "prompt_per_second": 208.5,
+            "predicted_n": 1903,
+            "predicted_ms": 43172.5,
+            "predicted_per_token_ms": 22.687,
+            "predicted_per_second": 44.1,
+            "draft_n": 1362,
+            "draft_n_accepted": 1150
+          }
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 3,
+          "stem": "helper-python-3",
+          "input_sha256": "337003e21886f8566e8b15f07724dcbd7adcbbcb4bebf62358a683cf6d629f3c",
+          "wall_s": 53.699183791999985,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 34617,
+            "prompt_n": 101,
+            "prompt_ms": 1381.9,
+            "prompt_per_token_ms": 13.682,
+            "prompt_per_second": 73.1,
+            "predicted_n": 2281,
+            "predicted_ms": 51697.9,
+            "predicted_per_token_ms": 22.665,
+            "predicted_per_second": 44.1,
+            "draft_n": 1661,
+            "draft_n_accepted": 1412
+          },
+          "superseded": true,
+          "superseded_reason": "Second paired continuation changes downstream history",
+          "archived_directory": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/superseded-one-continuation"
+        }
+      ],
+      "load_s": 53.53627785499975,
+      "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.73 s (1083 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 1.80 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 14972 MiB, 16303 MiB, 51\n1, NVIDIA GeForce RTX 4060, 6890 MiB, 8188 MiB, 48\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 311.8407964229996
+    },
+    {
+      "setup": "helper",
+      "phase": "followups",
+      "runs": [
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 4,
+          "stem": "helper-python-4",
+          "input_sha256": "39622fb76b7083adef4ef24cb283fa496b36ab74a0089b252fc63acb4cd4341d",
+          "wall_s": 249.47534349399984,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 37139,
+            "prompt_ms": 177978.7,
+            "prompt_per_token_ms": 4.792,
+            "prompt_per_second": 208.7,
+            "predicted_n": 3031,
+            "predicted_ms": 70954.4,
+            "predicted_per_token_ms": 23.41,
+            "predicted_per_second": 42.7,
+            "draft_n": 2206,
+            "draft_n_accepted": 1930
+          },
+          "superseded": true,
+          "superseded_reason": "Second paired continuation changes downstream history",
+          "archived_directory": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/superseded-one-continuation"
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 5,
+          "stem": "helper-python-5",
+          "input_sha256": "d937acd7d4043d1fe2b52a296664635b740f494897e376ace57dc22c2fd52a43",
+          "wall_s": 52.37436422399969,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 40169,
+            "prompt_n": 88,
+            "prompt_ms": 1477.1,
+            "prompt_per_token_ms": 16.785,
+            "prompt_per_second": 59.6,
+            "predicted_n": 2285,
+            "predicted_ms": 50112.0,
+            "predicted_per_token_ms": 21.931,
+            "predicted_per_second": 45.6,
+            "draft_n": 1755,
+            "draft_n_accepted": 1671
+          },
+          "superseded": true,
+          "superseded_reason": "Second paired continuation changes downstream history",
+          "archived_directory": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/superseded-one-continuation"
+        }
+      ],
+      "load_s": 42.090965591999975,
+      "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.69 s (1143 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.60 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 14972 MiB, 16303 MiB, 51\n1, NVIDIA GeForce RTX 4060, 6890 MiB, 8188 MiB, 51\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 348.34786486999974
+    },
+    {
+      "setup": "four-layers",
+      "phase": "stage2-continuation-and-final",
+      "runs": [
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": "2-continuation-1",
+          "stem": "four-layers-python-2-continuation-1",
+          "input_sha256": "a4e5f809268aa45fcd9868bdbe3c5ac5925afde2f567b80d88a4553112979b21",
+          "wall_s": 165.02537216100018,
+          "finish_reason": "length",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 31997,
+            "prompt_ms": 119015.1,
+            "prompt_per_token_ms": 3.72,
+            "prompt_per_second": 268.8,
+            "predicted_n": 2048,
+            "predicted_ms": 45484.2,
+            "predicted_per_token_ms": 22.209,
+            "predicted_per_second": 45.0,
+            "draft_n": 1468,
+            "draft_n_accepted": 1225
+          }
+        }
+      ],
+      "load_s": 54.22872236999956,
+      "startup_log": "strata generate: layer split across 2 GPUs: CUDA0, then CUDA1 (split 4)\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 141 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (1007 canonical tensors skipped)\nstrata generate: 26 native projection matrices, 272.27 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: layer split: CUDA1 loads dense weights for layers 4-47: 1300.82 MiB canonical + 2729.30 MiB native (shared weights retained)\nstrata generate: layer split: CUDA1 holds its layer weights; 11.15 GiB free before its session\nstrata generate: layer split: CUDA0 loads dense weights for layers 0-3: 141.20 MiB canonical + 272.27 MiB native (shared weights retained)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata generate: layer split: CUDA1 holds its weights, session [4, 48) and the head; 8.93 GiB free\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.72 s (1095 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 4060, compute capability 8.9\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 1.69 GiB/s\nstrata generate: expert cache auto: 6.77 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1712 slots\nstrata generate: expert cache 2048 slots, 4.99 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2048 of 2048 slots from the profile; slot 0 verified\nstrata generate: layer split: CUDA1 runs layers 4-47, expert cache 2939 slots (6.58 GiB), 2939 of its 22528 profiled pairs; slot 0 verified\nstrata generate: layer split: CUDA0 runs layers 0-3\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 4987 resident experts, decided on the device\nstrata serve: the prompt path borrows 172 CUDA0 cache slots (0.41 GiB)\nstrata serve:   CUDA1 prompt path borrows 183 of its 2939 slots (0.41 GiB)\nstrata hc: CUDA1: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata serve: layer split: layers 0-3 (CUDA0), 4-47 (CUDA1), one hand-off per window\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 1556 MiB of VRAM free with everything loaded\n",
+      "status": "complete_with_truncation",
+      "error": "Continuation budget reached; second paired continuation planned",
+      "elapsed_s_including_stop": 222.62158075399975
+    },
+    {
+      "setup": "helper",
+      "phase": "stage2-second-continuation-and-final",
+      "runs": [
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": "2-continuation-2",
+          "stem": "helper-python-2-continuation-2",
+          "input_sha256": "a4e5f809268aa45fcd9868bdbe3c5ac5925afde2f567b80d88a4553112979b21",
+          "wall_s": 202.59002451700007,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 34655,
+            "prompt_ms": 148508.2,
+            "prompt_per_token_ms": 4.285,
+            "prompt_per_second": 233.4,
+            "predicted_n": 2473,
+            "predicted_ms": 53398.4,
+            "predicted_per_token_ms": 21.593,
+            "predicted_per_second": 46.3,
+            "draft_n": 1793,
+            "draft_n_accepted": 1560
+          }
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 3,
+          "stem": "helper-python-3",
+          "input_sha256": "337003e21886f8566e8b15f07724dcbd7adcbbcb4bebf62358a683cf6d629f3c",
+          "wall_s": 57.74120099899983,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 37129,
+            "prompt_n": 99,
+            "prompt_ms": 1280.2,
+            "prompt_per_token_ms": 12.931,
+            "prompt_per_second": 77.3,
+            "predicted_n": 2532,
+            "predicted_ms": 55774.8,
+            "predicted_per_token_ms": 22.028,
+            "predicted_per_second": 45.4,
+            "draft_n": 1850,
+            "draft_n_accepted": 1611
+          }
+        }
+      ],
+      "load_s": 45.13151168600007,
+      "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 1.06 s (744 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.38 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 14972 MiB, 16303 MiB, 52\n1, NVIDIA GeForce RTX 4060, 6890 MiB, 8188 MiB, 49\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 309.27312903500024
+    },
+    {
+      "setup": "helper",
+      "phase": "followups-final",
+      "runs": [
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 4,
+          "stem": "helper-python-4",
+          "input_sha256": "39622fb76b7083adef4ef24cb283fa496b36ab74a0089b252fc63acb4cd4341d",
+          "wall_s": 237.4773050050003,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 39900,
+            "prompt_ms": 172585.8,
+            "prompt_per_token_ms": 4.325,
+            "prompt_per_second": 231.2,
+            "predicted_n": 2880,
+            "predicted_ms": 64200.6,
+            "predicted_per_token_ms": 22.292,
+            "predicted_per_second": 44.9,
+            "draft_n": 2097,
+            "draft_n_accepted": 1851
+          }
+        },
+        {
+          "setup": "helper",
+          "task": "python",
+          "stage": 5,
+          "stem": "helper-python-5",
+          "input_sha256": "d937acd7d4043d1fe2b52a296664635b740f494897e376ace57dc22c2fd52a43",
+          "wall_s": 50.09828108700003,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 42780,
+            "prompt_n": 87,
+            "prompt_ms": 1320.7,
+            "prompt_per_token_ms": 15.18,
+            "prompt_per_second": 65.9,
+            "predicted_n": 2485,
+            "predicted_ms": 48206.3,
+            "predicted_per_token_ms": 19.399,
+            "predicted_per_second": 51.5,
+            "draft_n": 1887,
+            "draft_n_accepted": 1813
+          }
+        }
+      ],
+      "load_s": 46.80817217200001,
+      "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.67 s (1177 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.13 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 14972 MiB, 16303 MiB, 52\n1, NVIDIA GeForce RTX 4060, 6890 MiB, 8188 MiB, 51\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 338.166146519
+    },
+    {
+      "setup": "four-layers",
+      "phase": "stage2-second-continuation-and-final",
+      "runs": [
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": "2-continuation-2",
+          "stem": "four-layers-python-2-continuation-2",
+          "input_sha256": "a4e5f809268aa45fcd9868bdbe3c5ac5925afde2f567b80d88a4553112979b21",
+          "wall_s": 143.54610018099993,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 34083,
+            "prompt_ms": 126811.4,
+            "prompt_per_token_ms": 3.721,
+            "prompt_per_second": 268.8,
+            "predicted_n": 712,
+            "predicted_ms": 16168.5,
+            "predicted_per_token_ms": 22.709,
+            "predicted_per_second": 44.0,
+            "draft_n": 494,
+            "draft_n_accepted": 399
+          }
+        },
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": 3,
+          "stem": "four-layers-python-3",
+          "input_sha256": "337003e21886f8566e8b15f07724dcbd7adcbbcb4bebf62358a683cf6d629f3c",
+          "wall_s": 54.398595026000294,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 34076,
+            "prompt_n": 819,
+            "prompt_ms": 4011.9,
+            "prompt_per_token_ms": 4.899,
+            "prompt_per_second": 204.1,
+            "predicted_n": 2241,
+            "predicted_ms": 49668.2,
+            "predicted_per_token_ms": 22.163,
+            "predicted_per_second": 45.1,
+            "draft_n": 1669,
+            "draft_n_accepted": 1483
+          }
+        }
+      ],
+      "load_s": 49.2602569719993,
+      "startup_log": "strata generate: layer split across 2 GPUs: CUDA0, then CUDA1 (split 4)\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 141 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (1007 canonical tensors skipped)\nstrata generate: 26 native projection matrices, 272.27 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: layer split: CUDA1 loads dense weights for layers 4-47: 1300.82 MiB canonical + 2729.30 MiB native (shared weights retained)\nstrata generate: layer split: CUDA1 holds its layer weights; 11.15 GiB free before its session\nstrata generate: layer split: CUDA0 loads dense weights for layers 0-3: 141.20 MiB canonical + 272.27 MiB native (shared weights retained)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata generate: layer split: CUDA1 holds its weights, session [4, 48) and the head; 8.93 GiB free\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.66 s (1194 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 4060, compute capability 8.9\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.05 GiB/s\nstrata generate: expert cache auto: 6.77 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1712 slots\nstrata generate: expert cache 2048 slots, 4.99 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2048 of 2048 slots from the profile; slot 0 verified\nstrata generate: layer split: CUDA1 runs layers 4-47, expert cache 2939 slots (6.58 GiB), 2939 of its 22528 profiled pairs; slot 0 verified\nstrata generate: layer split: CUDA0 runs layers 0-3\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 4987 resident experts, decided on the device\nstrata serve: the prompt path borrows 172 CUDA0 cache slots (0.41 GiB)\nstrata serve:   CUDA1 prompt path borrows 183 of its 2939 slots (0.41 GiB)\nstrata hc: CUDA1: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata serve: layer split: layers 0-3 (CUDA0), 4-47 (CUDA1), one hand-off per window\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 1556 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 15388 MiB, 16303 MiB, 51\n1, NVIDIA GeForce RTX 4060, 6298 MiB, 8188 MiB, 44\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 251.87206056200012
+    },
+    {
+      "setup": "four-layers",
+      "phase": "followups-final",
+      "runs": [
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": 4,
+          "stem": "four-layers-python-4",
+          "input_sha256": "39622fb76b7083adef4ef24cb283fa496b36ab74a0089b252fc63acb4cd4341d",
+          "wall_s": 190.52671481800007,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 0,
+            "prompt_n": 37276,
+            "prompt_ms": 137355.1,
+            "prompt_per_token_ms": 3.685,
+            "prompt_per_second": 271.4,
+            "predicted_n": 2452,
+            "predicted_ms": 52551.1,
+            "predicted_per_token_ms": 21.432,
+            "predicted_per_second": 46.7,
+            "draft_n": 1753,
+            "draft_n_accepted": 1502
+          }
+        },
+        {
+          "setup": "four-layers",
+          "task": "python",
+          "stage": 5,
+          "stem": "four-layers-python-5",
+          "input_sha256": "d937acd7d4043d1fe2b52a296664635b740f494897e376ace57dc22c2fd52a43",
+          "wall_s": 48.70581060800032,
+          "finish_reason": "stop",
+          "timings": {
+            "cache_n": 39729,
+            "prompt_n": 86,
+            "prompt_ms": 1301.5,
+            "prompt_per_token_ms": 15.134,
+            "prompt_per_second": 66.1,
+            "predicted_n": 2217,
+            "predicted_ms": 46674.2,
+            "predicted_per_token_ms": 21.053,
+            "predicted_per_second": 47.5,
+            "draft_n": 1689,
+            "draft_n_accepted": 1616
+          }
+        }
+      ],
+      "load_s": 48.241505802000574,
+      "startup_log": "strata generate: layer split across 2 GPUs: CUDA0, then CUDA1 (split 4)\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: 141 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (1007 canonical tensors skipped)\nstrata generate: 26 native projection matrices, 272.27 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: layer split: CUDA1 loads dense weights for layers 4-47: 1300.82 MiB canonical + 2729.30 MiB native (shared weights retained)\nstrata generate: layer split: CUDA1 holds its layer weights; 11.15 GiB free before its session\nstrata generate: layer split: CUDA0 loads dense weights for layers 0-3: 141.20 MiB canonical + 272.27 MiB native (shared weights retained)\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata generate: layer split: CUDA1 holds its weights, session [4, 48) and the head; 8.93 GiB free\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.66 s (1192 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 4060, compute capability 8.9\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.14 GiB/s\nstrata generate: expert cache auto: 6.77 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1712 slots\nstrata generate: expert cache 2048 slots, 4.99 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2048 of 2048 slots from the profile; slot 0 verified\nstrata generate: layer split: CUDA1 runs layers 4-47, expert cache 2939 slots (6.58 GiB), 2939 of its 22528 profiled pairs; slot 0 verified\nstrata generate: layer split: CUDA0 runs layers 0-3\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 4987 resident experts, decided on the device\nstrata serve: the prompt path borrows 172 CUDA0 cache slots (0.41 GiB)\nstrata serve:   CUDA1 prompt path borrows 183 of its 2939 slots (0.41 GiB)\nstrata hc: CUDA1: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata serve: layer split: layers 0-3 (CUDA0), 4-47 (CUDA1), one hand-off per window\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 1556 MiB of VRAM free with everything loaded\n",
+      "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 15388 MiB, 16303 MiB, 52\n1, NVIDIA GeForce RTX 4060, 6298 MiB, 8188 MiB, 43\n",
+      "status": "complete",
+      "elapsed_s_including_stop": 291.59237484500045
+    }
+  ],
+  "production_before": {
+    "server_reachable": false
+  },
+  "method": "One marketing article and five Python proposal/review turns per placement; exact saved external inputs/settings. Both use current patched engine. Fresh server for stages 4-5, matching original follow-up cold-history procedure. No warmup or extra benchmark prompts.",
+  "hashes_after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata/build/strata": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
+    "/home/hnvcam/Workplace/Strata/tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_fetch.py": "c8c64c20f035535b309b7eae69004dc5d0b27b0899dc1b8f626f275837884d5a",
+    "/home/hnvcam/Workplace/Strata/setup.py": "7979d29b35c9d3942db4ffe2afa453f049f61d160d7f19405be030d79bb1085e",
+    "/home/hnvcam/Workplace/Strata/serve/server.py": "4c9174b84faa5a17d3145d781e5d0c1e612f4709d36f096128074d422b71dda0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/iq_kernels.hpp": "2b8f5a08be7c7a501e8af7103d7d3ce412295c4467bbfd08b8dc0d02cea7c70d",
+    "/home/hnvcam/Workplace/Strata/include/strata/core/mtp.hpp": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+    "/home/hnvcam/Workplace/Strata/src/core/mtp.cpp": "11fbacd4f062c888226601a57ee86c5dc6627d36693b622793f97c4116e8b673",
+    "/home/hnvcam/Workplace/Strata/src/kernels/cuda/iq_kernels.cu": "07fe5567a7fc75a079dcc7887975dffe490607564c16ad884423b903ab08a537",
+    "/home/hnvcam/Workplace/Strata/src/program/generate.cpp": "7c2980610031371349f9d3640ca9ab6ec1ec4324f6762cb5470027fed5f608cf"
+  },
+  "protected_files_unchanged": true,
+  "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n",
+  "continuation_plan": {
+    "python-2": {
+      "paired_prompt": "Continue from the exact point where your previous answer was cut off, without repeating earlier text. Complete the requested deliverable.",
+      "max_tokens": 2048,
+      "reason": "Helper stage 2 reached its saved 4096-token cap. Both setups receive one identical continuation before stage 3."
+    }
+  },
+  "continuation_state_note": "Both setups restart before the paired stage-2 continuation. This adds one matched cold-history read per setup beyond the original procedure.",
+  "second_continuation_adjustment": {
+    "reason": "Four-layer first continuation reached 2048 tokens after the helper stage-2 cap. Both setups need a second continuation and matched downstream histories.",
+    "prompt": "Continue from the exact point where your previous answer was cut off, without repeating earlier text. Complete the requested deliverable.",
+    "second_continuation_max_tokens": 6144,
+    "original_continuation_max_tokens": 2048,
+    "all_original_task_and_scope_limits_unchanged": true,
+    "extra_cold_restart_before_second_continuation_for_both": true,
+    "superseded_outputs_retained": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/superseded-one-continuation"
+  },
+  "matched_continuation_applied": true,
+  "finished_at": "2026-10-04T11:06:19+0700"
+}

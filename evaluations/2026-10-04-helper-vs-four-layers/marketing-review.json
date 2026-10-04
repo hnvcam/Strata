@@ -1,0 +1,42 @@
+{
+  "note": "Subjective reviewer scores using the unchanged saved rubric, based only on these two completed articles. Word counts include headings and use whitespace splitting.",
+  "helper": {
+    "word_count": 771,
+    "within_600_to_800_words": true,
+    "scores": {
+      "product_accuracy": 24,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 17,
+      "concrete_original_language": 11,
+      "instruction_compliance": 14
+    },
+    "total": 88,
+    "evidence": [
+      "Correct Free restrictions, both Pro prices, optional sync, account/internet requirements, platforms and download CTA.",
+      "States calendar and AI scheduling limitations; no invented browser platform, research or customer endorsements.",
+      "The offline paragraph says data stays on the device without immediately qualifying optional Pro sync; the later Pro paragraph supplies that qualification.",
+      "Concrete client examples and a readable opening, but familiar phrases such as 'move the needle' and 'close the day with clarity' reduce originality.",
+      "Several sections still read as a feature walkthrough rather than a tightly developed launch story."
+    ]
+  },
+  "four-layers": {
+    "word_count": 974,
+    "within_600_to_800_words": false,
+    "scores": {
+      "product_accuracy": 20,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 16,
+      "concrete_original_language": 11,
+      "instruction_compliance": 6
+    },
+    "total": 75,
+    "evidence": [
+      "Correct Free project/task limits, no-account Free, both Pro prices, optional sync, platforms and CTA.",
+      "Does not state the account and internet requirements for cloud sync.",
+      "Describes notifications displaying a client tag and says the app prompts a weekly review; these specific behaviors are absent from the complete product brief.",
+      "The weekly-review paragraph suggests recognizing time spent on clients from completed-task review, which is not established by the supplied features.",
+      "Exceeds the word limit by 174 words, uses generic productivity rhetoric and expands into a long series of feature sections."
+    ]
+  },
+  "judgment": "The helper article follows the supplied brief and length requirement more closely. One sampled article per GPU placement does not establish a general quality advantage."
+}

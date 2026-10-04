@@ -1,0 +1,3 @@
+strata serve: prompt 40257 tokens = 40169 reused + 88 read in 1477 ms (59.6 tok/s), 2285 generated in 50112 ms (45.6 tok/s), drafts accepted 1671 of 1755, 4 checkpoints
+strata serve: decode expert cache hit rate: 60.7% (594410 hits / 979771 lookups)
+strata serve: CUDA1: 82688 expert entries, 22576 active layer launches, 807.5 MiB returned (8490.2 MiB with full rows) in this request; host 687 ms staging+launching, 128 ms waiting for it in this request

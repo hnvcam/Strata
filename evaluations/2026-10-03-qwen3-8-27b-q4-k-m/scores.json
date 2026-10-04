@@ -1,0 +1,17 @@
+{
+  "note": "Same preregistered rubric as earlier IQ3_S/IQ4_XS; subjective reviewer assessment, Python score evaluates corrected replay stage 5. Superseded runs are excluded.",
+  "marketing": {
+    "product_accuracy": 23,
+    "persuasive_audience_fit": 20,
+    "structure_and_readability": 18,
+    "concrete_original_language": 11,
+    "instruction_compliance": 12
+  },
+  "python": {
+    "current_code_diagnosis": 12,
+    "python_conversion_correctness": 5,
+    "engine_integration_correctness": 7,
+    "compatibility_memory_and_validation": 6,
+    "proposal_clarity_and_honesty": 5
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "reason": "Four-layer first continuation reached 2048 tokens after the helper stage-2 cap. Both setups need a second continuation and matched downstream histories.",
+  "prompt": "Continue from the exact point where your previous answer was cut off, without repeating earlier text. Complete the requested deliverable.",
+  "second_continuation_max_tokens": 6144,
+  "original_continuation_max_tokens": 2048,
+  "all_original_task_and_scope_limits_unchanged": true,
+  "extra_cold_restart_before_second_continuation_for_both": true,
+  "superseded_outputs_retained": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-04-helper-vs-four-layers/superseded-one-continuation"
+}

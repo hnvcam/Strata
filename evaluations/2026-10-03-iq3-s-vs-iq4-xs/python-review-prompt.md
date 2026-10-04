@@ -1,0 +1,1 @@
+Review your preceding proposal as a skeptical Strata maintainer. Check its important assumptions against the supplied source and sidecar specimen. Identify concrete mistakes or missing requirements, propose corrections, and distinguish verified source facts from untested expectations. Do not implement changes or provide a patch.

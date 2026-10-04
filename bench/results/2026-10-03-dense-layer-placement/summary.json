@@ -1,0 +1,17 @@
+{
+  "original_tok_s": 43.408300544186595,
+  "changed_tok_s": 42.59986812879623,
+  "percent_change": -1.8623913059379937,
+  "earlier_changed_tok_s": 43.456361537090565,
+  "parity": [
+    true,
+    true,
+    true
+  ],
+  "production_unchanged": true,
+  "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n",
+  "engine_hashes": {
+    "original": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "changed": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903"
+  }
+}

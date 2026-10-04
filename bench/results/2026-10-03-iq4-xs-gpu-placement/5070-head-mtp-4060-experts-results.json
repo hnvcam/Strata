@@ -1,0 +1,559 @@
+{
+  "name": "5070-head-mtp-4060-experts",
+  "config": {
+    "exe": "/home/hnvcam/Workplace/Strata/engine/strata",
+    "args": [
+      "--pack",
+      "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+      "--native",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "--ple-gguf",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "--expert-profile",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "512",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--vram-reserve-mib",
+      "1248",
+      "--pcie-frac",
+      "0.20",
+      "--spec-min-p",
+      "0.70",
+      "--suffix-draft",
+      "0",
+      "--expert-cache-device1",
+      "2800"
+    ],
+    "cwd": "/home/hnvcam/Workplace/Strata",
+    "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq4_xs",
+    "log": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-head-mtp-4060-experts-engine.log",
+    "lib_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "port": 1112,
+    "draft_vocab": "full",
+    "gpu": 0,
+    "gpus_asked": true,
+    "host": "127.0.0.1",
+    "env": {
+      "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+      "CUDA_VISIBLE_DEVICES": "0,1"
+    }
+  },
+  "pilot": false,
+  "runs": [
+    {
+      "label": "english-1",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-c58a7aba9f0342b5b0e1701c",
+        "object": "chat.completion",
+        "created": 1791038219,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, typically located on the back or bottom of the refrigerator. Here, the hot refrigerant releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid, effectively transferring the heat absorbed from inside the fridge out into the kitchen.\n\nOnce the refrigerant has become a high-pressure liquid, it flows toward the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. As the liquid passes through this narrow restriction, its pressure drops dramatically, causing a corresponding and rapid decrease in temperature. This sudden drop in pressure causes the liquid to partially vaporize and cool down significantly, resulting in a cold, low-pressure mixture of liquid and vapor. This stage is crucial because it prepares the refrigerant to absorb heat; the refrigerant is now at a temperature lower than the air inside the refrigerator compartment, creating the necessary thermal gradient for heat transfer to occur.\n\nFinally, this cold, low-pressure refrigerant enters the **evaporator** coils, which are located inside the refrigerator and freezer compartments. Because the refrigerant is colder than the air inside the cabinet, heat naturally flows from the warmer interior air into the colder refrigerant. As the refrigerant absorbs this thermal energy, it boils and evaporates, changing from a liquid back into a low-pressure gas. This phase change removes heat from the interior, lowering the temperature of the food and air inside. The now-warmed, low-pressure gas returns to the compressor to begin the cycle anew, continuously pumping heat from the cold interior to the warmer exterior environment."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 428,
+          "total_tokens": 470,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 42,
+          "prompt_ms": 902.6,
+          "prompt_per_token_ms": 21.49,
+          "prompt_per_second": 46.5,
+          "predicted_n": 428,
+          "predicted_ms": 8281.2,
+          "predicted_per_token_ms": 19.349,
+          "predicted_per_second": 51.7,
+          "draft_n": 321,
+          "draft_n_accepted": 225
+        }
+      },
+      "wall_s": 9.210429885999474,
+      "engine_log": "strata serve: prompt 42 tokens = 0 reused + 42 read in 903 ms (46.5 tok/s), 428 generated in 8281 ms (51.7 tok/s), drafts accepted 225 of 321, 1 checkpoints\nstrata serve: decode expert cache hit rate: 76.5% (174123 hits / 227537 lookups)\nstrata serve: CUDA1: 18810 expert entries, 6209 active layer launches, 183.7 MiB returned (1724.4 MiB with full rows) in this request; host 129 ms staging+launching, 51 ms waiting for it in this request\n"
+    },
+    {
+      "label": "code-1",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-942c57d137954195aa0d8109",
+        "object": "chat.completion",
+        "created": 1791038228,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function takes two lists that are already sorted in ascending order\n    and merges them into one sorted list in ascending order. It uses a two-pointer\n    technique to efficiently combine the lists.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists, sorted in ascending order.\n    \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 2, 3], [])\n        [1, 2, 3]\n    \"\"\"\n    merged = []\n    i, j = 0, 0\n    \n    # Compare elements from both lists and append the smaller one\n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n    \n    # Append any remaining elements from list1\n    while i < len(list1):\n        merged.append(list1[i])\n        i += 1\n    \n    # Append any remaining elements from list2\n    while j < len(list2):\n        merged.append(list2[j])\n        j += 1\n    \n    return merged\n\n\n# Unit tests\nimport unittest\n\nclass TestMergeSortedLists(unittest.TestCase):\n    def test_merge_two_non_empty_lists(self):\n        \"\"\"Test merging two non-empty sorted lists.\"\"\"\n        result = merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        self.assertEqual(result, [1, 2, 3, 4, 5, 6])\n    \n    def test_merge_with_empty_list(self):\n        \"\"\"Test merging when one list is empty.\"\"\"\n        result = merge_sorted"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 512,
+          "total_tokens": 556,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 44,
+          "prompt_ms": 1075.7,
+          "prompt_per_token_ms": 24.448,
+          "prompt_per_second": 40.9,
+          "predicted_n": 512,
+          "predicted_ms": 11686.1,
+          "predicted_per_token_ms": 22.824,
+          "predicted_per_second": 43.8,
+          "draft_n": 390,
+          "draft_n_accepted": 367
+        }
+      },
+      "wall_s": 12.779246334000163,
+      "engine_log": "strata serve: prompt 44 tokens = 0 reused + 44 read in 1076 ms (40.9 tok/s), 512 generated in 11686 ms (43.8 tok/s), drafts accepted 367 of 390, 1 checkpoints\nstrata serve: decode expert cache hit rate: 48.4% (106802 hits / 220707 lookups)\nstrata serve: CUDA1: 19791 expert entries, 5869 active layer launches, 193.3 MiB returned (2122.9 MiB with full rows) in this request; host 157 ms staging+launching, 31 ms waiting for it in this request\n"
+    },
+    {
+      "label": "vietnamese-1",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-d1d59333dce3414282561ce3",
+        "object": "chat.completion",
+        "created": 1791038241,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học liên tục, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong tủ lạnh. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí bên trong, khiến nó sôi và chuyển hóa thành hơi. Quá trình hấp thụ nhiệt này làm giảm nhiệt độ bên trong tủ, tạo ra hiệu ứng làm lạnh, trong khi môi chất lạnh mang theo nhiệt lượng vừa thu được di chuyển ra ngoài để tiếp tục chu trình.\n\nĐể đẩy nhiệt lượng này ra khỏi hệ thống, máy nén đóng vai trò như trái tim của hệ thống, hút hơi môi chất lạnh từ dàn bay hơi và nén nó với áp suất và nhiệt độ rất cao. Hơi môi chất nóng và áp suất cao này sau đó đi vào dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại dàn ngưng tụ, nhiệt độ của môi chất lạnh cao hơn nhiệt độ môi trường xung quanh, nên nó tỏa nhiệt ra không khí bên ngoài và ngưng tụ lại thành dạng lỏng. Đây chính là lý do tại sao phần lưng tủ lạnh thường nóng khi hoạt động, vì đó là nơi nhiệt lượng từ bên trong tủ được thải ra ngoài.\n\nCuối cùng, để hoàn thành chu trình và duy trì sự chênh lệch áp suất cần thiết, môi chất lạnh dạng lỏng áp suất cao đi qua van tiết lưu. Van này có nhiệm vụ giảm áp suất đột ngột của môi chất lạnh, khiến một phần nhỏ chất lỏng bay hơi và nhiệt độ của nó giảm xuống rất thấp. Sau khi đi qua van tiết lưu, môi chất lạnh ở trạng thái lỏng-hơi áp suất thấp và nhiệt độ thấp quay trở lại dàn bay hơi để bắt đầu lại quá trình hấp thụ nhiệt. Sự phối hợp nhịp nhàng giữa máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi tạo nên một vòng tuần hoàn khép kín, liên tục bơm nhiệt từ trong ra ngoài, giúp duy trì nhiệt độ thấp ổn định cho thực phẩm."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 454,
+          "total_tokens": 510,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 56,
+          "prompt_ms": 1366.5,
+          "prompt_per_token_ms": 24.402,
+          "prompt_per_second": 41.0,
+          "predicted_n": 454,
+          "predicted_ms": 9170.9,
+          "predicted_per_token_ms": 20.2,
+          "predicted_per_second": 49.5,
+          "draft_n": 268,
+          "draft_n_accepted": 208
+        }
+      },
+      "wall_s": 10.571894290999808,
+      "engine_log": "strata serve: prompt 56 tokens = 0 reused + 56 read in 1367 ms (41.0 tok/s), 454 generated in 9171 ms (49.5 tok/s), drafts accepted 208 of 268, 1 checkpoints\nstrata serve: decode expert cache hit rate: 72.8% (163699 hits / 224857 lookups)\nstrata serve: CUDA1: 16606 expert entries, 6455 active layer launches, 162.2 MiB returned (1552.4 MiB with full rows) in this request; host 139 ms staging+launching, 45 ms waiting for it in this request\n"
+    },
+    {
+      "label": "english-2",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-d50b977ae1884b3bade631d1",
+        "object": "chat.completion",
+        "created": 1791038251,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized fluid known as a refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, which is typically located on the back or bottom of the refrigerator. Here, the hot gas releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat to the environment, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid.\n\nOnce the refrigerant has become a high-pressure liquid, it flows toward the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. As the liquid passes through this narrow restriction, its pressure drops dramatically, causing a corresponding and rapid decrease in temperature. This sudden drop in pressure causes the liquid to partially vaporize and cool down significantly, resulting in a cold, low-pressure mixture of liquid and vapor. This chilled state is essential because it prepares the refrigerant to absorb heat from the interior of the refrigerator, effectively creating a temperature differential that allows heat to flow from the cold interior to the warmer exterior.\n\nFinally, this cold, low-pressure refrigerant enters the **evaporator**, a set of coils located inside the refrigerator compartment. Because the refrigerant is now much colder than the air inside the fridge, heat naturally transfers from the warmer food and air into the cold refrigerant coils. As the refrigerant absorbs this thermal energy, it boils and evaporates, changing back into a low-pressure gas. This gas is then drawn back into the compressor to begin the cycle anew. By continuously repeating this cycle of compression, condensation, expansion, and evaporation, the refrigerator effectively pumps heat from its interior to the outside environment, maintaining a cool temperature inside."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 420,
+          "total_tokens": 462,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 42,
+          "prompt_ms": 944.6,
+          "prompt_per_token_ms": 22.49,
+          "prompt_per_second": 44.5,
+          "predicted_n": 420,
+          "predicted_ms": 8235.8,
+          "predicted_per_token_ms": 19.609,
+          "predicted_per_second": 51.0,
+          "draft_n": 314,
+          "draft_n_accepted": 220
+        }
+      },
+      "wall_s": 9.183269696000025,
+      "engine_log": "strata serve: prompt 42 tokens = 0 reused + 42 read in 945 ms (44.5 tok/s), 420 generated in 8236 ms (51.0 tok/s), drafts accepted 220 of 314, 1 checkpoints\nstrata serve: decode expert cache hit rate: 77.4% (172926 hits / 223374 lookups)\nstrata serve: CUDA1: 18057 expert entries, 5885 active layer launches, 176.3 MiB returned (1662.6 MiB with full rows) in this request; host 122 ms staging+launching, 38 ms waiting for it in this request\n"
+    },
+    {
+      "label": "code-2",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-ccc5199af1cb495d894c8fa2",
+        "object": "chat.completion",
+        "created": 1791038260,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function takes two lists that are already sorted in ascending order\n    and merges them into one sorted list in ascending order. It uses a two-pointer\n    technique to efficiently combine the lists.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists, sorted in ascending order.\n    \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 2, 3], [])\n        [1, 2, 3]\n    \"\"\"\n    merged = []\n    i, j = 0, 0\n    \n    # Compare elements from both lists and append the smaller one\n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n    \n    # Append any remaining elements from list1\n    while i < len(list1):\n        merged.append(list1[i])\n        i += 1\n    \n    # Append any remaining elements from list2\n    while j < len(list2):\n        merged.append(list2[j])\n        j += 1\n    \n    return merged\n\n\n# Unit tests\nimport unittest\n\n\nclass TestMergeSortedLists(unittest.TestCase):\n    def test_merge_two_non_empty_lists(self):\n        \"\"\"Test merging two non-empty sorted lists.\"\"\"\n        result = merge_sorted_lists([1, 3, 5, 7], [2, 4, 6, 8])\n        self.assertEqual(result, [1, 2, 3, 4, 5, 6, 7, 8])\n    \n    def test_merge_with_empty_list(self):\n        \"\"\"Test merging"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 512,
+          "total_tokens": 556,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 44,
+          "prompt_ms": 1197.2,
+          "prompt_per_token_ms": 27.209,
+          "prompt_per_second": 36.8,
+          "predicted_n": 512,
+          "predicted_ms": 12620.9,
+          "predicted_per_token_ms": 24.65,
+          "predicted_per_second": 40.6,
+          "draft_n": 392,
+          "draft_n_accepted": 367
+        }
+      },
+      "wall_s": 13.820155154000531,
+      "engine_log": "strata serve: prompt 44 tokens = 0 reused + 44 read in 1197 ms (36.8 tok/s), 512 generated in 12621 ms (40.6 tok/s), drafts accepted 367 of 392, 1 checkpoints\nstrata serve: decode expert cache hit rate: 48.7% (107468 hits / 220838 lookups)\nstrata serve: CUDA1: 19860 expert entries, 5825 active layer launches, 193.9 MiB returned (2122.8 MiB with full rows) in this request; host 156 ms staging+launching, 27 ms waiting for it in this request\n"
+    },
+    {
+      "label": "vietnamese-2",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "max_tokens": 512,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-716a72688be34eb1977f88de",
+        "object": "chat.completion",
+        "created": 1791038274,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học khép kín, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong tủ ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong ngăn đông hoặc ngăn mát. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí xung quanh, khiến nhiệt độ bên trong tủ giảm xuống. Quá trình hấp thụ nhiệt này làm cho môi chất lạnh sôi và chuyển hóa thành hơi, mang theo nhiệt năng vừa thu được ra khỏi khu vực cần làm lạnh, tạo ra hiệu ứng làm mát mà chúng ta cảm nhận được.\n\nSau khi hấp thụ nhiệt, dòng hơi môi chất lạnh áp suất thấp và nhiệt độ thấp được hút vào máy nén, được ví như \"trái tim\" của hệ thống. Máy nén thực hiện công việc nén chặt các phân tử khí, làm tăng đáng kể cả áp suất lẫn nhiệt độ của môi chất lạnh, biến nó thành hơi quá nhiệt có năng lượng cao. Dòng hơi nóng và áp suất cao này sau đó di chuyển đến dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại dàn ngưng tụ, nhiệt độ của môi chất lạnh cao hơn nhiệt độ môi trường xung quanh, nên nhiệt lượng sẽ tự động tỏa ra ngoài không khí. Khi mất nhiệt, môi chất lạnh ngưng tụ lại thành dạng lỏng áp suất cao, sẵn sàng cho giai đoạn tiếp theo.\n\nCuối cùng, môi chất lạnh dạng lỏng áp suất cao đi qua van tiết lưu, một thiết bị có chức năng giảm áp suất đột ngột. Khi áp suất giảm mạnh, nhiệt độ của môi chất lạnh cũng hạ thấp đáng kể, đưa nó trở về trạng thái lỏng lạnh ở áp suất thấp. Ở trạng thái này, môi chất lạnh quay trở lại dàn bay hơi để tiếp tục chu trình hấp thụ nhiệt mới. Sự phối hợp nhịp nhàng giữa bốn thành phần chính—máy nén tạo áp suất, dàn ngưng tụ tỏa nhiệt, van tiết lưu giảm áp và dàn bay hơi hấp thụ nhiệt—giúp duy trì nhiệt độ thấp ổn định bên trong tủ lạnh một cách liên tục và hiệu quả."
+            },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 466,
+          "total_tokens": 522,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 56,
+          "prompt_ms": 1590.6,
+          "prompt_per_token_ms": 28.404,
+          "prompt_per_second": 35.2,
+          "predicted_n": 466,
+          "predicted_ms": 9901.5,
+          "predicted_per_token_ms": 21.248,
+          "predicted_per_second": 47.1,
+          "draft_n": 290,
+          "draft_n_accepted": 215
+        }
+      },
+      "wall_s": 11.494359812000766,
+      "engine_log": "strata serve: prompt 56 tokens = 0 reused + 56 read in 1591 ms (35.2 tok/s), 466 generated in 9902 ms (47.1 tok/s), drafts accepted 215 of 290, 1 checkpoints\nstrata serve: decode expert cache hit rate: 72.9% (172002 hits / 235957 lookups)\nstrata serve: CUDA1: 17407 expert entries, 6556 active layer launches, 170.0 MiB returned (1615.3 MiB with full rows) in this request; host 146 ms staging+launching, 41 ms waiting for it in this request\n"
+    },
+    {
+      "label": "long-prompt",
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Read the following maintenance notes. After the notes, write a detailed general maintenance checklist covering inspection, diagnosis, repair and documentation.\nEntry 0001: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0002: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0003: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0004: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0005: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0006: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0007: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0008: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0009: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0010: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0011: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0012: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0013: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0014: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0015: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0016: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0017: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0018: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0019: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0020: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0021: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0022: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0023: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0024: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0025: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0026: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0027: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0028: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0029: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0030: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0031: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0032: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0033: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0034: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0035: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0036: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0037: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0038: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0039: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0040: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0041: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0042: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0043: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0044: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0045: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0046: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0047: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0048: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0049: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0050: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0051: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0052: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0053: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0054: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0055: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0056: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0057: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0058: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0059: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0060: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0061: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0062: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0063: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0064: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0065: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0066: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0067: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0068: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0069: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0070: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0071: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0072: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0073: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0074: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0075: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0076: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0077: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0078: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0079: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0080: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0081: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0082: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0083: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0084: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0085: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0086: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0087: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0088: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0089: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0090: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0091: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0092: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0093: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0094: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0095: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0096: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0097: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0098: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0099: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0100: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0101: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0102: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0103: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0104: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0105: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0106: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0107: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0108: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0109: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0110: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0111: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0112: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0113: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0114: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0115: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0116: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0117: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0118: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0119: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0120: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0121: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0122: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0123: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0124: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0125: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0126: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0127: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0128: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0129: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0130: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0131: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0132: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0133: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0134: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0135: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0136: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0137: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0138: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0139: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0140: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0141: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0142: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0143: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0144: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0145: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0146: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0147: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0148: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0149: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0150: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0151: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0152: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0153: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0154: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0155: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0156: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0157: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0158: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0159: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0160: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0161: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0162: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0163: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0164: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0165: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0166: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0167: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0168: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0169: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0170: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0171: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0172: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0173: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0174: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0175: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0176: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0177: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0178: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0179: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0180: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0181: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0182: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0183: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0184: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0185: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0186: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0187: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0188: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0189: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0190: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0191: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0192: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0193: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0194: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0195: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0196: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0197: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0198: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0199: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0200: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0201: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0202: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0203: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0204: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0205: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0206: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0207: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0208: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0209: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0210: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0211: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0212: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0213: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0214: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0215: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0216: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0217: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0218: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0219: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0220: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0221: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0222: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0223: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0224: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0225: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0226: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0227: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0228: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0229: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0230: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0231: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0232: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0233: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0234: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0235: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0236: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0237: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0238: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0239: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0240: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0241: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0242: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0243: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0244: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0245: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0246: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0247: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0248: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0249: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0250: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0251: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0252: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0253: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0254: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0255: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0256: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0257: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0258: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0259: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0260: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0261: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0262: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0263: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0264: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0265: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0266: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0267: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0268: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0269: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0270: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0271: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0272: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0273: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0274: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0275: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0276: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0277: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0278: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0279: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nEntry 0280: The maintenance team inspected the water pump, checked the pressure gauge, replaced a worn seal, and recorded the result in the service log.\nNow write the detailed checklist. Do not list individual entry numbers."
+          }
+        ],
+        "max_tokens": 256,
+        "temperature": 0,
+        "top_p": 1,
+        "top_k": 0,
+        "seed": 1234,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-ac1e6f12de3a44cfa744d345",
+        "object": "chat.completion",
+        "created": 1791038286,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Based on the repetitive nature of the maintenance notes provided (Entries 0001–0280), it is evident that the current maintenance protocol is highly standardized but potentially reactive or overly frequent regarding seal replacement. The notes indicate a consistent cycle of **Inspection → Pressure Check → Seal Replacement → Documentation**.\n\nBelow is a detailed, generalized maintenance checklist for water pump systems. This checklist expands on the basic actions found in the logs to include best practices for diagnosis, root-cause analysis, and comprehensive documentation, aiming to improve reliability and reduce unnecessary part replacements.\n\n### **General Water Pump Maintenance Checklist**\n\n#### **1. Pre-Maintenance Safety & Preparation**\n*   [ ] **Lockout/Tagout (LOTO):** Ensure the pump is electrically isolated and mechanically locked out to prevent accidental startup.\n*   [ ] **Depressurization:** Verify that the system pressure is zero before opening any components.\n*   [ ] **Drainage:** Drain residual fluid from the pump casing if required for the specific task.\n*   [ ] **PPE Check:** Wear appropriate personal protective equipment (gloves, eye protection, steel-toed boots).\n*   [ ] **Tool & Part Verification:** Confirm availability of correct"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 9851,
+          "completion_tokens": 256,
+          "total_tokens": 10107,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 9851,
+          "prompt_ms": 41698.3,
+          "prompt_per_token_ms": 4.233,
+          "prompt_per_second": 236.2,
+          "predicted_n": 256,
+          "predicted_ms": 5861.0,
+          "predicted_per_token_ms": 22.895,
+          "predicted_per_second": 43.7,
+          "draft_n": 173,
+          "draft_n_accepted": 141
+        }
+      },
+      "wall_s": 47.62507111099967,
+      "engine_log": "strata serve: prompt 9851 tokens = 0 reused + 9851 read in 41698 ms (236.2 tok/s), 256 generated in 5861 ms (43.7 tok/s), drafts accepted 141 of 173, 1 checkpoints\nstrata serve: decode expert cache hit rate: 61.5% (72146 hits / 117274 lookups)\nstrata serve: CUDA1: 14596 expert entries, 4145 active layer launches, 142.5 MiB returned (1047.0 MiB with full rows) in this request; host 95 ms staging+launching, 33 ms waiting for it in this request\n"
+    }
+  ],
+  "load_s": 47.06726120900021,
+  "health": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next-iq4_xs",
+    "images": false,
+    "api_key": false,
+    "loaded": true,
+    "service": "strata"
+  },
+  "startup_log": "strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration\nstrata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)\nstrata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)\nstrata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped: served natively)\nstrata generate: 301 native projection matrices, 2975.00 MiB of weights\nstrata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)\nstrata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots\nstrata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf\nstrata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 1.06 s (738 MiB/s)\nstrata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0\nstrata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages\nstrata generate: loaded 55.43 GiB at 2.51 GiB/s\nstrata generate: experimental native Q5_K head, 521472000 bytes\nstrata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots\nstrata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is\nstrata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,\n                 so a reply can differ slightly from a run without the cache (same quality:\n                 bench/results/2026-09-27-cache-parity).\n                 PROFILE, ranked by routing frequency, no eviction.\nstrata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified\nstrata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows\nstrata generate: R4 hit path ON - resident experts are computed on the GPU\nstrata generate: 13 expert-pool workers + the host thread\nstrata generate: session is up (engine 0.1.34)\nstrata generate: token graph hit path: 2513 resident experts, decided on the device\nstrata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)\nstrata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)\nstrata verify: window up to 4 tokens, 75.8 MiB of device buffers\nstrata mtp: draft head over 248320 tokens (497.3 MiB)\nstrata serve: 946 MiB of VRAM free with everything loaded\n",
+  "warmup": {
+    "label": "warmup",
+    "request": {
+      "model": "qwen3.8-flash-next-iq4_xs",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Explain the difference between RAM and SSD storage in a personal computer."
+        }
+      ],
+      "max_tokens": 128,
+      "temperature": 0,
+      "top_p": 1,
+      "top_k": 0,
+      "seed": 1234,
+      "reasoning_effort": "none",
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "stream": false
+    },
+    "response": {
+      "id": "chatcmpl-3e6c6156acf74de2909716ca",
+      "object": "chat.completion",
+      "created": 1791038215,
+      "model": "qwen3.8-flash-next-iq4_xs",
+      "choices": [
+        {
+          "index": 0,
+          "message": {
+            "role": "assistant",
+            "content": "To understand the difference between **RAM** (Random Access Memory) and **SSD** (Solid State Drive) storage, it helps to think of your computer like a human brain or a workspace.\n\n### 🧠 Simple Analogy\n- **RAM** is like your **desk surface**. It’s where you keep the documents and tools you are actively using right now. It’s super fast to access, but if you leave the room (turn off the computer), everything on the desk is cleared away.\n- **SSD** is like your **filing cabinet**. It’s where you store all your documents, photos,"
+          },
+          "finish_reason": "length"
+        }
+      ],
+      "usage": {
+        "prompt_tokens": 26,
+        "completion_tokens": 128,
+        "total_tokens": 154,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "timings": {
+        "cache_n": 0,
+        "prompt_n": 26,
+        "prompt_ms": 789.6,
+        "prompt_per_token_ms": 30.369,
+        "prompt_per_second": 32.9,
+        "predicted_n": 128,
+        "predicted_ms": 2980.5,
+        "predicted_per_token_ms": 23.285,
+        "predicted_per_second": 42.9,
+        "draft_n": 95,
+        "draft_n_accepted": 80
+      }
+    },
+    "wall_s": 3.820574795000539,
+    "engine_log": "strata verify: captured the 4-token window (upload no error, sync no error)\nstrata verify: captured the 3-token window (upload no error, sync no error)\nstrata verify: captured the 2-token window (upload no error, sync no error)\nstrata verify: captured the 1-token window (upload no error, sync no error)\nstrata serve: prompt 26 tokens = 0 reused + 26 read in 790 ms (32.9 tok/s), 128 generated in 2980 ms (42.9 tok/s), drafts accepted 80 of 95, 1 checkpoints\nstrata serve: decode expert cache hit rate: 54.4% (29259 hits / 53784 lookups)\nstrata serve: CUDA1: 12794 expert entries, 2416 active layer launches, 124.9 MiB returned (719.4 MiB with full rows) in this request; host 63 ms staging+launching, 34 ms waiting for it in this request\n"
+  },
+  "gpu_snapshot": "index, name, memory.used [MiB], memory.total [MiB], pcie.link.gen.current, pcie.link.width.current, temperature.gpu\n0, NVIDIA GeForce RTX 5070 Ti, 14972 MiB, 16303 MiB, 4, 16, 50\n1, NVIDIA GeForce RTX 4060, 6890 MiB, 8188 MiB, 3, 4, 47\n",
+  "status": "complete"
+}

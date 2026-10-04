@@ -1,0 +1,9 @@
+{
+  "hashes_match": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": true,
+    "/home/hnvcam/Workplace/Strata/engine/strata": true,
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": true
+  },
+  "draft_vocab_full": true,
+  "gpu": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n"
+}

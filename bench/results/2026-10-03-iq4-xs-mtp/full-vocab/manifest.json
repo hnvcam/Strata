@@ -1,0 +1,76 @@
+{
+  "production_hashes_before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "aefc3a413ffd13afd360b1d471d0b3bf48c37c209f2208f6eb13d819857690ec",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25",
+    "/home/hnvcam/Workplace/Strata/data/mtp-unsloth-q4-k-m/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25"
+  },
+  "vocab_count": 248320,
+  "full_vocab_sha256": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+  "matched_config": {
+    "exe": "/home/hnvcam/Workplace/Strata/engine/strata-mtp",
+    "args": [
+      "--pack",
+      "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+      "--native",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "--ple-gguf",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "--expert-profile",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "512",
+      "--spec",
+      "4",
+      "--mtp",
+      "<runtime>",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--vram-reserve-mib",
+      "1248",
+      "--pcie-frac",
+      "0.20",
+      "--spec-min-p",
+      "0.70",
+      "--suffix-draft",
+      "0"
+    ],
+    "cwd": "/home/hnvcam/Workplace/Strata",
+    "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq4_xs",
+    "lib_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "port": 1112,
+    "draft_vocab": "full",
+    "gpu": [
+      1,
+      0
+    ],
+    "gpus_asked": true,
+    "layer_split": 2,
+    "host": "127.0.0.1"
+  },
+  "engine_sha256": "91154365f7b1cbaec9ef923c66bb2c222f2e4a3e8df0a127b2cf142b3f45cd71",
+  "restore": false,
+  "apply": false,
+  "production_hashes_after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "aefc3a413ffd13afd360b1d471d0b3bf48c37c209f2208f6eb13d819857690ec",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25",
+    "/home/hnvcam/Workplace/Strata/data/mtp-unsloth-q4-k-m/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25"
+  },
+  "production_files_unchanged": true,
+  "production_health_after": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next-iq4_xs",
+    "images": false,
+    "api_key": false,
+    "loaded": false,
+    "service": "strata"
+  }
+}

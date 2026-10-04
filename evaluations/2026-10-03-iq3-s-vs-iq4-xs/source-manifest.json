@@ -1,0 +1,14 @@
+{
+  "tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
+  "tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
+  "tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
+  "tools/mtp_fetch.py": "c8c64c20f035535b309b7eae69004dc5d0b27b0899dc1b8f626f275837884d5a",
+  "setup.py": "7979d29b35c9d3942db4ffe2afa453f049f61d160d7f19405be030d79bb1085e",
+  "serve/server.py": "4c9174b84faa5a17d3145d781e5d0c1e612f4709d36f096128074d422b71dda0",
+  "include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+  "include/strata/kernels/iq_kernels.hpp": "2b8f5a08be7c7a501e8af7103d7d3ce412295c4467bbfd08b8dc0d02cea7c70d",
+  "include/strata/core/mtp.hpp": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+  "src/core/mtp.cpp": "11fbacd4f062c888226601a57ee86c5dc6627d36693b622793f97c4116e8b673",
+  "src/kernels/cuda/iq_kernels.cu": "07fe5567a7fc75a079dcc7887975dffe490607564c16ad884423b903ab08a537",
+  "src/program/generate.cpp": "1b26c11cc923c140294024947f59c36c8a1a9d9f7c40a3ba3c461d08e626f68d"
+}

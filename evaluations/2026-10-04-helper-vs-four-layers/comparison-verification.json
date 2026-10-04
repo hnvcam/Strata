@@ -1,0 +1,32 @@
+{
+  "same_patched_executable": true,
+  "identical_saved_inputs": {
+    "test-inputs.json": "babed6735b045d486a4070f3548bb7e7891f9f5f881b03c2697bbfa3475328ca",
+    "scope-clarification.json": "c5155636301531998ec6953c9f7e2b41a5b5d63775e7b0c4a2a7ba2f53888105",
+    "source-snapshot.md": "aece8873b55c9f71420db2a644ddfa82933c242c520d4a61c5fce85f60cc1a74",
+    "source-manifest.json": "4525d90564077a2987a4795975efe4653ac42635878eaf76c798bdc2cbfab7a8",
+    "rubric.json": "54c2eaf75221583c2b38e72bde43857fc976ade5d357640c733408ab2954c890",
+    "review-facts.json": "6b974fc09c4c23879de1e1d0f42e3051e148d979148b1ea961d7059456d3d904"
+  },
+  "matched_external_messages_and_settings": [
+    "marketing-1",
+    "python-1",
+    "python-2",
+    "python-2-continuation-1",
+    "python-2-continuation-2",
+    "python-3",
+    "python-4",
+    "python-5"
+  ],
+  "complete_final_deliverables_after_continuations": true,
+  "protected_files_unchanged": true,
+  "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n",
+  "matched_stage2_continuations": 2,
+  "second_continuation_budget": 6144,
+  "token_limit_events": [
+    "helper-python-2",
+    "four-layers-python-2-continuation-1"
+  ],
+  "benchmark_port_closed": true,
+  "production_server_reachable_after": false
+}

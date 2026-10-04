@@ -1,0 +1,10 @@
+{
+  "sha256": "b671507f9b5755983c6a75aa50484fca2d31c9cfd1709b52b1e91ff21238ef62",
+  "build_command": "CCACHE_DIR=/tmp/strata-ccache cmake --build build --target strata split_schedule_test dense_placement_test -j4",
+  "checks": [
+    "split_schedule_test: 14 cases passed",
+    "dense_placement_test: passed",
+    "git diff --check: passed"
+  ],
+  "note": "Final rebuild includes a stricter empty-stage validation and clearer diagnostic/help text after the initial GPU validation."
+}

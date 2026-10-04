@@ -1,0 +1,22 @@
+{
+  "note": "Subjective reviewer score using the unchanged saved rubric; one sampled article. Word count includes headings and uses whitespace splitting.",
+  "word_count": 908,
+  "within_600_to_800_words": false,
+  "scores": {
+    "product_accuracy": 19,
+    "persuasive_audience_fit": 21,
+    "structure_and_readability": 16,
+    "concrete_original_language": 10,
+    "instruction_compliance": 6
+  },
+  "total": 72,
+  "evidence": [
+    "Correct Free project/task limits, no-account Free, both Pro prices, optional sync, offline core functions, calendar/AI limitations, iOS/Android and download CTA.",
+    "Does not state that cloud sync requires an account and internet access. The phrase always up to date overstates optional sync without these conditions.",
+    "Says the app forces a choice every evening and prompts the weekly review; those enforced or prompted behaviors are not established by the complete brief.",
+    "Explains client-tag and three-priority use with concrete designer examples, but makes unsupported product-design claims about why calendar integration and AI scheduling were excluded.",
+    "Generic productivity rhetoric includes decision fatigue, high-impact items, deep focused work and flow.",
+    "Exceeds the 800-word maximum by 108 words."
+  ],
+  "judgment": "The article is usable as a draft but needs shorter copy, the sync requirements, and removal of unprovided behaviors and design rationale. No general quality ranking follows from one sample."
+}

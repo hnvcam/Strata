@@ -1,0 +1,123 @@
+{
+  "request_checks": [
+    {
+      "task": "marketing",
+      "stage": 1,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "b19cd76b746a2495061795f3f2bafdfdb8b220b6164fb374ceb20e94ee89780a",
+      "max_tokens": 2048
+    },
+    {
+      "task": "python",
+      "stage": 1,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "61305f63f8fd14f53bf3c4917becf232dca3b8f8cbd3a79fb13af77d4c053d4f",
+      "max_tokens": 6144
+    },
+    {
+      "task": "python",
+      "stage": 2,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "95735b45af54eca596f0005784929565f69c293ac40ec0e6e43afed232b43e1e",
+      "max_tokens": 4096
+    },
+    {
+      "task": "python",
+      "stage": 3,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "aa9dbf3dac76cb0473dc45df70a344a5f6b98e2002c27217fe2b24acc0a4aab9",
+      "max_tokens": 6144
+    },
+    {
+      "task": "python",
+      "stage": 4,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "061175116c61d9646ab123cb2e9697f61aeda97fd8379024f1bf86e2d79e67d2",
+      "max_tokens": 4096
+    },
+    {
+      "task": "python",
+      "stage": 5,
+      "same_external_messages": true,
+      "same_sampling_and_limits": true,
+      "external_messages_sha256": "036712066f98bc2ddbc55976a3be59d6275cf2cd4a6810ed86463db57294768c",
+      "max_tokens": 6144
+    }
+  ],
+  "engine_configs_same_except_model_assets_names_and_logs": true,
+  "production_source_configs_vocab_hashes_unchanged": true,
+  "engine_hash_unchanged": true,
+  "completed_responses": 12,
+  "all_finish_reason_stop": true,
+  "production_health_after": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next-iq4_xs",
+    "images": false,
+    "api_key": false,
+    "loaded": false,
+    "service": "strata"
+  },
+  "metrics": {
+    "iq3_s": {
+      "marketing": {
+        "requests": 1,
+        "wall_s_sum": 20.968,
+        "output_tokens": 1090,
+        "generation_ms": 18858.1,
+        "weighted_decode_tokens_per_s": 57.8,
+        "draft_tokens": 716,
+        "accepted_draft_tokens": 545,
+        "draft_acceptance_percent": 76.12
+      },
+      "python": {
+        "requests": 5,
+        "wall_s_sum": 497.739,
+        "output_tokens": 14656,
+        "generation_ms": 267041.6,
+        "weighted_decode_tokens_per_s": 54.88,
+        "draft_tokens": 10673,
+        "accepted_draft_tokens": 9386,
+        "draft_acceptance_percent": 87.94
+      }
+    },
+    "iq4_xs": {
+      "marketing": {
+        "requests": 1,
+        "wall_s_sum": 31.748,
+        "output_tokens": 1204,
+        "generation_ms": 28501.7,
+        "weighted_decode_tokens_per_s": 42.24,
+        "draft_tokens": 827,
+        "accepted_draft_tokens": 596,
+        "draft_acceptance_percent": 72.07
+      },
+      "python": {
+        "requests": 5,
+        "wall_s_sum": 717.535,
+        "output_tokens": 16463,
+        "generation_ms": 409229.0,
+        "weighted_decode_tokens_per_s": 40.23,
+        "draft_tokens": 11859,
+        "accepted_draft_tokens": 10347,
+        "draft_acceptance_percent": 87.25
+      }
+    }
+  },
+  "limitations": "Same system/user prompts and settings; later histories necessarily include each model own prior answers. Metrics describe these generated responses, not equal-output speed or precision tests.",
+  "production_health_final": {
+    "status": "ok",
+    "max_context": 131072,
+    "model": "qwen3.8-flash-next-iq4_xs",
+    "images": false,
+    "api_key": false,
+    "loaded": false,
+    "service": "strata"
+  },
+  "temporary_test_port_closed": true
+}

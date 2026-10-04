@@ -1,0 +1,35 @@
+{
+  "note": "Subjective reviewer scores for the completed article and regenerated stage-5 proposal, using the saved rubric. No combined task score.",
+  "marketing": {
+    "helper": {
+      "product_accuracy": 24,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 17,
+      "concrete_original_language": 11,
+      "instruction_compliance": 14
+    },
+    "four-layers": {
+      "product_accuracy": 20,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 16,
+      "concrete_original_language": 11,
+      "instruction_compliance": 6
+    }
+  },
+  "python": {
+    "helper": {
+      "current_code_diagnosis": 14,
+      "python_conversion_correctness": 13,
+      "engine_integration_correctness": 10,
+      "compatibility_memory_and_validation": 7,
+      "proposal_clarity_and_honesty": 7
+    },
+    "four-layers": {
+      "current_code_diagnosis": 14,
+      "python_conversion_correctness": 11,
+      "engine_integration_correctness": 18,
+      "compatibility_memory_and_validation": 6,
+      "proposal_clarity_and_honesty": 7
+    }
+  }
+}

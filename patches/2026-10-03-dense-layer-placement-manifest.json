@@ -1,0 +1,22 @@
+{
+  "base_commit": "1678de333d0e0711bc414ad992b640e1a37dd814",
+  "patch": "2026-10-03-dense-layer-placement.patch",
+  "patch_sha256": "bd836499f8d26a6423540f0afc361a8254c73b1ee67d80c34cd445feae557310",
+  "files": {
+    "CMakeLists.txt": "12017ebc0341e50268898b9fc6df42200c334220a5a1c186e5df0e3bf06a7227",
+    "docs/MULTI_GPU.md": "82745eb6bde2c91366731dc68c90fb41658be2b3d1d3ef56cb92066262de4594",
+    "include/strata/core/native_dense.hpp": "082bfcbec2b26c1859379eb194cee00c0254a8fe3161c8a5d371ca715995b643",
+    "include/strata/core/weights.hpp": "cd6e80eb69cd46cae224f55291637e651a4a4cf3dbec965b14996cea2c596760",
+    "src/core/native_dense.cpp": "4ccebee82c7aa3f5954e6f79f06b3aac974c19a5f73887392836650fa2ae3068",
+    "src/core/weights.cpp": "7d9ffb2d220cb828374347b495ca19f55559bc929daab7cbf343d1bc80f9e0bc",
+    "src/program/generate.cpp": "7c2980610031371349f9d3640ca9ab6ec1ec4324f6762cb5470027fed5f608cf",
+    "include/strata/core/dense_placement.hpp": "32dfb9b83782e76af40aa3e4b68474203433cd19537f6bc58eb1333b693a9ec7",
+    "src/core/dense_placement_test.cpp": "246c532ed6c96be28945034a341da7363aad41dbb3c4136e8c0d33e211fb6450"
+  },
+  "verification": {
+    "apply_check": true,
+    "matches_current_source": true,
+    "reverse_check": true
+  },
+  "production_configuration_changed": false
+}

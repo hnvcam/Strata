@@ -1,0 +1,136 @@
+This is a review of the preceding proposal from the perspective of a skeptical Strata maintainer. The proposal contains several critical architectural misunderstandings, ignores hard-coded constraints in the current runtime, and proposes a "dual-path" solution that is significantly more complex and risky than necessary given the existing infrastructure.
+
+### 1. Critical Mistake: Misunderstanding the "Blob" vs. "Native" Expert Path
+
+**Proposal Claim:** *"Do not convert experts to the custom Q2 blob... Write these to a new file `experts_native.bin`... Call `native_expert_grouped`... instead of `moe_grouped_s2`."*
+
+**Maintainer Review:**
+This is the most dangerous part of the proposal. It assumes we can simply swap the expert kernel at runtime without changing the surrounding data flow.
+
+*   **Source Fact:** `src/core/mtp.cpp` line 533 calls `moe_grouped_s2`. This function expects experts in the **custom Q2_0 blob layout** defined in `include/strata/kernels/cpu/expert.hpp`. This layout is *not* just "raw GGUF blocks." It is a specific interleaving of gate/up rows and separation of codes/scales optimized for the CPU VNNI kernel and the specific Q2_0 identity correction (`hx[k]` precomputation mentioned in `expert.hpp` line 61).
+*   **Source Fact:** `native_expert_grouped` (in `iq_kernels.hpp`) expects **raw GGUF blocks** in a `[gate | up | down]` layout.
+*   **The Conflict:** The current MTP runtime (`mtp.cpp`) is tightly coupled to the Q2_0 blob. It allocates memory based on `strata::kernels::cpu::BLOB` (line 182). It does not have the scratch buffers or the activation quantization pipeline (`x_q8_1`) set up for `native_expert_grouped` in the same way the main model does. The main model uses `native_expert_grouped` for its experts, but the MTP drafter uses `moe_grouped_s2`.
+*   **Correction:** You cannot simply "call `native_expert_grouped`" in `mtp.cpp` without rewriting the entire expert execution block in `mtp.cpp` to match the main model's expert path. This includes:
+    1.  Changing how activations are quantized (currently `quantize_q8_0_scaled` in `mtp.cpp` line 532; `native_expert_grouped` expects `q8_1` blocks).
+    2.  Allocating the specific scratch buffers required by `native_expert_grouped` (`native_expert_scratch_bytes`).
+    3.  Changing the grouping logic (`moe_group_resident` vs. whatever the main model uses).
+    *   **Verdict:** The proposal underestimates the runtime changes by an order of magnitude. It treats the expert kernel as a drop-in replacement, but it is a different data pipeline.
+
+### 2. Critical Mistake: Ignoring the "Shared Sidecar" Constraint
+
+**Proposal Claim:** *"The sidecar is shared, so it relies on the target model's embedding/head."*
+
+**Maintainer Review:**
+The proposal acknowledges this but fails to address the **tensor name mismatch** for the shared components.
+
+*   **Source Fact:** The sidecar contains `blk.48.nextn.eh_proj.weight`. This is the projection from the hidden state + embedding to the MTP input.
+*   **Source Fact:** The current `mtp_rt.py` (line 29) expects `fc_embedding.weight` and `fc_hidden.weight`.
+*   **The Conflict:** The sidecar does *not* contain `fc_embedding` or `fc_hidden`. It contains `nextn.eh_proj`. The current runtime `mtp.cpp` (line 201) explicitly checks for `fc_embedding.weight` and `fc_hidden.weight`.
+*   **Correction:** The proposal suggests mapping names. But `fc_embedding` and `fc_hidden` are *separate* matrices in the current Q2 GGUF. In the sidecar, they are fused into `nextn.eh_proj` (shape `[5120, 2560]`, where 5120 = 2560 emb + 2560 hidden).
+    *   The runtime `mtp.cpp` likely performs two separate matrix multiplications (one for embedding, one for hidden) or expects them in a specific layout.
+    *   If the runtime expects two separate tensors, the converter must **split** `nextn.eh_proj` into `fc_embedding` and `fc_hidden`.
+    *   If the runtime can be changed to accept a single fused tensor, the kernel calls must be updated.
+    *   **Verdict:** The proposal misses the structural difference in the input projection. Splitting a fused matrix is non-trivial if the quantization blocks span the boundary (though here the split is likely at the 2560 boundary, which aligns with Q4_K block size 256, so it *might* be safe, but it must be verified).
+
+### 3. Missing Requirement: Hyper-Connection (HC) Quantization Support
+
+**Proposal Claim:** *"Dequantize hyper-connection weights to BF16 during loading... This increases memory but simplifies runtime."*
+
+**Maintainer Review:**
+This is a reasonable simplification, but the proposal fails to identify **which** HC weights are quantized and **how** they are used.
+
+*   **Source Fact:** The sidecar uses `Q4_K`/`Q6_K` for `hc_attn_down`, `hc_ffn_down`, `hc_inject`, and `Q5_0` for `hc_attn_up`, `hc_ffn_up`.
+*   **Source Fact:** `mtp.cpp` uses `bf16()` accessors for these (e.g., line 550 `gr_write` uses `inj2_` which comes from HC weights).
+*   **The Conflict:** The current `mtp_rt.py` keeps HC weights as BF16. The sidecar has them as Q4_K/Q5_0.
+*   **Correction:** The proposal is correct that dequantizing to BF16 is the easiest path. However, it must explicitly state that the **converter** (`mtp_rt_v2.py`) must perform this dequantization. The runtime `mtp.cpp` does not need to change if the converter outputs BF16.
+    *   **Risk:** Dequantizing Q4_K to BF16 loses precision. Is this acceptable for HC? The proposal assumes yes. This needs validation.
+    *   **Verdict:** Acceptable proposal, but must be explicit that the *converter* does the work, not the runtime.
+
+### 4. Missing Requirement: Norm Offset Handling
+
+**Proposal Claim:** *"Copy F32 norms directly (do not add +1.0, as they are pre-offset)."*
+
+**Maintainer Review:**
+This is a critical correctness issue.
+
+*   **Source Fact:** `tools/mtp_rt.py` line 86: `arr = (data.astype(np.float32) + 1.0)`. The current pipeline *adds* 1.0.
+*   **Source Fact:** The sidecar spec says: "source GGUF norm scales already include their Gemma +1 offset."
+*   **The Conflict:** If the converter copies them directly, and the runtime expects them to be pre-offset (which it does, because it uses them directly in RMSNorm kernels), then this is correct.
+    *   **However:** The current runtime `mtp.cpp` does *not* add 1.0. It expects the data in `dense.bin` to already be `1+w`.
+    *   **Verdict:** The proposal is correct here, but it must be emphasized that the **converter** must NOT add 1.0, unlike the legacy `mtp_rt.py`. This is a subtle but fatal bug if copied from the old script.
+
+### 5. Memory Implications: Underestimation
+
+**Proposal Claim:** *"Total: ~2.5–2.6 GB... The MTP layer should be placed on the RTX 4060 (8 GB) if possible."*
+
+**Maintainer Review:**
+The calculation is rough, but the placement strategy is flawed.
+
+*   **Source Fact:** `src/program/generate.cpp` line 2299: `const int64_t kDrafterMib = 1000; // the MTP drafter (839 MiB) + the head`. The current Q2 MTP is ~840 MB.
+*   **Source Fact:** The proposal estimates Q4_K_M MTP at ~2.6 GB.
+*   **The Conflict:** The RTX 4060 has 8 GB. The main model (IQ4_XS) is likely split across both GPUs. If the MTP is on the 4060, it must fit alongside the *last layer* of the main model and the KV cache for that stage.
+    *   2.6 GB for MTP is huge. It is 3x the size of the current MTP.
+    *   If the main model's last layer + KV cache on the 4060 takes 4-5 GB, adding 2.6 GB for MTP will likely cause OOM or force a very small KV cache.
+    *   **Verdict:** The proposal should warn that this sidecar might be **too large** for the 4060 in a split configuration. It might require running the MTP on the 5070 Ti, which competes with the main model's KV cache there. This is a major usability regression.
+
+### 6. Missing Requirement: Router and Indexer Tensors
+
+**Proposal Claim:** *"Map sidecar names to Strata short names."*
+
+**Maintainer Review:**
+The sidecar contains `ffn_gate_inp` (Router) and `indexer` tensors.
+
+*   **Source Fact:** `mtp.cpp` line 526 uses `mlp.gate.weight` for the router.
+*   **Source Fact:** The sidecar has `ffn_gate_inp` (F32) and `ffn_gate_inp_shexp` (F32).
+*   **The Conflict:** The current `mtp_rt.py` expects `mlp.gate.weight`. The sidecar has `ffn_gate_inp`.
+*   **Correction:** The converter must map `ffn_gate_inp` -> `mlp.gate.weight`.
+*   **Indexer:** The sidecar has `self_attn.indexer.index_qk_proj.weight`. The current `mtp_rt.py` (line 30) includes this in the `Q8` list. The sidecar has it as Q4_K/Q6_K. The runtime `mtp.cpp` does *not* seem to use the indexer in the MTP path (line 206 comment: "no indexer state is read").
+    *   **Verdict:** The converter can likely **skip** indexer tensors if the runtime doesn't use them. This saves space. The proposal should explicitly state to **exclude** unused tensors.
+
+### 7. Verified Source Facts vs. Untested Expectations
+
+| Item | Status | Note |
+| :--- | :--- | :--- |
+| **Q2_0 Blob Layout** | **Verified** | `expert.hpp` defines a custom layout, not raw GGUF. |
+| **`native_expert_grouped` Input** | **Verified** | `iq_kernels.hpp` expects raw GGUF blocks and `q8_1` activations. |
+| **MTP Runtime Expert Path** | **Verified** | `mtp.cpp` uses `moe_grouped_s2` (custom Q2 path), not `native_expert_grouped`. |
+| **Norm Offset** | **Verified** | `mtp_rt.py` adds 1.0; sidecar is pre-offset. Converter must skip addition. |
+| **Fused Input Projection** | **Verified** | Sidecar has `nextn.eh_proj` (fused); Runtime expects `fc_embedding`/`fc_hidden` (split). |
+| **HC Quantization** | **Verified** | Sidecar has Q4_K/Q5_0; Runtime expects BF16. Converter must dequantize. |
+| **Memory Fit on 4060** | **Untested** | 2.6 GB MTP + Main Model Layer + KV on 8 GB card is risky. |
+| **Q4_K Accuracy** | **Untested** | Draft acceptance rate impact is unknown. |
+
+### Corrected Proposal Summary
+
+1.  **Do NOT attempt to use `native_expert_grouped` in `mtp.cpp` without a major refactor.** Instead, **convert** the sidecar's Q4_K/Q8_0 experts **back** to the custom Q2_0 blob format?
+    *   *Wait:* You cannot convert Q4_K to Q2_0 losslessly. You would lose precision.
+    *   *Alternative:* **Convert** the sidecar's Q4_K/Q8_0 experts to **Q8_0** (or BF16) and use the existing `moe_grouped_s2`? No, `moe_grouped_s2` is hard-coded for Q2_0.
+    *   *Real Solution:* The runtime **must** be updated to support a second expert format. The proposal's idea of using `native_expert_grouped` is the *only* viable path, but it requires **porting the main model's expert execution logic** into `mtp.cpp`. This is a significant engineering task, not a simple "call a different function."
+
+2.  **Converter (`mtp_rt_v2.py`) Requirements:**
+    *   **Experts:** Extract raw Q4_K/Q8_0 blocks. Do **not** convert to Q2.
+    *   **Dense:**
+        *   Split `nextn.eh_proj` into `fc_embedding` and `fc_hidden` (if runtime requires split) OR update runtime to accept fused.
+        *   Map `ffn_gate_inp` -> `mlp.gate.weight`.
+        *   **Skip** indexer tensors if unused.
+        *   **Dequantize** HC weights (Q4_K/Q5_0) to BF16.
+        *   **Do NOT** add 1.0 to norms.
+        *   Keep dense projections (Attention/Shared) in their native quantized formats (Q4_K/Q6_K/Q8_0).
+
+3.  **Runtime (`mtp.cpp`) Requirements:**
+    *   **Detect Format:** Check for `experts_native.bin`.
+    *   **Expert Path:** If native, use `native_expert_grouped`. This requires:
+        *   Allocating `native_expert_scratch_bytes`.
+        *   Quantizing activations to `q8_1` (not `q8_0`).
+        *   Setting up `NativeExpertLayout`.
+    *   **Dense Path:** If native, use `iq_mmvq` for Q4_K/Q6_K tensors. This requires:
+        *   Quantizing activations to `q8_1` for these MMVs.
+        *   Updating the `q8()` accessor to a generic `get_tensor()` that handles types.
+
+4.  **Validation:**
+    *   **Must** test if `native_expert_grouped` works with Q4_K/Q8_0 at these dimensions.
+    *   **Must** measure VRAM usage. If it exceeds 8 GB on the 4060, this sidecar is **not compatible** with the current split strategy and may require running the MTP on the 5070 Ti, which may not fit.
+
+### Final Verdict
+
+The preceding proposal is **technically flawed** because it underestimates the runtime changes required to switch expert kernels. It treats `native_expert_grouped` as a drop-in replacement, but it requires a different activation quantization pipeline and scratch buffer management. The proposal should be rejected in its current form and revised to explicitly detail the **runtime refactor** needed to support the native expert path in the MTP module, or to propose a **conversion to Q8_0/BF16** for experts (if memory allows) to reuse existing dense paths, though this defeats the purpose of the Q4_K sidecar. Given the memory constraints, the "native expert" path is the only viable one, but it is a **major feature**, not a simple import.

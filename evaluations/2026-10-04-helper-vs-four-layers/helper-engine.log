@@ -1,0 +1,203 @@
+strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)
+strata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)
+strata generate: 301 native projection matrices, 2975.00 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 1.11 s (706 MiB/s)
+strata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0
+strata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 55.43 GiB at 1.83 GiB/s
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots
+strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 PROFILE, ranked by routing frequency, no eviction.
+strata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified
+strata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 13 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: token graph hit path: 2513 resident experts, decided on the device
+strata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)
+strata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)
+strata verify: window up to 4 tokens, 75.8 MiB of device buffers
+strata mtp: draft head over 248320 tokens (497.3 MiB)
+strata serve: 946 MiB of VRAM free with everything loaded
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 406 tokens = 0 reused + 406 read in 3561 ms (114.0 tok/s), 951 generated in 22992 ms (41.4 tok/s), drafts accepted 485 of 652, 1 checkpoints
+strata serve: decode expert cache hit rate: 66.1% (303346 hits / 458936 lookups)
+strata serve: CUDA1: 52836 expert entries, 15846 active layer launches, 516.0 MiB returned (3966.4 MiB with full rows) in this request; host 426 ms staging+launching, 154 ms waiting for it in this request
+strata serve: prompt 24796 tokens = 0 reused + 24796 read in 129963 ms (190.8 tok/s), 3718 generated in 90334 ms (41.2 tok/s), drafts accepted 2227 of 2616, 2 checkpoints
+strata serve: decode expert cache hit rate: 63.0% (1040028 hits / 1650293 lookups)
+strata serve: CUDA1: 207828 expert entries, 54894 active layer launches, 2029.6 MiB returned (15523.3 MiB with full rows) in this request; host 1472 ms staging+launching, 492 ms waiting for it in this request
+strata serve: prompt 28581 tokens = 28514 reused + 67 read in 1631 ms (41.1 tok/s), 4096 generated in 103424 ms (39.6 tok/s), drafts accepted 2522 of 2914, 3 checkpoints
+strata serve: decode expert cache hit rate: 59.6% (1062178 hits / 1781562 lookups)
+strata serve: CUDA1: 240935 expert entries, 60436 active layer launches, 2352.9 MiB returned (17692.4 MiB with full rows) in this request; host 1675 ms staging+launching, 512 ms waiting for it in this request
+strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)
+strata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)
+strata generate: 301 native projection matrices, 2975.00 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.73 s (1083 MiB/s)
+strata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0
+strata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 55.43 GiB at 1.80 GiB/s
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots
+strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 PROFILE, ranked by routing frequency, no eviction.
+strata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified
+strata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 13 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: token graph hit path: 2513 resident experts, decided on the device
+strata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)
+strata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)
+strata verify: window up to 4 tokens, 75.8 MiB of device buffers
+strata mtp: draft head over 248320 tokens (497.3 MiB)
+strata serve: 946 MiB of VRAM free with everything loaded
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 32715 tokens = 0 reused + 32715 read in 156938 ms (208.5 tok/s), 1903 generated in 43173 ms (44.1 tok/s), drafts accepted 1150 of 1362, 2 checkpoints
+strata serve: decode expert cache hit rate: 59.9% (503892 hits / 840714 lookups)
+strata serve: CUDA1: 110858 expert entries, 28591 active layer launches, 1082.6 MiB returned (8221.0 MiB with full rows) in this request; host 637 ms staging+launching, 272 ms waiting for it in this request
+strata serve: prompt 34718 tokens = 34617 reused + 101 read in 1382 ms (73.1 tok/s), 2281 generated in 51698 ms (44.1 tok/s), drafts accepted 1412 of 1661, 3 checkpoints
+strata serve: decode expert cache hit rate: 60.3% (611424 hits / 1013761 lookups)
+strata serve: CUDA1: 125245 expert entries, 32912 active layer launches, 1223.1 MiB returned (9784.3 MiB with full rows) in this request; host 751 ms staging+launching, 275 ms waiting for it in this request
+strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)
+strata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)
+strata generate: 301 native projection matrices, 2975.00 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.69 s (1143 MiB/s)
+strata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0
+strata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 55.43 GiB at 2.60 GiB/s
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots
+strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 PROFILE, ranked by routing frequency, no eviction.
+strata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified
+strata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 13 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: token graph hit path: 2513 resident experts, decided on the device
+strata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)
+strata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)
+strata verify: window up to 4 tokens, 75.8 MiB of device buffers
+strata mtp: draft head over 248320 tokens (497.3 MiB)
+strata serve: 946 MiB of VRAM free with everything loaded
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 37139 tokens = 0 reused + 37139 read in 177979 ms (208.7 tok/s), 3031 generated in 70954 ms (42.7 tok/s), drafts accepted 1930 of 2206, 3 checkpoints
+strata serve: decode expert cache hit rate: 60.3% (801795 hits / 1329214 lookups)
+strata serve: CUDA1: 157748 expert entries, 41259 active layer launches, 1540.5 MiB returned (12500.2 MiB with full rows) in this request; host 1075 ms staging+launching, 349 ms waiting for it in this request
+strata serve: prompt 40257 tokens = 40169 reused + 88 read in 1477 ms (59.6 tok/s), 2285 generated in 50112 ms (45.6 tok/s), drafts accepted 1671 of 1755, 4 checkpoints
+strata serve: decode expert cache hit rate: 60.7% (594410 hits / 979771 lookups)
+strata serve: CUDA1: 82688 expert entries, 22576 active layer launches, 807.5 MiB returned (8490.2 MiB with full rows) in this request; host 687 ms staging+launching, 128 ms waiting for it in this request
+strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)
+strata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)
+strata generate: 301 native projection matrices, 2975.00 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 1.06 s (744 MiB/s)
+strata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0
+strata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 55.43 GiB at 2.38 GiB/s
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots
+strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 PROFILE, ranked by routing frequency, no eviction.
+strata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified
+strata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 13 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: token graph hit path: 2513 resident experts, decided on the device
+strata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)
+strata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)
+strata verify: window up to 4 tokens, 75.8 MiB of device buffers
+strata mtp: draft head over 248320 tokens (497.3 MiB)
+strata serve: 946 MiB of VRAM free with everything loaded
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 34655 tokens = 0 reused + 34655 read in 148508 ms (233.4 tok/s), 2473 generated in 53398 ms (46.3 tok/s), drafts accepted 1560 of 1793, 3 checkpoints
+strata serve: decode expert cache hit rate: 59.3% (636821 hits / 1073239 lookups)
+strata serve: CUDA1: 142254 expert entries, 35536 active layer launches, 1389.2 MiB returned (10647.8 MiB with full rows) in this request; host 772 ms staging+launching, 292 ms waiting for it in this request
+strata serve: prompt 37228 tokens = 37129 reused + 99 read in 1280 ms (77.3 tok/s), 2532 generated in 55775 ms (45.4 tok/s), drafts accepted 1611 of 1850, 4 checkpoints
+strata serve: decode expert cache hit rate: 60.2% (671159 hits / 1115169 lookups)
+strata serve: CUDA1: 131601 expert entries, 34517 active layer launches, 1285.2 MiB returned (10639.0 MiB with full rows) in this request; host 826 ms staging+launching, 212 ms waiting for it in this request
+strata generate: CUDA1 context ready, 7.49 GiB free before expert arena registration
+strata generate: this CPU has no AVX-512: the expert kernels run on AVX-2 (multi-token for the i-quant gate/up rows)
+strata generate: native pack: /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs experts (largest blob 3.48 MB), token embedding Q8_0 in mapped host memory (644 MiB)
+strata generate: profile /home/hnvcam/Workplace/Strata/data/expert-profile.bin: 24576 ranked pairs, built for 24576 slots
+strata generate: 1416 MiB of weights loaded from /home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs (303 canonical tensors skipped)
+strata generate: 301 native projection matrices, 2975.00 MiB of weights
+strata generate: the SSD is kept awake while rows are read: one page of the table after 100 ms without a read, until 60 s after the last request (STRATA_SSD_KEEPALIVE=0 turns it off)
+strata generate: PLE on, table 320001536 rows of /home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf
+strata mtp: draft layer loaded, 949 MiB of VRAM (experts 675, dense 111), files read in 0.67 s (1177 MiB/s)
+strata generate: GPU 0: NVIDIA GeForce RTX 5070 Ti, compute capability 12.0
+strata generate: expert arena: cudaHostRegister PORTABLE ok; MAP_HUGETLB unavailable (no hugetlb pool configured?); using 4 KB pages
+strata generate: loaded 55.43 GiB at 2.13 GiB/s
+strata generate: experimental native Q5_K head, 521472000 bytes
+strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots
+strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is
+strata generate: the GPU computes the experts in the cache; it rounds differently from the CPU,
+                 so a reply can differ slightly from a run without the cache (same quality:
+                 bench/results/2026-09-27-cache-parity).
+                 PROFILE, ranked by routing frequency, no eviction.
+strata generate: pre-filled 2513 of 2513 slots from the profile; slot 0 verified
+strata generate: CUDA1: 2800 additional experts, 6.31 GiB; results return through pinned host rows
+strata generate: R4 hit path ON - resident experts are computed on the GPU
+strata generate: 13 expert-pool workers + the host thread
+strata generate: session is up (engine 0.1.34)
+strata generate: token graph hit path: 2513 resident experts, decided on the device
+strata serve: the prompt path borrows 181 CUDA0 cache slots (0.41 GiB)
+strata hc: CUDA0: the hyper-connection read runs as staged (the norm per token and stream, the down projection's activations staged ahead by cp.async); checked bit for bit against the plain read on this card (STRATA_HC_SPLIT=1 or 0 for the earlier ones)
+strata verify: window up to 4 tokens, 75.8 MiB of device buffers
+strata mtp: draft head over 248320 tokens (497.3 MiB)
+strata serve: 946 MiB of VRAM free with everything loaded
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 39900 tokens = 0 reused + 39900 read in 172586 ms (231.2 tok/s), 2880 generated in 64201 ms (44.9 tok/s), drafts accepted 1851 of 2097, 3 checkpoints
+strata serve: decode expert cache hit rate: 59.1% (738524 hits / 1250649 lookups)
+strata serve: CUDA1: 152978 expert entries, 39649 active layer launches, 1493.9 MiB returned (12139.9 MiB with full rows) in this request; host 924 ms staging+launching, 278 ms waiting for it in this request
+strata serve: prompt 42867 tokens = 42780 reused + 87 read in 1321 ms (65.9 tok/s), 2485 generated in 48206 ms (51.5 tok/s), drafts accepted 1813 of 1887, 4 checkpoints
+strata serve: decode expert cache hit rate: 61.5% (654009 hits / 1063036 lookups)
+strata serve: CUDA1: 86567 expert entries, 24123 active layer launches, 845.4 MiB returned (9001.2 MiB with full rows) in this request; host 551 ms staging+launching, 105 ms waiting for it in this request

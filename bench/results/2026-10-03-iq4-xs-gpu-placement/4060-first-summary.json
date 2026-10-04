@@ -1,0 +1,84 @@
+{
+  "5070-alone-check": {
+    "label": "5070 Ti alone, recheck",
+    "pilot": false,
+    "requests": 6,
+    "decode_tok_s": 41.685651553959104,
+    "first_repeat_decode_tok_s": 42.999602602950674,
+    "long_prompt_s": 41.4526,
+    "long_prompt_tok_s": 237.6,
+    "long_decode_tok_s": 38.2,
+    "by_language": {
+      "english": 45.18439065843813,
+      "code": 37.990932632875506,
+      "vietnamese": 43.172606957699195
+    },
+    "primary_cache_slots": 2513,
+    "primary_cache_gib": 5.66,
+    "later_cache_slots": null,
+    "later_cache_gib": null
+  },
+  "5070-head-mtp-4060-experts": {
+    "label": "5070 Ti + 4060 expert-only helper",
+    "pilot": false,
+    "requests": 6,
+    "decode_tok_s": 46.613819862295564,
+    "first_repeat_decode_tok_s": 47.8409785093108,
+    "long_prompt_s": 41.6983,
+    "long_prompt_tok_s": 236.2,
+    "long_decode_tok_s": 43.7,
+    "by_language": {
+      "english": 51.341042562208635,
+      "code": 42.12778212037685,
+      "vietnamese": 48.23724334640632
+    },
+    "primary_cache_slots": 2513,
+    "primary_cache_gib": 5.66,
+    "later_cache_slots": null,
+    "later_cache_gib": null
+  },
+  "4060-first-5070-head-mtp": {
+    "label": "4060 first two layers, 5070 Ti finishes",
+    "pilot": false,
+    "requests": 6,
+    "decode_tok_s": 47.246079634267275,
+    "first_repeat_decode_tok_s": 49.20625622400562,
+    "long_prompt_s": 36.8966,
+    "long_prompt_tok_s": 267.0,
+    "long_decode_tok_s": 40.5,
+    "by_language": {
+      "english": 53.9568345323741,
+      "code": 42.022151911720655,
+      "vietnamese": 48.42861876481533
+    },
+    "primary_cache_slots": 718,
+    "primary_cache_gib": 1.56,
+    "later_cache_slots": 2690,
+    "later_cache_gib": 6.06
+  },
+  "4060-first-four-layers": {
+    "label": "4060 first four layers, pilot",
+    "pilot": true,
+    "requests": 3,
+    "decode_tok_s": 46.45674097484554,
+    "first_repeat_decode_tok_s": 46.45674097484554,
+    "long_prompt_s": null,
+    "long_prompt_tok_s": null,
+    "long_decode_tok_s": null,
+    "by_language": {
+      "english": 49.51276045775033,
+      "code": 42.61481863732459,
+      "vietnamese": 48.72819413312543
+    },
+    "primary_cache_slots": 631,
+    "primary_cache_gib": 1.55,
+    "later_cache_slots": 2775,
+    "later_cache_gib": 6.21
+  },
+  "comparison": {
+    "first_vs_single_decode_gain": 0.13338949669793676,
+    "first_vs_helper_decode_gain": 0.013563783741377566,
+    "first_vs_helper_prompt_time": 0.884846624442723,
+    "four_vs_two_first_repeat_decode_gain": -0.0558773509742998
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "marketing": {
+    "product_accuracy": 25,
+    "persuasive_audience_fit": 25,
+    "structure_and_readability": 20,
+    "concrete_original_language": 15,
+    "instruction_compliance": 15
+  },
+  "python": {
+    "current_code_diagnosis": 15,
+    "python_conversion_correctness": 25,
+    "engine_integration_correctness": 25,
+    "compatibility_memory_and_validation": 25,
+    "proposal_clarity_and_honesty": 10
+  },
+  "critical_checks": [
+    "Q4_K_M is mixed Q4_K gate/up plus Q8_0 down; Q4_0 is different",
+    "Legacy Q2 planar/interleaved expert layout cannot consume raw native Q4 blocks",
+    "Unsloth names and fused embedding/hidden projection must be mapped/split",
+    "Do not double-add +1 to GGUF norms; F32 router/shared gate is not a norm",
+    "Dense projected weights can convert to existing Q8 while HC/router stays BF16, norms F32",
+    "Use existing native expert layout and grouped kernels with q8_1 activations; update bytes/stride/scratch",
+    "Retain Q2 without a descriptor and prevent old loaders silently reading new expert blobs",
+    "Validate source/target geometry, tokenizer, sizes; stage imports safely",
+    "Larger MTP lives on last GPU; counts and cache budgets matter; no guaranteed speed improvement",
+    "No claims of real code edits, executed tests or measured speed from this exercise"
+  ],
+  "scoring_note": "Scores are a reviewer judgment, not a public benchmark or a statistical claim; cite response evidence and report limitations. Evaluate final proposal and separately note improvement through review."
+}

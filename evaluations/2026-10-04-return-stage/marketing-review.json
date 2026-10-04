@@ -1,0 +1,20 @@
+{
+  "note": "Subjective review using the unchanged saved rubric. One article per placement; no general quality ranking.",
+  "word_count": 880,
+  "within_600_to_800_words": false,
+  "scores": {
+    "product_accuracy": 23,
+    "persuasive_audience_fit": 22,
+    "structure_and_readability": 17,
+    "concrete_original_language": 10,
+    "instruction_compliance": 8
+  },
+  "total": 80,
+  "evidence": [
+    "Includes iOS/Android, Free limits and no-account one-device use, both Pro prices, unlimited Pro projects, optional cloud sync requiring account and Internet, offline core functions, and explicit calendar/AI scheduling limitations.",
+    "Exceeds the 800-word maximum by 80 words; all required product facts are present, but the opening and feature walkthrough are longer than needed.",
+    "Says users are prompted at the end of the workday to choose three priorities; the supplied brief establishes priority selection but does not establish an automatic prompt.",
+    "The concrete Client A/B/C example fits freelancers. The long feature sections and familiar phrases such as moves the needle and mental juggling act weaken originality.",
+    "Does not invent testimonials, research, a browser platform or measured customer outcomes."
+  ]
+}

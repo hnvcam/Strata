@@ -1,0 +1,22 @@
+{
+  "before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+  },
+  "built_engine_sha256": "a08255105ef0b8277ab21e0ca65f7ce2966a40a2567af03ab47ad6492979baf9",
+  "same_output_with_identical_expert_residency": [
+    true,
+    true,
+    true
+  ],
+  "auto_status": "complete",
+  "single_status": "complete",
+  "after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+  },
+  "production_unchanged": true,
+  "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n"
+}

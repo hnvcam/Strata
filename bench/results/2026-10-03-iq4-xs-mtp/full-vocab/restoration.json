@@ -1,0 +1,13 @@
+{
+  "original_config_sha256": "05c4d30d0b4d7141c3b0a4e76a2411a4792d81208f8e1730161b3e06da264289",
+  "original_engine_sha256": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+  "original_gpu_order": [
+    0,
+    1
+  ],
+  "original_draft_vocab": "en",
+  "original_mtp": "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+  "current_draft_vocab": "full",
+  "current_draft_vocab_count": 248320,
+  "current_draft_vocab_sha256": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+}

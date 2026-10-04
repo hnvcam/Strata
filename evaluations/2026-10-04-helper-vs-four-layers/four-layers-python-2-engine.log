@@ -1,0 +1,2 @@
+strata serve: prompt 28348 tokens = 28282 reused + 66 read in 1975 ms (33.4 tok/s), 3612 generated in 94070 ms (38.4 tok/s), drafts accepted 2154 of 2507, 3 checkpoints
+strata serve: decode expert cache hit rate: 66.1% (1205438 hits / 1824077 lookups)

@@ -1,0 +1,333 @@
+{
+  "rows": [
+    {
+      "language": "english",
+      "condition": "current_greedy",
+      "q2": {
+        "language": "english",
+        "condition": "current_greedy",
+        "mtp_offered": 385,
+        "mtp_accepted": 267,
+        "mtp_acceptance": 0.6935064935064935,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.521484375,
+        "decode_tok_s": 49.568694271524144,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "english",
+        "condition": "current_greedy",
+        "mtp_offered": 393,
+        "mtp_accepted": 273,
+        "mtp_acceptance": 0.6946564885496184,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.533203125,
+        "decode_tok_s": 45.417450235957844,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": 0.11499950431248518,
+      "speed_difference_pct": -8.374729446829665
+    },
+    {
+      "language": "code",
+      "condition": "current_greedy",
+      "q2": {
+        "language": "code",
+        "condition": "current_greedy",
+        "mtp_offered": 396,
+        "mtp_accepted": 356,
+        "mtp_acceptance": 0.898989898989899,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.6953125,
+        "decode_tok_s": 42.82511960922079,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "code",
+        "condition": "current_greedy",
+        "mtp_offered": 400,
+        "mtp_accepted": 360,
+        "mtp_acceptance": 0.9,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.703125,
+        "decode_tok_s": 37.36353552454901,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": 0.10101010101010166,
+      "speed_difference_pct": -12.753225523965227
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_greedy",
+      "q2": {
+        "language": "vietnamese",
+        "condition": "current_greedy",
+        "mtp_offered": 308,
+        "mtp_accepted": 207,
+        "mtp_acceptance": 0.672077922077922,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.404296875,
+        "decode_tok_s": 42.19757034302009,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "vietnamese",
+        "condition": "current_greedy",
+        "mtp_offered": 337,
+        "mtp_accepted": 230,
+        "mtp_acceptance": 0.6824925816023739,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.44921875,
+        "decode_tok_s": 41.542930399363875,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": 1.0414659524451864,
+      "speed_difference_pct": -1.5513688071012277
+    },
+    {
+      "language": "english",
+      "condition": "unfiltered_greedy",
+      "q2": {
+        "language": "english",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 633,
+        "mtp_accepted": 301,
+        "mtp_acceptance": 0.4755134281200632,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.587890625,
+        "decode_tok_s": 45.573090514210435,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "english",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 657,
+        "mtp_accepted": 292,
+        "mtp_acceptance": 0.4444444444444444,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.5703125,
+        "decode_tok_s": 39.79109674210395,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": -3.106898367561878,
+      "speed_difference_pct": -12.687297935836849
+    },
+    {
+      "language": "code",
+      "condition": "unfiltered_greedy",
+      "q2": {
+        "language": "code",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 435,
+        "mtp_accepted": 369,
+        "mtp_acceptance": 0.8482758620689655,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.720703125,
+        "decode_tok_s": 43.636859509767156,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "code",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 444,
+        "mtp_accepted": 366,
+        "mtp_acceptance": 0.8243243243243243,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.71484375,
+        "decode_tok_s": 39.532405763083524,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": -2.3951537744641205,
+      "speed_difference_pct": -9.405932949333673
+    },
+    {
+      "language": "vietnamese",
+      "condition": "unfiltered_greedy",
+      "q2": {
+        "language": "vietnamese",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 738,
+        "mtp_accepted": 266,
+        "mtp_acceptance": 0.3604336043360434,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.51953125,
+        "decode_tok_s": 38.9270725624962,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "vietnamese",
+        "condition": "unfiltered_greedy",
+        "mtp_offered": 693,
+        "mtp_accepted": 282,
+        "mtp_acceptance": 0.4069264069264069,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.55078125,
+        "decode_tok_s": 36.99876429908298,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": 4.649280259036353,
+      "speed_difference_pct": -4.953643149808872
+    },
+    {
+      "language": "english",
+      "condition": "current_sampled",
+      "q2": {
+        "language": "english",
+        "condition": "current_sampled",
+        "mtp_offered": 398,
+        "mtp_accepted": 266,
+        "mtp_acceptance": 0.6683417085427136,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.51953125,
+        "decode_tok_s": 49.84957501290052,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "english",
+        "condition": "current_sampled",
+        "mtp_offered": 388,
+        "mtp_accepted": 280,
+        "mtp_acceptance": 0.7216494845360825,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.546875,
+        "decode_tok_s": 45.568628847078095,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": 5.330777599336889,
+      "speed_difference_pct": -8.587728510653436
+    },
+    {
+      "language": "code",
+      "condition": "current_sampled",
+      "q2": {
+        "language": "code",
+        "condition": "current_sampled",
+        "mtp_offered": 382,
+        "mtp_accepted": 353,
+        "mtp_acceptance": 0.9240837696335078,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.689453125,
+        "decode_tok_s": 38.22350297501288,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "code",
+        "condition": "current_sampled",
+        "mtp_offered": 404,
+        "mtp_accepted": 363,
+        "mtp_acceptance": 0.8985148514851485,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.708984375,
+        "decode_tok_s": 37.415686819008926,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": -2.5568918148359265,
+      "speed_difference_pct": -2.1134016851674486
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_sampled",
+      "q2": {
+        "language": "vietnamese",
+        "condition": "current_sampled",
+        "mtp_offered": 297,
+        "mtp_accepted": 215,
+        "mtp_acceptance": 0.7239057239057239,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.419921875,
+        "decode_tok_s": 43.577435059408295,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "q4_k_m": {
+        "language": "vietnamese",
+        "condition": "current_sampled",
+        "mtp_offered": 335,
+        "mtp_accepted": 240,
+        "mtp_acceptance": 0.7164179104477612,
+        "generated": 512,
+        "mtp_accepted_per_generated": 0.46875,
+        "decode_tok_s": 43.7330235577498,
+        "visible_draft_vocab_coverage": 1.0
+      },
+      "acceptance_difference_pp": -0.7487813457962789,
+      "speed_difference_pct": 0.35703913763946993
+    }
+  ],
+  "generated_tokens": 9216,
+  "manifest": {
+    "production_hashes_before": {
+      "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "aefc3a413ffd13afd360b1d471d0b3bf48c37c209f2208f6eb13d819857690ec",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25",
+      "/home/hnvcam/Workplace/Strata/data/mtp-unsloth-q4-k-m/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25"
+    },
+    "vocab_count": 248320,
+    "full_vocab_sha256": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "matched_config": {
+      "exe": "/home/hnvcam/Workplace/Strata/engine/strata-mtp",
+      "args": [
+        "--pack",
+        "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+        "--native",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+        "--ple-gguf",
+        "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+        "--expert-profile",
+        "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+        "--expert-cache",
+        "auto",
+        "--prefill",
+        "512",
+        "--spec",
+        "4",
+        "--mtp",
+        "<runtime>",
+        "--max-context",
+        "131072",
+        "--kv",
+        "int8",
+        "--vram-reserve-mib",
+        "1248",
+        "--pcie-frac",
+        "0.20",
+        "--spec-min-p",
+        "0.70",
+        "--suffix-draft",
+        "0"
+      ],
+      "cwd": "/home/hnvcam/Workplace/Strata",
+      "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+      "model_name": "qwen3.8-flash-next-iq4_xs",
+      "lib_dirs": [
+        "/usr/local/cuda/bin",
+        "/usr/local/cuda/lib64"
+      ],
+      "port": 1112,
+      "draft_vocab": "full",
+      "gpu": [
+        1,
+        0
+      ],
+      "gpus_asked": true,
+      "layer_split": 2,
+      "host": "127.0.0.1"
+    },
+    "engine_sha256": "91154365f7b1cbaec9ef923c66bb2c222f2e4a3e8df0a127b2cf142b3f45cd71",
+    "restore": false,
+    "apply": false,
+    "production_hashes_after": {
+      "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "aefc3a413ffd13afd360b1d471d0b3bf48c37c209f2208f6eb13d819857690ec",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25",
+      "/home/hnvcam/Workplace/Strata/data/mtp-unsloth-q4-k-m/rt/draft_vocab.bin": "369151522226a5edaa5f12cfd1e2ae7db8f4fbdbd222f3dcf327dced9597fb25"
+    },
+    "production_files_unchanged": true,
+    "production_health_after": {
+      "status": "ok",
+      "max_context": 131072,
+      "model": "qwen3.8-flash-next-iq4_xs",
+      "images": false,
+      "api_key": false,
+      "loaded": false,
+      "service": "strata"
+    }
+  }
+}

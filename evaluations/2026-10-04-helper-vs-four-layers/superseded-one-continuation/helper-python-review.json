@@ -1,0 +1,46 @@
+{
+  "note": "Subjective reviewer assessment using the unchanged saved rubric. Scores evaluate helper-python-5.md; previous turns are discussed separately.",
+  "scores": {
+    "current_code_diagnosis": 14,
+    "python_conversion_correctness": 13,
+    "engine_integration_correctness": 8,
+    "compatibility_memory_and_validation": 6,
+    "proposal_clarity_and_honesty": 6
+  },
+  "total": 47,
+  "ready_to_implement": false,
+  "strengths": [
+    "Identifies the Q2 planar/interleaved format mismatch, distinguishes Q4_K gate/up from Q8_0 down, and proposes contiguous gate/up/down native expert bytes.",
+    "Uses first ten and next ten Q4_K blocks per output row for the fused projection split. This correctly splits the supplied 5120 input columns at 2560, despite imprecise wording about the inner dimension.",
+    "Skips the already-applied norm offset, converts router F32 to BF16, and includes Q5_0 hyper-connection decoding to BF16.",
+    "Names native expert layout/grouped dispatch and retains a separate legacy Q2 route. Does not claim code edits or executed tests."
+  ],
+  "blocking_findings": [
+    {
+      "issue": "Contradictory expert-precision requirement",
+      "response_evidence": "Section 2 forbids re-quantization, but section 4 says the converter must downsample Down to Q4_K if mixed support is absent.",
+      "reference_fact": "The clarified task requires the supplied routed gate/up Q4_K and down Q8_0 throughout. Unsupported formats must cause refusal or require a proper kernel path, not this conversion."
+    },
+    {
+      "issue": "Native expert activations and scratch omitted from the final design",
+      "response_evidence": "The final runtime section changes the grouped kernel but never specifies Q8_1 input quantization, its buffer size, or native_expert_scratch_bytes.",
+      "reference_fact": "The supplied legacy path uses quantize_q8_0_scaled and a 34-byte Q8_0 buffer. native_expert_grouped takes Q8_1; its blocks are 36 bytes per 32 values, and it needs native scratch sizing."
+    },
+    {
+      "issue": "Fixed expert address stride remains unaddressed",
+      "response_evidence": "Allocation uses native_expert_layout, but no change is specified for the cpu::BLOB stride passed to moe_group_resident.",
+      "reference_fact": "The supplied src/core/mtp.cpp:530 uses the fixed legacy stride. The native path must use its computed 3584000-byte expert stride."
+    },
+    {
+      "issue": "Incomplete tensor mapping and import validation",
+      "response_evidence": "Uses self_attn.*, mlp.shared_expert.* and hc_* without an explicit complete source-to-loader mapping; the 1-D shared gate is omitted.",
+      "reference_fact": "The specimen uses blk.48.attn_q/k/v/output, ffn_*_shexp, ffn_gate_inp_shexp and hc_* names. The loader requires its own attention, shared gate and hyper-connection names. Geometry, tokenizer, bounds/byte checks and staged publication also need explicit checks."
+    },
+    {
+      "issue": "Incomplete memory and startup placement plan",
+      "response_evidence": "Gives approximate 1.8 GB experts + 0.4 GB dense = 2.2 GB and requests CUDA0 placement via layer splitting, without the last-stage ordering or a generate.cpp budget change.",
+      "reference_fact": "Exact expert bytes are 1835008000 (1750 MiB). The full draft head, KV/workspace, target dense/cache and reserve must also be budgeted. MTP runs on the last stage; naming CUDA0 alone does not establish that ordering."
+    }
+  ],
+  "review_history": "Stage 4 recognized Q8_1 activation and native scratch requirements but stated a wrong 34-byte Q8_1 block size. The final answer drops those requirements instead of fixing and integrating them. The final still contains a forbidden down-requantization fallback."
+}

@@ -1,0 +1,47 @@
+{
+  "note": "Subjective reviewer scores using the unchanged saved rubric. This evaluates four-layers-python-5.md after both matched continuations.",
+  "scores": {
+    "current_code_diagnosis": 14,
+    "python_conversion_correctness": 11,
+    "engine_integration_correctness": 18,
+    "compatibility_memory_and_validation": 6,
+    "proposal_clarity_and_honesty": 7
+  },
+  "total": 56,
+  "ready_to_implement": false,
+  "strengths": [
+    "Correctly identifies the legacy Q2 layout and activation mismatch and preserves Q4_K gate/up and Q8_0 down expert bytes.",
+    "Specifies Q8_1 quantization, correctly sizes its blocks at 36 rather than 34 bytes, and explicitly uses native_expert_scratch_bytes.",
+    "Allocates experts using native layout bytes and dispatches native_expert_grouped with native activations and scratch.",
+    "Names the actual ffn_gate_inp router source, converts it to BF16, handles Q5_0 hyper-connections, skips unused indexer tensors and avoids a second norm offset.",
+    "Uses separate native dense/expert files and an explicit native index detection path. Does not claim changes or executed tests."
+  ],
+  "blocking_findings": [
+    {
+      "issue": "Incorrect source tensor names and incomplete mapping",
+      "response_evidence": "Uses blk.48.self_attn.q_proj.weight as a sidecar source and mapping example. It leaves the shared-gate and exact hyper-connection destination names unspecified.",
+      "reference_fact": "The supplied sidecar source is blk.48.attn_q.weight, with attn_k/v/output companions. The converter also needs ffn_gate_inp_shexp and exact loader hyper-connection names. The named conversion example would not find its source tensor."
+    },
+    {
+      "issue": "Fixed expert address stride omitted",
+      "response_evidence": "Changes expert allocation to NativeExpertLayout::bytes but does not change the cpu::BLOB stride passed to moe_group_resident.",
+      "reference_fact": "The native path must group expert addresses using its 3584000-byte stride rather than the 1382400-byte Q2 stride in the supplied src/core/mtp.cpp:530."
+    },
+    {
+      "issue": "Fused projection split is not specified per output row",
+      "response_evidence": "Says block-aligned raw slicing is safe but does not state the decoded 2560-by-5120 shape and input-column split. Its preceding scope review first reverses the axes and then wrongly says independent projections cannot represent the fused input projection.",
+      "reference_fact": "The supplied geometry is unambiguous: split the first and last 2560 input columns in each of 2560 output rows. Block alignment alone does not specify the correct slicing procedure."
+    },
+    {
+      "issue": "Wrong expert storage estimate and incomplete last-GPU budget",
+      "response_evidence": "Estimates about 2.3 GB for experts and 2.6 GB total MTP, with about 840 MB for current Q2. It does not include the full draft head, complete KV/workspace, target expert cache or generate.cpp budget update.",
+      "reference_fact": "Exact native expert storage is 1835008000 bytes (1750 MiB), not about 2.3 GB. The measured Q2 draft layer is 949 MiB plus a separate 497.3 MiB full head in these runs. Complete per-stage budgeting is required before any fit claim."
+    },
+    {
+      "issue": "Incomplete converter and compatibility validation",
+      "response_evidence": "Proposes checking output types/size and kernel execution but omits complete source/target geometry and tokenizer checks, tensor offset/bounds validation, versioned descriptors and staged import safety. Header changes for added state/scratch are not listed.",
+      "reference_fact": "Shared sidecar compatibility must be checked before consuming target embedding/head weights. Native file detection alone does not validate the runtime binary contract or a safe import."
+    }
+  ],
+  "review_history": "The final correctly incorporates the 36-byte Q8_1 buffer and native scratch changes, unlike the helper final. Its review mishandles the fused projection's axes and linear decomposition; the final resumes a split proposal without explicitly resolving those errors. Its incorrect expert byte estimate remains."
+}

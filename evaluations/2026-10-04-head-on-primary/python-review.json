@@ -1,0 +1,52 @@
+{
+  "note": "Subjective reviewer score using the unchanged saved rubric. Only head-primary-python-5.md is scored. This is a proposal exercise; none of the generated implementation proposals were applied.",
+  "scores": {
+    "current_code_diagnosis": 13,
+    "python_conversion_correctness": 8,
+    "engine_integration_correctness": 12,
+    "compatibility_memory_and_validation": 3,
+    "proposal_clarity_and_honesty": 7
+  },
+  "total": 43,
+  "ready_to_implement": false,
+  "strengths": [
+    "Recognizes legacy Q2 blob/kernel incompatibility and proposes retaining its converter and runtime branch.",
+    "Preserves supplied Q4_K gate/up and Q8_0 down bytes in contiguous per-expert native blobs.",
+    "Names native_expert_layout and native_expert_grouped, switches native expert activations to Q8_1, and lists mtp.hpp changes.",
+    "Proposes explicit native format metadata, numerical comparison, measured acceptance/performance and a Q2 regression check.",
+    "Does not claim implementation, executed tests or measured speed improvements."
+  ],
+  "blocking_findings": [
+    {
+      "issue": "Expert byte count and fit claim are wrong",
+      "response_evidence": "Sections 3A and 5 state about 0.57 GB for all experts and 0.9\u20131.1 GB total VRAM, and say it fits on the RTX 4060.",
+      "reference_fact": "512 native experts require 1835008000 bytes (1750 MiB), with stride 3584000 bytes. Experts alone exceed the proposed total. The separate full draft head, KV/work buffers, main-model allocations and reserve also need budgeting. The supplied reference makes no such fit guarantee."
+    },
+    {
+      "issue": "Expert address stride, native scratch and activation buffer sizing omitted",
+      "response_evidence": "Changes allocation and expert dispatch and selects quantize_q8_1_rows, but does not update moe_group_resident stride, native_expert_scratch_bytes or the native activation allocation.",
+      "reference_fact": "The supplied mtp.cpp:530 groups addresses using cpu::BLOB. Native blobs need their 3584000-byte stride; grouped native kernels need their required scratch and 36-byte Q8_1 blocks, rather than reusing the Q2 scratch/input allocation."
+    },
+    {
+      "issue": "Fused input projection conversion omitted",
+      "response_evidence": "The final dense conversion section only says to preserve raw bytes and map blk.48 names; it does not address eh_proj or the embedding/hidden projection split.",
+      "reference_fact": "The supplied fused eh_proj decodes to 2560 output rows by 5120 input columns. Split the first and last 2560 input columns in each output row to produce the two runtime projections."
+    },
+    {
+      "issue": "Tensor mapping and formats remain incomplete",
+      "response_evidence": "Provides only a generic blk.48 to self_attn.q_proj mapping, leaves BF16/F32 tensors raw, and defaults to raw HC Q4_K/Q5_0 with an unspecified fallback.",
+      "reference_fact": "A usable converter must map actual attn_q/k/v/output, ffn_gate/up/down_shexp, the router and 1-D ffn_gate_inp_shexp, and exact HC destination keys. Current router/shared-gate and HC kernels require their expected BF16 formats; merely emitting an F32 router or quantized HC kind is insufficient. HC down/inject also include Q6_K in the supplied specimen."
+    },
+    {
+      "issue": "Unsupported runtime norm-offset diagnosis",
+      "response_evidence": "Section 3B says to remove a +1.0 addition in mtp.cpp, while acknowledging that the cited addition is in tools/mtp_rt.py.",
+      "reference_fact": "The supplied converter applies the offset; the supplied C++ loader does not show the claimed +1 addition. Preserve already-offset native norms and retain the legacy converter behavior rather than proposing removal of an unverified runtime operation."
+    },
+    {
+      "issue": "Incomplete import and compatibility contract",
+      "response_evidence": "Offers format metadata or file-size detection, embedding/FF dimensions and block alignment; no complete source/target/tokenizer validation, offsets/bounds checks, staged import or last-stage cache budgeting.",
+      "reference_fact": "A safe native format needs a validated descriptor and complete geometry, tensor inventory, byte/offset bounds and shared embedding/head compatibility before activation. Size detection alone cannot establish compatibility or protect old loaders."
+    }
+  ],
+  "review_history": "The self-review initially rejected native integration and favored lossy Q2 conversion. The final precision clarification restored a dual-path native proposal, but retained the incorrect 0.57 GB expert calculation, omitted the fused projection, grouping stride and scratch sizing, and introduced an unsupported runtime norm-offset claim."
+}

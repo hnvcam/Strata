@@ -1,0 +1,25 @@
+{
+  "marketing_whitespace_word_counts": {
+    "iq3_s": 897,
+    "iq4_xs": 986
+  },
+  "marketing_required_range": [
+    600,
+    800
+  ],
+  "native_expert_bytes_per_expert": 3584000,
+  "native_expert_bytes_total": 1835008000,
+  "native_expert_mib_total": 1750.0,
+  "fused_projection_numpy_shape": [
+    2560,
+    5120
+  ],
+  "fused_projection_split_axis": "input columns, first H embedding and last H hidden",
+  "attention_source_names": [
+    "blk.48.attn_q.weight",
+    "blk.48.attn_k.weight",
+    "blk.48.attn_v.weight",
+    "blk.48.attn_output.weight"
+  ],
+  "hc_destination_example": "hc_attn_down -> attn_hyper_connection.input_mix_weight_down.weight"
+}

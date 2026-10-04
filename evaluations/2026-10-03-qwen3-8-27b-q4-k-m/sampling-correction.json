@@ -1,0 +1,6 @@
+{
+  "reason": "Identical API requests omitted min_p; the loaded llama.cpp server defaults to 0.05, whereas the saved Strata test configs have no sampling overrides and engine defaults req_min_p to 0.0. Replay with explicit min_p=0 for comparable effective filtering.",
+  "superseded_directory": "superseded-default-min-p",
+  "effective_sampling_min_p": 0.0,
+  "production_source_reference": "src/program/generate.cpp:4697"
+}

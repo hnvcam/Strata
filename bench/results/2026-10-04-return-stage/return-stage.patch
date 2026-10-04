@@ -1,0 +1,209 @@
+--- before/src/program/generate.cpp
++++ after/src/program/generate.cpp
+@@ -28,6 +28,7 @@
+ #include "strata/core/session.hpp"
+ #include "strata/core/weights.hpp"
+ #include "strata/core/dense_placement.hpp"
++#include "strata/core/split_schedule.hpp"
+ #include "strata/kernels/cpu/expert.hpp"
+ #include "strata/kernels/cpu/pool.hpp"
+ #include "strata/kernels/cpu/expert_layout.hpp"
+@@ -368,8 +369,8 @@
+     /// --serve, multi-GPU layer split: "K" or "K1,K2,.." (the first layer of each later stage) or "auto" (placed
+     /// from each GPU's free VRAM); empty = one GPU
+     std::string layer_split;
+-    /// the later stages' devices "D1,D2,.." (default: the next visible GPUs; "0" with one K: both stages on this
+-    /// GPU, sharing everything - the bit-exact A/B of the hand-off)
++    /// Later stages' devices "D1,D2,.." (default: the next visible GPUs).
++    /// Final 0 returns to the first GPU; 0 with one K is the same-GPU diagnostic.
+     std::string split_device;
+     /// --split-skip-if-fits (opt-in; the server passes it for a config's "split_skip_if_fits"): with
+     /// --layer-split auto, run on CUDA0 alone when it holds every profiled expert pair plus the whole session (KV),
+@@ -1301,14 +1302,12 @@
+         } else if (ok) {
+             ok = (split_auto || split_at.size() == split_devs.size()) && split_devs.size() < (size_t) SplitDrive::kMax;
+             for (size_t i = 0; ok && i < split_at.size(); ++i) ok = split_at[i] >= 2 && (i == 0 || split_at[i] > split_at[i - 1]);
+-            for (size_t i = 0; ok && !split_same && i < split_devs.size(); ++i) {
+-                ok = split_devs[i] > 0 && split_devs[i] < n_dev;
+-                for (size_t j = 0; ok && j < i; ++j) ok = split_devs[i] != split_devs[j];
+-            }
++            if (ok) ok = strata::core::split_devices_valid(split_devs, n_dev, split_auto, split_same);
+         }
+         if (!ok) {
+             std::fprintf(stderr, "strata generate: --layer-split K[,K2..]|auto needs --serve, rising K from 2, and one "
+-                                 "distinct GPU per K in --split-device (1..%d; or 0 with one K: the same GPU)\n", n_dev - 1);
++                                 "GPU per K in --split-device (1..%d; final 0 returns to the first GPU; "
++                                 "0 with one K is the same-GPU diagnostic)\n", n_dev - 1);
+             return 2;
+         }
+     }
+@@ -1418,7 +1417,7 @@
+         }
+         std::string devs;
+         for (const int d : split_devs) devs += (devs.empty() ? "" : ",") + std::to_string(d);
+-        std::fprintf(stderr, "strata generate: layer split across %zu GPUs: CUDA0, then CUDA%s (split %s)\n",
++        std::fprintf(stderr, "strata generate: layer split across %zu stages: CUDA0, then CUDA%s (split %s)\n",
+                      split_devs.size() + 1, devs.c_str(), o.layer_split.c_str());
+     }
+ #if defined(STRATA_USE_HIP)
+@@ -2424,7 +2423,8 @@
+         GpuStage& st = *stages.back();
+         st.dev = split_devs[i];
+         double free_gib = 0;
+-        if (!strata::core::RemoteExperts::preflight(st.dev, free_gib, err)) {
++        // CUDA0's context already exists when the final stage returns to it.
++        if (st.dev != 0 && !strata::core::RemoteExperts::preflight(st.dev, free_gib, err)) {
+             std::fprintf(stderr, "strata generate: %s\n", err.c_str());
+             return 1;
+         }
+@@ -2745,6 +2745,23 @@
+         return 1;
+     }
+     const bool auto_cache = o.expert_cache < 0;
++    // A final stage on CUDA0 shares physical VRAM with the first. Keep its
++    // profiled experts, verification window, prompt allocation (when not
++    // borrowing) and the draft head available before the first cache fills.
++    // Its weights, session, output head and MTP layer are already allocated.
++    int64_t primary_stage_reserve = 0;
++    if (last_st && last_st->dev == 0) {
++        const auto& lay = strata::kernels::cpu::expert_layout();
++        for (const auto& pr : last_st->profile)
++            primary_stage_reserve += native_pack ? ((int64_t) lay.blob_bytes(pr.first) + 255) / 256 * 256
++                                                : (int64_t) lay.max_blob;
++        primary_stage_reserve += (kWindowMib + split_pf_mib) << 20;
++        if (!o.mtp.empty() && last_st->head.loaded())
++            primary_stage_reserve += (int64_t) mtp.bind_bytes(last_st->head.row_bytes(), n_vocab);
++        std::fprintf(stderr, "strata generate: return stage on CUDA0: reserving %lld MiB before the first "
++                             "expert cache for layers %lld-%lld, its window and draft head\n",
++                     (long long) (primary_stage_reserve >> 20), (long long) last_st->lb, (long long) (last_st->le - 1));
++    }
+     if (o.expert_cache < 0) {
+         size_t free_b = 0, total_b = 0;
+         cudaMemGetInfo(&free_b, &total_b);
+@@ -2757,7 +2774,7 @@
+         // ~110-180 MiB larger, and out of the reserve they left 16 GB cards below the stall line (#199)
+         const int64_t mtp_bind = (!o.mtp.empty() && native_head.loaded())
+                                      ? (int64_t) mtp.bind_bytes(native_head.row_bytes(), n_vocab) : 0;
+-        const int64_t reserve = (((int64_t) o.vram_reserve_mib + prefill_mib) << 20) + mtp_bind;
++        const int64_t reserve = (((int64_t) o.vram_reserve_mib + prefill_mib) << 20) + mtp_bind + primary_stage_reserve;
+         int64_t slots = ((int64_t) free_b - reserve) / (int64_t) strata::kernels::cpu::expert_layout().max_blob;
+         if (!profile.empty()) slots = std::min<int64_t>(slots, (int64_t) profile.size());
+         o.expert_cache = (int) std::max<int64_t>(slots, 0);
+@@ -2774,7 +2791,7 @@
+         size_t free_b = 0, total_b = 0;
+         cudaMemGetInfo(&free_b, &total_b);
+         const int64_t prefill_mib = (o.prefill_chunk > 0 && !pf_borrow) ? 160 + (o.prefill_chunk * 680) / 1024 : 0;
+-        const int64_t reserve = ((int64_t) o.vram_reserve_mib + prefill_mib) << 20;
++        const int64_t reserve = (((int64_t) o.vram_reserve_mib + prefill_mib) << 20) + primary_stage_reserve;
+         const int64_t fit = std::max<int64_t>(((int64_t) free_b - reserve) / (int64_t) strata::kernels::cpu::expert_layout().max_blob, 0);
+         if (o.expert_cache > fit) {
+             // a WARNING that names the knob: the user asked for this size, and gets fewer slots
+@@ -2796,7 +2813,8 @@
+         const auto& lay = strata::kernels::cpu::expert_layout();
+         const uint64_t budget = (uint64_t) o.expert_cache * lay.max_blob;   // what the uniform sizing granted
+         uint64_t used = 0;
+-        size_t free_room = free_b > ((size_t) o.vram_reserve_mib << 20) ? free_b - ((size_t) o.vram_reserve_mib << 20) : 0;
++        const uint64_t held_back = ((uint64_t) o.vram_reserve_mib << 20) + (uint64_t) primary_stage_reserve;
++        size_t free_room = free_b > held_back ? free_b - held_back : 0;
+         const uint64_t cap = std::min<uint64_t>(budget, (uint64_t) free_room);
+         for (const auto& pr : profile) {
+             const uint64_t b = (lay.blob_bytes(pr.first) + 255) / 256 * 256;
+@@ -2879,7 +2897,7 @@
+             cudaDeviceSynchronize();
+             size_t free_b = 0, total_b = 0;
+             cudaMemGetInfo(&free_b, &total_b);
+-            const int64_t want = (int64_t) o.vram_reserve_mib << 20;
++            const int64_t want = ((int64_t) o.vram_reserve_mib << 20) + primary_stage_reserve;
+             if ((int64_t) free_b >= want - (64ll << 20)) break;
+             // short by (want - free); a figure of 0 only says "at least": the first two such reads give back 1 GiB
+             // each (under WDDM the free figure read before the allocation runs ~0.7 GiB high), later ones a quarter
+@@ -4284,7 +4302,8 @@
+             for (int st = 1; st < n_stages; ++st)
+                 plan_s += ", " + std::to_string(split_at[(size_t) st - 1]) + "-" + std::to_string(split_drive.end[st] - 1) +
+                           " (CUDA" + std::to_string(split_same ? 0 : stages[(size_t) st - 1]->dev) + ")";
+-            std::fprintf(stderr, "strata serve: layer split: layers %s, one hand-off per window\n", plan_s.c_str());
++            std::fprintf(stderr, "strata serve: layer split: layers %s, %d hand-off%s per window\n",
++                         plan_s.c_str(), n_stages - 1, n_stages == 2 ? "" : "s");
+         }
+         if (!ver.init(wt, g, ss, vh, native_head.loaded() ? &native_head : nullptr, o.spec, err) ||
+             !mtp.bind(last_st ? last_st->wt : wt, last_st ? &last_st->head : &native_head, ver.final_R_all(), err)) {
+--- before/CMakeLists.txt
++++ after/CMakeLists.txt
+@@ -199,6 +199,14 @@
+     add_executable(dense_placement_test EXCLUDE_FROM_ALL src/core/dense_placement_test.cpp)
+   endif()
+   target_link_libraries(dense_placement_test PRIVATE strata_core)
++
++  if(STRATA_BUILD_TESTS)
++    add_executable(split_schedule_test src/core/split_schedule_test.cpp)
++    add_test(NAME split_schedule_test COMMAND split_schedule_test)
++  else()
++    add_executable(split_schedule_test EXCLUDE_FROM_ALL src/core/split_schedule_test.cpp)
++  endif()
++  target_link_libraries(split_schedule_test PRIVATE strata_plan)
+ 
+   add_executable(strata-device src/core/device_main.cpp)
+   target_link_libraries(strata-device PRIVATE strata_core)
+--- before/docs/MULTI_GPU.md
++++ after/docs/MULTI_GPU.md
+@@ -73,6 +73,14 @@
+ The engine flags behind it: `--layer-split K1[,K2..]|auto` and `--split-device D1[,D2..]` (the later stages'
+ devices; default the next visible ones). `--layer-split K --split-device 0` runs both stages on one card sharing
+ everything - the bit-exact check of the hand-off, not a speed mode.
++
++An explicit split can return to the first GPU for its final stage. For example, with the 5070 Ti visible as
++CUDA0 and the 4060 as CUDA1, `--layer-split 43,47 --split-device 1,0` runs layers 0–42 on the 5070 Ti,
++43–46 on the 4060, then layer 47, the output head and MTP on the 5070 Ti. In a server config, use
++`"gpu": [0, 1]`, `"layer_split": "43,47"`, and add `"--split-device", "1,0"` to `args`.
++The returning stage keeps its own weights, session, expert cache and prompt buffers. Its cache and remaining
++allocations are reserved before the first stage fills its cache on that GPU. This path has two hand-offs per
++verification window; it is not searched by `auto`. Other later stages must still use distinct GPUs.
+ 
+ **auto** tries every placement for two or three cards; beyond that it shares layers in proportion to estimated GPU
+ speed. It estimates layer compute time and the cost of experts missing from the caches, with hotter pairs weighted
+--- /dev/null
++++ after/include/strata/core/split_schedule.hpp
+@@ -0,0 +1,19 @@
++#pragma once
++#include <cstddef>
++#include <vector>
++
++namespace strata::core {
++// Automatic placement still uses distinct GPUs. An explicit schedule may
++// return to CUDA0 for its final stage, with independent stage state/cache.
++inline bool split_devices_valid(const std::vector<int>& devices, int count,
++                                bool automatic, bool same_device) {
++    if (same_device) return !automatic && devices.size() == 1 && devices[0] == 0;
++    for (std::size_t i = 0; i < devices.size(); ++i) {
++        const int dev = devices[i];
++        if (dev < 0 || dev >= count) return false;
++        if (dev == 0 && (automatic || devices.size() < 2 || i + 1 != devices.size())) return false;
++        for (std::size_t j = 0; j < i; ++j) if (dev == devices[j]) return false;
++    }
++    return true;
++}
++} // namespace strata::core
+--- /dev/null
++++ after/src/core/split_schedule_test.cpp
+@@ -0,0 +1,21 @@
++#include "strata/core/split_schedule.hpp"
++#include <cstdio>
++
++int main() {
++    using strata::core::split_devices_valid;
++    struct Case { std::vector<int> devices; int count; bool automatic, same, valid; };
++    const Case cases[] = {
++        {{1}, 2, false, false, true}, {{1, 2}, 3, true, false, true},
++        {{1, 0}, 2, false, false, true}, {{2, 1, 0}, 3, false, false, true},
++        {{0}, 1, false, true, true}, {{1, 0}, 2, true, false, false},
++        {{0, 1}, 2, false, false, false}, {{1, 0, 2}, 3, false, false, false},
++        {{1, 1}, 2, false, false, false}, {{1, 2}, 2, false, false, false},
++        {{-1}, 2, false, false, false}, {{0}, 1, true, true, false},
++        {{1}, 2, false, true, false}, {{0}, 2, false, false, false}
++    };
++    for (const auto& c : cases)
++        if (split_devices_valid(c.devices, c.count, c.automatic, c.same) != c.valid) {
++            std::fprintf(stderr, "split schedule validation failed\n"); return 1;
++        }
++    std::puts("split schedule validation: 14 cases passed");
++}

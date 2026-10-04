@@ -1,0 +1,10 @@
+{
+  "src/program/generate.cpp": "7c2980610031371349f9d3640ca9ab6ec1ec4324f6762cb5470027fed5f608cf",
+  "src/core/remote_experts.cpp": "7c10c2b923bdd5105d6626d0d1950883da7e53f64e581a67ef0fdacd3e3284b7",
+  "CMakeLists.txt": "12017ebc0341e50268898b9fc6df42200c334220a5a1c186e5df0e3bf06a7227",
+  "docs/MULTI_GPU.md": "82745eb6bde2c91366731dc68c90fb41658be2b3d1d3ef56cb92066262de4594",
+  "build/strata": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903",
+  "engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+  "strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+  "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+}

@@ -1,0 +1,35 @@
+{
+  "note": "Subjective reviewer scores using the saved rubric; not statistical estimates. Python scores evaluate stage 5, with earlier stages retained for review history.",
+  "marketing": {
+    "iq3_s": {
+      "product_accuracy": 20,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 17,
+      "concrete_original_language": 11,
+      "instruction_compliance": 10
+    },
+    "iq4_xs": {
+      "product_accuracy": 16,
+      "persuasive_audience_fit": 22,
+      "structure_and_readability": 17,
+      "concrete_original_language": 12,
+      "instruction_compliance": 7
+    }
+  },
+  "python": {
+    "iq3_s": {
+      "current_code_diagnosis": 14,
+      "python_conversion_correctness": 7,
+      "engine_integration_correctness": 12,
+      "compatibility_memory_and_validation": 6,
+      "proposal_clarity_and_honesty": 6
+    },
+    "iq4_xs": {
+      "current_code_diagnosis": 14,
+      "python_conversion_correctness": 10,
+      "engine_integration_correctness": 16,
+      "compatibility_memory_and_validation": 11,
+      "proposal_clarity_and_honesty": 7
+    }
+  }
+}

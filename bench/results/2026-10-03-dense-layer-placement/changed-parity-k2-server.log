@@ -1,0 +1,30 @@
+loading the model (the first start takes a minute or two) ...
+[strata] layer split across GPUs [1, 0] (2)
+[strata] starting the engine: reading the model's weights ...
+[strata] loading the experts into RAM (tens of GB) and locking part of them for the GPU.
+         YOUR PC CAN BE SLOW OR STOP RESPONDING FOR 1-3 MINUTES NOW - this is normal.
+         Please wait and don't close this window; the browser opens when it is ready.
+[strata] still starting (25 s) - please wait ...
+[strata] experts loaded: 55.43 GiB at 2.47 GiB/s (39 s so far)
+[strata] filling the GPU's expert cache (16 experts, 0.03 GiB of VRAM) ...
+[strata] almost ready ...
+ready: http://127.0.0.1:1112/v1  (OpenAI: /v1/chat/completions, Anthropic: /v1/messages, context 131072 tokens)
+       open http://127.0.0.1:1112/ in a browser to chat; close this window to stop the model
+[strata] reading the prompt: 21 of 22 tokens, 1 s so far
+[strata] answering: 20 of max 96 tokens, 20.4 tok/s, 2 s
+[strata] answering: 45 of max 96 tokens, 21.8 tok/s, 3 s
+[strata] answering: 65 of max 96 tokens, 20.8 tok/s, 4 s
+[strata] answering: 91 of max 96 tokens, 21.5 tok/s, 5 s
+[strata] done: 95 tokens in 6 s (21.7 tok/s) (stop, cancel=False), expert cache 1.4% hit
+[strata] answering: 7 of max 96 tokens, 21.5 tok/s, 1 s
+[strata] answering: 40 of max 96 tokens, 29.1 tok/s, 2 s
+[strata] answering: 70 of max 96 tokens, 29.5 tok/s, 3 s
+[strata] done: 96 tokens in 4 s (29.6 tok/s) (length, cancel=False), expert cache 3.7% hit
+[strata] answering: 6 of max 96 tokens, 27.1 tok/s, 1 s
+[strata] answering: 37 of max 96 tokens, 29.4 tok/s, 2 s
+[strata] answering: 66 of max 96 tokens, 28.5 tok/s, 3 s
+[strata] answering: 93 of max 96 tokens, 28.0 tok/s, 4 s
+[strata] done: 96 tokens in 4 s (27.9 tok/s) (length, cancel=False), expert cache 5.0% hit
+
+[strata] stopping (Ctrl+C again to end the engine at once) ...
+[strata] stopped

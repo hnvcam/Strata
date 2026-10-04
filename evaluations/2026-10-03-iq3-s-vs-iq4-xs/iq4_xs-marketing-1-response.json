@@ -1,0 +1,37 @@
+{
+  "id": "chatcmpl-9675acb523dd4d1685a428af",
+  "object": "chat.completion",
+  "created": 1791020138,
+  "model": "qwen3.8-flash-next-iq4_xs",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "# Stop Juggling Clients: A Calmer Way to Plan Tomorrow\n\nIt is 10:45 PM on a Tuesday. You have just closed the last email from Client A, who needs a revision by morning. You open your laptop to check Client B’s project board, only to realize you forgot to send the invoice for Client C. Your mind races with a chaotic list of half-remembered obligations. You try to write them down, but the list is a tangled mess of priorities. You don’t know what to do first, so you do nothing, scrolling through your phone until exhaustion finally wins.\n\nThis is the reality for many freelancers. The problem isn’t a lack of effort; it’s the cognitive load of switching contexts. When you manage multiple clients, every task feels urgent, and every notification feels like a demand. LoopDay was built to break this cycle. It is not another complex project management suite that requires a training seminar to use. It is a simple, focused tool designed to help you capture what matters, choose what is truly important for tomorrow, and leave the rest behind until you are ready.\n\n### Capture Without the Chaos\n\nThe first step to a calmer mind is getting the noise out of your head. LoopDay allows you to capture tasks instantly. Whether you are on a walk, in a meeting, or lying in bed, you can jot down a thought. But unlike generic to-do lists, LoopDay asks you to tag each task by client immediately.\n\nImagine you are working with three distinct clients: a graphic design agency, a tech startup, and a local bakery. When you capture a task like \"Send logo drafts,\" you tag it to the design agency. When you capture \"Fix login bug,\" you tag it to the startup. This simple act of categorization creates mental separation. You stop seeing one giant, overwhelming pile of work and start seeing distinct projects. You can see exactly what belongs to whom, which reduces the anxiety of wondering if you forgot something for a specific person.\n\n### The Power of Three\n\nMost productivity advice tells you to prioritize everything. LoopDay takes the opposite approach. Each evening, you look at your captured tasks and choose just three priorities for tomorrow. Not ten. Not five. Three.\n\nThis constraint is the core of the app’s philosophy. By forcing you to select only three items, you are compelled to ask hard questions. Is this task actually due tomorrow, or can it wait? Is this the most valuable use of my time? If you have five urgent tasks, you must decide which two can slip. This isn’t about ignoring work; it’s about acknowledging that you have finite energy. When you wake up, you don’t face a mountain. You face three clear, manageable steps. This clarity reduces decision fatigue and helps you start your day with momentum rather than dread.\n\n### Stay in Control, Even Offline\n\nFreelancers often work in unpredictable environments. You might be on a train with spotty signal, in a café with no Wi-Fi, or simply want to disconnect from the internet to focus. LoopDay is designed to work offline. Task capture, planning, reminders, and weekly reviews all function without an internet connection.\n\nThis means your planning tool is always with you, regardless of your connectivity. You can set local reminders for your three priorities, ensuring you are nudged at the right time without relying on cloud servers. At the end of the week, you can review what you completed. This review isn’t about guilt-tripping you for what you didn’t do; it’s about recognizing progress. Seeing a list of completed tasks across different clients provides a tangible sense of accomplishment, reinforcing that your work is moving forward.\n\n### Free vs. Pro: What Fits Your Workflow?\n\nLoopDay offers two tiers: Free and Pro. The Free version is not a trial; it has no time limit. It allows you to manage up to three active client projects with unlimited tasks within those projects. It works on one device without requiring an account. For many freelancers, especially those starting out or working with a small, stable roster of clients, this is sufficient. It provides the core experience of capturing, prioritizing, and reviewing without any cost or complexity.\n\nPro is for those who have outgrown the three-project limit or need flexibility across devices. Pro costs US$3.99 per month or US$29.99 per year. It unlocks unlimited active client projects and offers optional cloud sync. If you switch between an iPhone and an iPad, or want to access your tasks from a desktop browser, Pro’s sync feature keeps everything updated. However, it is important to note that cloud sync requires an account and an internet connection. If you prefer to keep your data strictly local, you can stick with the Free version or use Pro without enabling sync.\n\n### An Honest Limitation\n\nIn the spirit of transparency, LoopDay does not integrate with external calendars like Google Calendar or Outlook, and it does not use AI to automatically schedule your work. You will not see your tasks pop up in your existing calendar app, and the app will not tell you when you *should* do a task based on algorithms. You must manually set local reminders and choose your own priorities. This design choice keeps the app lightweight and private, but it means you must be intentional about your planning. If you need deep calendar integration or automated scheduling, LoopDay may not be the right fit.\n\n### Start Your Calmer Tomorrow\n\nYou don’t need a more complex system to manage your freelance business. You need a simpler way to decide what matters today. LoopDay helps you capture tasks, tag them by client, and focus on just three priorities for tomorrow. It works offline, respects your privacy, and grows with you.\n\nDownload LoopDay on iOS or Android and start with Free. See how it feels to plan a day with clarity instead of chaos."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 406,
+    "completion_tokens": 1204,
+    "total_tokens": 1610,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    }
+  },
+  "timings": {
+    "cache_n": 0,
+    "prompt_n": 406,
+    "prompt_ms": 3073.2,
+    "prompt_per_token_ms": 7.569,
+    "prompt_per_second": 132.1,
+    "predicted_n": 1204,
+    "predicted_ms": 28501.7,
+    "predicted_per_token_ms": 23.673,
+    "predicted_per_second": 42.2,
+    "draft_n": 827,
+    "draft_n_accepted": 596
+  }
+}

@@ -1,0 +1,252 @@
+{
+  "endpoint": "http://127.0.0.1:1234/v1",
+  "runs": [
+    {
+      "task": "marketing",
+      "stage": 1,
+      "continuation": 0,
+      "wall_s": 26.031,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 402,
+        "prompt_n": 4,
+        "prompt_ms": 141.21,
+        "prompt_per_token_ms": 35.3025,
+        "prompt_per_second": 28.326605764464272,
+        "predicted_n": 994,
+        "predicted_ms": 23760.227,
+        "predicted_per_token_ms": 23.927721047331318,
+        "predicted_per_second": 41.79253001244475,
+        "draft_n": 1182,
+        "draft_n_accepted": 600
+      },
+      "usage": {
+        "completion_tokens": 994,
+        "prompt_tokens": 406,
+        "total_tokens": 1400,
+        "prompt_tokens_details": {
+          "cached_tokens": 402
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "75cb3f3df4447f18471eb1ba9e47725df9b79c9c342ca0829eda67a2bb0469d7"
+    },
+    {
+      "task": "python",
+      "stage": 1,
+      "continuation": 0,
+      "wall_s": 73.104,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 24792,
+        "prompt_n": 4,
+        "prompt_ms": 311.763,
+        "prompt_per_token_ms": 77.94075,
+        "prompt_per_second": 12.830258882548604,
+        "predicted_n": 3405,
+        "predicted_ms": 72185.618,
+        "predicted_per_token_ms": 21.206115746180963,
+        "predicted_per_second": 47.15620776426684,
+        "draft_n": 3096,
+        "draft_n_accepted": 2373
+      },
+      "usage": {
+        "completion_tokens": 3405,
+        "prompt_tokens": 24796,
+        "total_tokens": 28201,
+        "prompt_tokens_details": {
+          "cached_tokens": 24792
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "f1b06f72a869b91b3fc97fa443f619546a072c097ee6d60d614a834c652925d3"
+    },
+    {
+      "task": "python",
+      "stage": 2,
+      "continuation": 0,
+      "wall_s": 51.696,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 28201,
+        "prompt_n": 67,
+        "prompt_ms": 582.658,
+        "prompt_per_token_ms": 8.696388059701492,
+        "prompt_per_second": 114.9902687339743,
+        "predicted_n": 2509,
+        "predicted_ms": 51086.03,
+        "predicted_per_token_ms": 20.369230462519937,
+        "predicted_per_second": 49.09365632835434,
+        "draft_n": 2151,
+        "draft_n_accepted": 1793
+      },
+      "usage": {
+        "completion_tokens": 2509,
+        "prompt_tokens": 28268,
+        "total_tokens": 30777,
+        "prompt_tokens_details": {
+          "cached_tokens": 28201
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "c882c04d07d5e5172812acf2af086c2cc1a2c76b0e2b65618ace7899bd21e320"
+    },
+    {
+      "task": "python",
+      "stage": 3,
+      "continuation": 0,
+      "wall_s": 62.463,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 30778,
+        "prompt_n": 99,
+        "prompt_ms": 462.245,
+        "prompt_per_token_ms": 4.669141414141414,
+        "prompt_per_second": 214.17213815184587,
+        "predicted_n": 3371,
+        "predicted_ms": 61969.275,
+        "predicted_per_token_ms": 18.388508902077152,
+        "predicted_per_second": 54.381788394329284,
+        "draft_n": 2568,
+        "draft_n_accepted": 2514
+      },
+      "usage": {
+        "completion_tokens": 3371,
+        "prompt_tokens": 30877,
+        "total_tokens": 34248,
+        "prompt_tokens_details": {
+          "cached_tokens": 30778
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "337003e21886f8566e8b15f07724dcbd7adcbbcb4bebf62358a683cf6d629f3c"
+    },
+    {
+      "task": "python",
+      "stage": 4,
+      "continuation": 0,
+      "wall_s": 63.852,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 34247,
+        "prompt_n": 141,
+        "prompt_ms": 736.214,
+        "prompt_per_token_ms": 5.221375886524823,
+        "prompt_per_second": 191.5204003183857,
+        "predicted_n": 3400,
+        "predicted_ms": 63075.883,
+        "predicted_per_token_ms": 18.55718829067373,
+        "predicted_per_second": 53.88747391772541,
+        "draft_n": 2556,
+        "draft_n_accepted": 2547
+      },
+      "usage": {
+        "completion_tokens": 3400,
+        "prompt_tokens": 34388,
+        "total_tokens": 37788,
+        "prompt_tokens_details": {
+          "cached_tokens": 34247
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "39622fb76b7083adef4ef24cb283fa496b36ab74a0089b252fc63acb4cd4341d"
+    },
+    {
+      "task": "python",
+      "stage": 5,
+      "continuation": 0,
+      "wall_s": 64.683,
+      "finish_reason": "stop",
+      "timings": {
+        "cache_n": 37787,
+        "prompt_n": 88,
+        "prompt_ms": 699.444,
+        "prompt_per_token_ms": 7.948227272727272,
+        "prompt_per_second": 125.81421815041664,
+        "predicted_n": 3396,
+        "predicted_ms": 63942.364,
+        "predicted_per_token_ms": 18.834275110456556,
+        "predicted_per_second": 53.094690086841325,
+        "draft_n": 2547,
+        "draft_n_accepted": 2546
+      },
+      "usage": {
+        "completion_tokens": 3396,
+        "prompt_tokens": 37875,
+        "total_tokens": 41271,
+        "prompt_tokens_details": {
+          "cached_tokens": 37787
+        }
+      },
+      "reasoning_chars": 0,
+      "input_sha256": "d937acd7d4043d1fe2b52a296664635b740f494897e376ace57dc22c2fd52a43"
+    }
+  ],
+  "watched_hashes_before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq3_s.json": "ee62a5817721da0c02135f13219895995a639931d5850c5427a978695396d53a",
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
+    "/home/hnvcam/Workplace/Strata/tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_fetch.py": "c8c64c20f035535b309b7eae69004dc5d0b27b0899dc1b8f626f275837884d5a",
+    "/home/hnvcam/Workplace/Strata/setup.py": "7979d29b35c9d3942db4ffe2afa453f049f61d160d7f19405be030d79bb1085e",
+    "/home/hnvcam/Workplace/Strata/serve/server.py": "4c9174b84faa5a17d3145d781e5d0c1e612f4709d36f096128074d422b71dda0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/iq_kernels.hpp": "2b8f5a08be7c7a501e8af7103d7d3ce412295c4467bbfd08b8dc0d02cea7c70d",
+    "/home/hnvcam/Workplace/Strata/include/strata/core/mtp.hpp": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+    "/home/hnvcam/Workplace/Strata/src/core/mtp.cpp": "11fbacd4f062c888226601a57ee86c5dc6627d36693b622793f97c4116e8b673",
+    "/home/hnvcam/Workplace/Strata/src/kernels/cuda/iq_kernels.cu": "07fe5567a7fc75a079dcc7887975dffe490607564c16ad884423b903ab08a537",
+    "/home/hnvcam/Workplace/Strata/src/program/generate.cpp": "1b26c11cc923c140294024947f59c36c8a1a9d9f7c40a3ba3c461d08e626f68d",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac"
+  },
+  "reference_directory": "/home/hnvcam/Workplace/Strata/evaluations/2026-10-03-iq3-s-vs-iq4-xs",
+  "input_files": {
+    "test-inputs.json": "babed6735b045d486a4070f3548bb7e7891f9f5f881b03c2697bbfa3475328ca",
+    "scope-clarification.json": "c5155636301531998ec6953c9f7e2b41a5b5d63775e7b0c4a2a7ba2f53888105",
+    "source-snapshot.md": "aece8873b55c9f71420db2a644ddfa82933c242c520d4a61c5fce85f60cc1a74",
+    "source-manifest.json": "4525d90564077a2987a4795975efe4653ac42635878eaf76c798bdc2cbfab7a8",
+    "rubric.json": "54c2eaf75221583c2b38e72bde43857fc976ade5d357640c733408ab2954c890"
+  },
+  "note": "Identical saved system/user prompts and requested sampling, with explicit min_p=0 matching the prior Strata default; user-loaded server settings differ from Strata.",
+  "model": "/media/hnvcam/AI/LLAMA_Models/Qwen3.8-27B-UD-Q4_K_M.gguf",
+  "model_metadata": {
+    "id": "/media/hnvcam/AI/LLAMA_Models/Qwen3.8-27B-UD-Q4_K_M.gguf",
+    "aliases": [
+      "/media/hnvcam/AI/LLAMA_Models/Qwen3.8-27B-UD-Q4_K_M.gguf"
+    ],
+    "tags": [],
+    "object": "model",
+    "created": 1791030891,
+    "owned_by": "llamacpp",
+    "meta": {
+      "vocab_type": true,
+      "n_vocab": 248320,
+      "n_ctx": 110592,
+      "n_ctx_train": 262144,
+      "n_embd": 5120,
+      "n_params": 27320697856,
+      "size": 16453443584,
+      "ftype": "Q4_K - Medium"
+    }
+  },
+  "watched_hashes_after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq3_s.json": "ee62a5817721da0c02135f13219895995a639931d5850c5427a978695396d53a",
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_rt.py": "2d128e3a62f8f4810e1837cf4292d0e8473c80c384c2f2e10e2c9bfc4e94a531",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_pack.py": "322502ce2356122c72c5958e0775e4bbbf22ab804a31a8a63c783388e04b3894",
+    "/home/hnvcam/Workplace/Strata/tools/gguf_reader.py": "5ecf739bb3c2f07bc7f889f7f3a455e3dfdb40068409e10781a1a9b2be289b5e",
+    "/home/hnvcam/Workplace/Strata/tools/mtp_fetch.py": "c8c64c20f035535b309b7eae69004dc5d0b27b0899dc1b8f626f275837884d5a",
+    "/home/hnvcam/Workplace/Strata/setup.py": "7979d29b35c9d3942db4ffe2afa453f049f61d160d7f19405be030d79bb1085e",
+    "/home/hnvcam/Workplace/Strata/serve/server.py": "4c9174b84faa5a17d3145d781e5d0c1e612f4709d36f096128074d422b71dda0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/cpu/expert.hpp": "ae3e6f4c079a0dcbf300d59c83a1b3b88377abf3115210543161e41ee83df6e0",
+    "/home/hnvcam/Workplace/Strata/include/strata/kernels/iq_kernels.hpp": "2b8f5a08be7c7a501e8af7103d7d3ce412295c4467bbfd08b8dc0d02cea7c70d",
+    "/home/hnvcam/Workplace/Strata/include/strata/core/mtp.hpp": "6240600a0620805774473bfbec9cc1cf6071dd2fa4aaccfb8fb8d15c6351fc69",
+    "/home/hnvcam/Workplace/Strata/src/core/mtp.cpp": "11fbacd4f062c888226601a57ee86c5dc6627d36693b622793f97c4116e8b673",
+    "/home/hnvcam/Workplace/Strata/src/kernels/cuda/iq_kernels.cu": "07fe5567a7fc75a079dcc7887975dffe490607564c16ad884423b903ab08a537",
+    "/home/hnvcam/Workplace/Strata/src/program/generate.cpp": "1b26c11cc923c140294024947f59c36c8a1a9d9f7c40a3ba3c461d08e626f68d",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac"
+  },
+  "production_code_config_engine_vocab_unchanged": true
+}

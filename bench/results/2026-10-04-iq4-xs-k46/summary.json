@@ -1,0 +1,915 @@
+{
+  "full_4060_cache_confirmed": true,
+  "4060_prompt_cache_loan": false,
+  "manifest": {
+    "started_at": "2026-10-04T09:50:53+0700",
+    "before": {
+      "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+      "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+      "/home/hnvcam/Workplace/Strata/build/strata": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "/home/hnvcam/Workplace/Strata/bench/results/2026-10-04-iq4-xs-k46/run.py": "4e2f0e053f57cd6d0644f6e4b8b0e78ec7e65bbb277562f1fefce81a093ce924",
+      "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/benchmark.py": "37bda7df67ff6fb1d27d5b3ea7c05a3ce9f5441187a0369d9a35e688a829f59a"
+    },
+    "gpu_before": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n",
+    "draft_vocab_count": 248320,
+    "requested_placement": {
+      "5070_ti": "layers 0-45",
+      "4060": "layers 46-47, output head, Q2 MTP"
+    },
+    "method": "Original placement runner: 128-token warmup, English/Python/Vietnamese twice at up to 512 tokens, cold 9851-token prompt at up to 256 tokens. Greedy, thinking off, suffix drafts off, adaptive caching and MTP policy enabled.",
+    "status": "complete",
+    "identical_requests_to_saved_k4": true,
+    "confirmed_layer_split": true,
+    "cold_prompt_tokens": 9851,
+    "after": {
+      "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+      "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+      "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+      "/home/hnvcam/Workplace/Strata/build/strata": "20e4e2d88234dc02c8d2e4e5a0ced9fa352b1cc60cd9ec7f4177f66b8caa0903",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf",
+      "/home/hnvcam/Workplace/Strata/bench/results/2026-10-04-iq4-xs-k46/run.py": "4e2f0e053f57cd6d0644f6e4b8b0e78ec7e65bbb277562f1fefce81a093ce924",
+      "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/benchmark.py": "37bda7df67ff6fb1d27d5b3ea7c05a3ce9f5441187a0369d9a35e688a829f59a"
+    },
+    "files_unchanged": true,
+    "finished_at": "2026-10-04T09:53:56+0700",
+    "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n"
+  },
+  "comparisons": {
+    "patched-k46": {
+      "label": "NEW: 5070 0–45; 4060 46–47 + head/MTP, full cache",
+      "engine": "patched",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-04-iq4-xs-k46/patched-k46-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2856,
+        "decode_ms": 67379.3,
+        "decode_tok_s": 42.38690517710929,
+        "drafts_accepted": 1628,
+        "drafts_offered": 2011,
+        "draft_acceptance": 0.8095474888115366,
+        "expert_hit_rate": 0.7031235345648144
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 858,
+          "decode_ms": 18053.8,
+          "decode_tok_s": 47.524620855443175,
+          "drafts_accepted": 453,
+          "drafts_offered": 633,
+          "draft_acceptance": 0.7156398104265402,
+          "expert_hit_rate": 0.8066151474626622
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 26145.0,
+          "decode_tok_s": 39.166188563778924,
+          "drafts_accepted": 730,
+          "drafts_offered": 788,
+          "draft_acceptance": 0.9263959390862944,
+          "expert_hit_rate": 0.5396315936366174
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 974,
+          "decode_ms": 23180.5,
+          "decode_tok_s": 42.01807553762861,
+          "drafts_accepted": 445,
+          "drafts_offered": 590,
+          "draft_acceptance": 0.7542372881355932,
+          "expert_hit_rate": 0.7581832345341237
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 41170.3,
+        "prompt_per_token_ms": 4.179,
+        "prompt_per_second": 239.3,
+        "predicted_n": 256,
+        "predicted_ms": 7168.0,
+        "predicted_per_token_ms": 28.0,
+        "predicted_per_second": 35.7,
+        "draft_n": 169,
+        "draft_n_accepted": 137
+      },
+      "startup_residency": [
+        "strata generate: layer split: CUDA1 loads dense weights for layers 46-47: 84.47 MiB canonical + 145.43 MiB native (shared weights retained)",
+        "strata generate: layer split: CUDA0 loads dense weights for layers 0-45: 1357.55 MiB canonical + 2856.13 MiB native (shared weights retained)",
+        "strata generate: expert cache auto: 9.12 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 2435 slots",
+        "strata generate: expert cache 3560 slots, 7.90 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 46-47, expert cache 1024 slots (3.00 GiB), 1024 of its 1024 profiled pairs; slot 0 verified"
+      ]
+    },
+    "changed-full-cache-k4": {
+      "label": "4060 0–3 full cache; 5070 4–47 + head/MTP",
+      "engine": "patched",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-dense-layer-placement/changed-full-cache-k4-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2899,
+        "decode_ms": 62020.2,
+        "decode_tok_s": 46.74283539878943,
+        "drafts_accepted": 1657,
+        "drafts_offered": 2070,
+        "draft_acceptance": 0.8004830917874396,
+        "expert_hit_rate": 0.7089166878441063
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 874,
+          "decode_ms": 16799.4,
+          "decode_tok_s": 52.025667583366065,
+          "drafts_accepted": 479,
+          "drafts_offered": 653,
+          "draft_acceptance": 0.7335375191424196,
+          "expert_hit_rate": 0.7970407768719849
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 24230.9,
+          "decode_tok_s": 42.260089389993766,
+          "drafts_accepted": 723,
+          "drafts_offered": 790,
+          "draft_acceptance": 0.9151898734177215,
+          "expert_hit_rate": 0.5560236658518164
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 1001,
+          "decode_ms": 20989.9,
+          "decode_tok_s": 47.68960309482179,
+          "drafts_accepted": 455,
+          "drafts_offered": 627,
+          "draft_acceptance": 0.7256778309409888,
+          "expert_hit_rate": 0.7664658510873384
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 39618.3,
+        "prompt_per_token_ms": 4.022,
+        "prompt_per_second": 248.6,
+        "predicted_n": 256,
+        "predicted_ms": 6221.2,
+        "predicted_per_token_ms": 24.302,
+        "predicted_per_second": 41.1,
+        "draft_n": 185,
+        "draft_n_accepted": 142
+      },
+      "startup_residency": [
+        "strata generate: layer split: CUDA1 loads dense weights for layers 4-47: 1300.82 MiB canonical + 2729.30 MiB native (shared weights retained)",
+        "strata generate: layer split: CUDA0 loads dense weights for layers 0-3: 141.20 MiB canonical + 272.27 MiB native (shared weights retained)",
+        "strata generate: expert cache auto: 6.77 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1712 slots",
+        "strata generate: expert cache 2048 slots, 4.99 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 4-47, expert cache 2939 slots (6.58 GiB), 2939 of its 22528 profiled pairs; slot 0 verified"
+      ]
+    },
+    "changed-fresh-k2": {
+      "label": "4060 0–1 full cache; 5070 2–47 + head/MTP",
+      "engine": "patched",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-dense-layer-placement/changed-fresh-k2-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2804,
+        "decode_ms": 65821.8,
+        "decode_tok_s": 42.59986812879623,
+        "drafts_accepted": 1598,
+        "drafts_offered": 1987,
+        "draft_acceptance": 0.8042274786109713,
+        "expert_hit_rate": 0.6686353446968877
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 879,
+          "decode_ms": 18188.5,
+          "decode_tok_s": 48.32723973939577,
+          "drafts_accepted": 470,
+          "drafts_offered": 665,
+          "draft_acceptance": 0.706766917293233,
+          "expert_hit_rate": 0.7627838206380415
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 26735.7,
+          "decode_tok_s": 38.30084867798487,
+          "drafts_accepted": 730,
+          "drafts_offered": 785,
+          "draft_acceptance": 0.9299363057324841,
+          "expert_hit_rate": 0.5078385053151508
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 901,
+          "decode_ms": 20897.6,
+          "decode_tok_s": 43.114998851542765,
+          "drafts_accepted": 398,
+          "drafts_offered": 537,
+          "draft_acceptance": 0.7411545623836127,
+          "expert_hit_rate": 0.7307818242839484
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 40822.2,
+        "prompt_per_token_ms": 4.144,
+        "prompt_per_second": 241.3,
+        "predicted_n": 256,
+        "predicted_ms": 6863.6,
+        "predicted_per_token_ms": 26.811,
+        "predicted_per_second": 37.3,
+        "draft_n": 176,
+        "draft_n_accepted": 140
+      },
+      "startup_residency": [
+        "strata generate: layer split: CUDA1 loads dense weights for layers 2-47: 1360.05 MiB canonical + 2848.16 MiB native (shared weights retained)",
+        "strata generate: layer split: CUDA0 loads dense weights for layers 0-1: 81.96 MiB canonical + 153.40 MiB native (shared weights retained)",
+        "strata generate: expert cache auto: 6.96 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1024 slots",
+        "strata generate: expert cache 1024 slots, 2.22 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 2-47, expert cache 2771 slots (6.25 GiB), 2771 of its 23552 profiled pairs; slot 0 verified"
+      ]
+    },
+    "original-fresh-k2": {
+      "label": "4060 0–1; 5070 2–47 + head/MTP, fresh",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-dense-layer-placement/original-fresh-k2-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2811,
+        "decode_ms": 64757.2,
+        "decode_tok_s": 43.408300544186595,
+        "drafts_accepted": 1598,
+        "drafts_offered": 1953,
+        "draft_acceptance": 0.8182283666154634,
+        "expert_hit_rate": 0.6600715434149655
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 837,
+          "decode_ms": 17252.9,
+          "decode_tok_s": 48.51358322368993,
+          "drafts_accepted": 446,
+          "drafts_offered": 595,
+          "draft_acceptance": 0.7495798319327731,
+          "expert_hit_rate": 0.7555113209015224
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 25920.7,
+          "decode_tok_s": 39.50510595778663,
+          "drafts_accepted": 730,
+          "drafts_offered": 780,
+          "draft_acceptance": 0.9358974358974359,
+          "expert_hit_rate": 0.49875917100558115
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 950,
+          "decode_ms": 21583.6,
+          "decode_tok_s": 44.01490020200523,
+          "drafts_accepted": 422,
+          "drafts_offered": 578,
+          "draft_acceptance": 0.7301038062283737,
+          "expert_hit_rate": 0.7246581463592031
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 41460.9,
+        "prompt_per_token_ms": 4.209,
+        "prompt_per_second": 237.6,
+        "predicted_n": 256,
+        "predicted_ms": 6817.0,
+        "predicted_per_token_ms": 26.629,
+        "predicted_per_second": 37.6,
+        "draft_n": 173,
+        "draft_n_accepted": 137
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 2.78 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 481 slots",
+        "strata generate: expert cache 718 slots, 1.56 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 2-47, expert cache 2690 slots (6.06 GiB), 2690 of its 23552 profiled pairs; slot 0 verified"
+      ]
+    },
+    "5070-alone-check": {
+      "label": "5070 alone, recheck",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-alone-check-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2827,
+        "decode_ms": 67817.1,
+        "decode_tok_s": 41.685651553959104,
+        "drafts_accepted": 1609,
+        "drafts_offered": 2000,
+        "draft_acceptance": 0.8045,
+        "expert_hit_rate": 0.6155057074829332
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 872,
+          "decode_ms": 19298.7,
+          "decode_tok_s": 45.18439065843813,
+          "drafts_accepted": 462,
+          "drafts_offered": 654,
+          "draft_acceptance": 0.7064220183486238,
+          "expert_hit_rate": 0.7146226748495
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 26953.800000000003,
+          "decode_tok_s": 37.990932632875506,
+          "drafts_accepted": 727,
+          "drafts_offered": 789,
+          "draft_acceptance": 0.9214195183776933,
+          "expert_hit_rate": 0.450831589404935
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 931,
+          "decode_ms": 21564.6,
+          "decode_tok_s": 43.172606957699195,
+          "drafts_accepted": 420,
+          "drafts_offered": 557,
+          "draft_acceptance": 0.7540394973070018,
+          "expert_hit_rate": 0.6765739724233787
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 41452.6,
+        "prompt_per_token_ms": 4.208,
+        "prompt_per_second": 237.6,
+        "predicted_n": 256,
+        "predicted_ms": 6696.6,
+        "predicted_per_token_ms": 26.159,
+        "predicted_per_second": 38.2,
+        "draft_n": 175,
+        "draft_n_accepted": 142
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots",
+        "strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is"
+      ]
+    },
+    "5070-head-mtp-4060-experts": {
+      "label": "5070 all layers + head/MTP; 4060 expert helper",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-head-mtp-4060-experts-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2792,
+        "decode_ms": 59896.4,
+        "decode_tok_s": 46.613819862295564,
+        "drafts_accepted": 1602,
+        "drafts_offered": 1975,
+        "draft_acceptance": 0.8111392405063291,
+        "expert_hit_rate": 0.6628536803446466
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 848,
+          "decode_ms": 16517.0,
+          "decode_tok_s": 51.341042562208635,
+          "drafts_accepted": 445,
+          "drafts_offered": 635,
+          "draft_acceptance": 0.7007874015748031,
+          "expert_hit_rate": 0.7696618623187281
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 24307.0,
+          "decode_tok_s": 42.12778212037685,
+          "drafts_accepted": 734,
+          "drafts_offered": 782,
+          "draft_acceptance": 0.9386189258312021,
+          "expert_hit_rate": 0.4852733017019783
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 920,
+          "decode_ms": 19072.4,
+          "decode_tok_s": 48.23724334640632,
+          "drafts_accepted": 423,
+          "drafts_offered": 558,
+          "draft_acceptance": 0.7580645161290323,
+          "expert_hit_rate": 0.7284956620241573
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 41698.3,
+        "prompt_per_token_ms": 4.233,
+        "prompt_per_second": 236.2,
+        "predicted_n": 256,
+        "predicted_ms": 5861.0,
+        "predicted_per_token_ms": 22.895,
+        "predicted_per_second": 43.7,
+        "draft_n": 173,
+        "draft_n_accepted": 141
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots",
+        "strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is"
+      ]
+    },
+    "4060-first-5070-head-mtp": {
+      "label": "4060 0–1; 5070 2–47 + head/MTP, earlier",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/4060-first-5070-head-mtp-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2811,
+        "decode_ms": 59497.0,
+        "decode_tok_s": 47.246079634267275,
+        "drafts_accepted": 1598,
+        "drafts_offered": 1953,
+        "draft_acceptance": 0.8182283666154634,
+        "expert_hit_rate": 0.6600715434149655
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 837,
+          "decode_ms": 15512.4,
+          "decode_tok_s": 53.9568345323741,
+          "drafts_accepted": 446,
+          "drafts_offered": 595,
+          "draft_acceptance": 0.7495798319327731,
+          "expert_hit_rate": 0.7555113209015224
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 24368.1,
+          "decode_tok_s": 42.022151911720655,
+          "drafts_accepted": 730,
+          "drafts_offered": 780,
+          "draft_acceptance": 0.9358974358974359,
+          "expert_hit_rate": 0.49875917100558115
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 950,
+          "decode_ms": 19616.5,
+          "decode_tok_s": 48.42861876481533,
+          "drafts_accepted": 422,
+          "drafts_offered": 578,
+          "draft_acceptance": 0.7301038062283737,
+          "expert_hit_rate": 0.7246581463592031
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 36896.6,
+        "prompt_per_token_ms": 3.745,
+        "prompt_per_second": 267.0,
+        "predicted_n": 256,
+        "predicted_ms": 6326.3,
+        "predicted_per_token_ms": 24.712,
+        "predicted_per_second": 40.5,
+        "draft_n": 173,
+        "draft_n_accepted": 137
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 2.78 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 481 slots",
+        "strata generate: expert cache 718 slots, 1.56 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 2-47, expert cache 2690 slots (6.06 GiB), 2690 of its 23552 profiled pairs; slot 0 verified"
+      ]
+    },
+    "4060-first-four-layers": {
+      "label": "4060 0–3; 5070 4–47 + head/MTP, pilot",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/4060-first-four-layers-results.json",
+      "status": "complete",
+      "pilot": true,
+      "short": {
+        "requests": 3,
+        "generated_tokens": 1370,
+        "decode_ms": 29489.8,
+        "decode_tok_s": 46.45674097484554,
+        "drafts_accepted": 790,
+        "drafts_offered": 976,
+        "draft_acceptance": 0.8094262295081968,
+        "expert_hit_rate": 0.6638271148357744
+      },
+      "by_language": {
+        "english": {
+          "requests": 1,
+          "generated_tokens": 408,
+          "decode_ms": 8240.3,
+          "decode_tok_s": 49.51276045775033,
+          "drafts_accepted": 216,
+          "drafts_offered": 305,
+          "draft_acceptance": 0.7081967213114754,
+          "expert_hit_rate": 0.7629675676834365
+        },
+        "code": {
+          "requests": 1,
+          "generated_tokens": 512,
+          "decode_ms": 12014.6,
+          "decode_tok_s": 42.61481863732459,
+          "drafts_accepted": 363,
+          "drafts_offered": 394,
+          "draft_acceptance": 0.9213197969543148,
+          "expert_hit_rate": 0.4953285696584197
+        },
+        "vietnamese": {
+          "requests": 1,
+          "generated_tokens": 450,
+          "decode_ms": 9234.9,
+          "decode_tok_s": 48.72819413312543,
+          "drafts_accepted": 211,
+          "drafts_offered": 277,
+          "draft_acceptance": 0.7617328519855595,
+          "expert_hit_rate": 0.7370926279127622
+        }
+      },
+      "long": null,
+      "startup_residency": [
+        "strata generate: expert cache auto: 2.78 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 480 slots",
+        "strata generate: expert cache 631 slots, 1.55 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 4-47, expert cache 2775 slots (6.21 GiB), 2775 of its 22528 profiled pairs; slot 0 verified"
+      ]
+    },
+    "5070-4060-auto": {
+      "label": "5070 0–46; 4060 47 + head/MTP, auto",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-4060-auto-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2752,
+        "decode_ms": 67568.5,
+        "decode_tok_s": 40.72903793927644,
+        "drafts_accepted": 1570,
+        "drafts_offered": 1938,
+        "draft_acceptance": 0.8101135190918473,
+        "expert_hit_rate": 0.6726796899500179
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 848,
+          "decode_ms": 19455.1,
+          "decode_tok_s": 43.58754259808482,
+          "drafts_accepted": 442,
+          "drafts_offered": 631,
+          "draft_acceptance": 0.7004754358161648,
+          "expert_hit_rate": 0.7754030330816364
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 27551.800000000003,
+          "decode_tok_s": 37.16635573719321,
+          "drafts_accepted": 728,
+          "drafts_offered": 789,
+          "draft_acceptance": 0.9226869455006337,
+          "expert_hit_rate": 0.508853179124183
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 880,
+          "decode_ms": 20561.6,
+          "decode_tok_s": 42.79822581900242,
+          "drafts_accepted": 400,
+          "drafts_offered": 518,
+          "draft_acceptance": 0.7722007722007722,
+          "expert_hit_rate": 0.7359584565798113
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 35015.1,
+        "prompt_per_token_ms": 3.554,
+        "prompt_per_second": 281.3,
+        "predicted_n": 256,
+        "predicted_ms": 6659.7,
+        "predicted_per_token_ms": 26.014,
+        "predicted_per_second": 38.4,
+        "draft_n": 178,
+        "draft_n_accepted": 143
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 8.93 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 2378 slots",
+        "strata generate: expert cache 3452 slots, 7.71 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 47-47, expert cache 19 slots (0.06 GiB), 19 of its 512 profiled pairs; slot 0 verified"
+      ]
+    },
+    "5070-4060-k44": {
+      "label": "5070 0–43; 4060 44–47 + head/MTP, pilot",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-4060-k44-results.json",
+      "status": "complete",
+      "pilot": true,
+      "short": {
+        "requests": 3,
+        "generated_tokens": 1393,
+        "decode_ms": 36802.2,
+        "decode_tok_s": 37.85099803816077,
+        "drafts_accepted": 792,
+        "drafts_offered": 960,
+        "draft_acceptance": 0.825,
+        "expert_hit_rate": 0.6488178915516757
+      },
+      "by_language": {
+        "english": {
+          "requests": 1,
+          "generated_tokens": 442,
+          "decode_ms": 10553.0,
+          "decode_tok_s": 41.88382450488013,
+          "drafts_accepted": 246,
+          "drafts_offered": 313,
+          "draft_acceptance": 0.7859424920127795,
+          "expert_hit_rate": 0.7398927392739274
+        },
+        "code": {
+          "requests": 1,
+          "generated_tokens": 512,
+          "decode_ms": 14517.3,
+          "decode_tok_s": 35.26826613764268,
+          "drafts_accepted": 364,
+          "drafts_offered": 392,
+          "draft_acceptance": 0.9285714285714286,
+          "expert_hit_rate": 0.48461987795329414
+        },
+        "vietnamese": {
+          "requests": 1,
+          "generated_tokens": 439,
+          "decode_ms": 11731.9,
+          "decode_tok_s": 37.41934384029867,
+          "drafts_accepted": 182,
+          "drafts_offered": 255,
+          "draft_acceptance": 0.7137254901960784,
+          "expert_hit_rate": 0.7239643130002046
+        }
+      },
+      "long": null,
+      "startup_residency": [
+        "strata generate: expert cache auto: 8.94 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 2381 slots",
+        "strata generate: expert cache 3475 slots, 7.72 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 44-47, expert cache 18 slots (0.05 GiB), 18 of its 2048 profiled pairs; slot 0 verified"
+      ]
+    },
+    "5070-4060-tuned-safe": {
+      "label": "5070 0–46; 4060 47 + head/MTP, tuned 1152 MiB/256 prefill",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-4060-tuned-safe-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2802,
+        "decode_ms": 66139.0,
+        "decode_tok_s": 42.36532151982945,
+        "drafts_accepted": 1572,
+        "drafts_offered": 1945,
+        "draft_acceptance": 0.8082262210796916,
+        "expert_hit_rate": 0.6799673363086624
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 841,
+          "decode_ms": 18063.9,
+          "decode_tok_s": 46.55694506723354,
+          "drafts_accepted": 441,
+          "drafts_offered": 597,
+          "draft_acceptance": 0.7386934673366834,
+          "expert_hit_rate": 0.7881278752569378
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 25887.9,
+          "decode_tok_s": 39.55515897388355,
+          "drafts_accepted": 733,
+          "drafts_offered": 787,
+          "draft_acceptance": 0.9313850063532402,
+          "expert_hit_rate": 0.508719556185785
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 937,
+          "decode_ms": 22187.199999999997,
+          "decode_tok_s": 42.23155693372756,
+          "drafts_accepted": 398,
+          "drafts_offered": 561,
+          "draft_acceptance": 0.7094474153297683,
+          "expert_hit_rate": 0.7415456175202287
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 58403.7,
+        "prompt_per_token_ms": 5.929,
+        "prompt_per_second": 168.7,
+        "predicted_n": 256,
+        "predicted_ms": 6657.3,
+        "predicted_per_token_ms": 26.005,
+        "predicted_per_second": 38.5,
+        "draft_n": 168,
+        "draft_n_accepted": 135
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 8.93 GiB free, 1152 MiB reserved (+0 MiB for the draft head) -> 2407 slots",
+        "strata generate: expert cache 3495 slots, 7.80 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 47-47, expert cache 51 slots (0.15 GiB), 51 of its 512 profiled pairs; slot 0 verified"
+      ]
+    },
+    "5070-4060-tuned": {
+      "label": "5070 0–46; 4060 47 + head/MTP, tuned 1024 MiB/256 prefill",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-4060-tuned-results.json",
+      "status": "failed",
+      "pilot": false,
+      "error": "<HTTPError 400: 'Bad Request'>"
+    },
+    "5070-alone": {
+      "label": "5070 alone, initial (cold prompt did not reproduce)",
+      "engine": "original",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-gpu-placement/5070-alone-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2827,
+        "decode_ms": 67959.0,
+        "decode_tok_s": 41.59861092717668,
+        "drafts_accepted": 1609,
+        "drafts_offered": 2000,
+        "draft_acceptance": 0.8045,
+        "expert_hit_rate": 0.6155057074829332
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 872,
+          "decode_ms": 19437.2,
+          "decode_tok_s": 44.86242874488095,
+          "drafts_accepted": 462,
+          "drafts_offered": 654,
+          "draft_acceptance": 0.7064220183486238,
+          "expert_hit_rate": 0.7146226748495
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 26762.5,
+          "decode_tok_s": 38.262494161606725,
+          "drafts_accepted": 727,
+          "drafts_offered": 789,
+          "draft_acceptance": 0.9214195183776933,
+          "expert_hit_rate": 0.450831589404935
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 931,
+          "decode_ms": 21759.3,
+          "decode_tok_s": 42.78630286819889,
+          "drafts_accepted": 420,
+          "drafts_offered": 557,
+          "draft_acceptance": 0.7540394973070018,
+          "expert_hit_rate": 0.6765739724233787
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 14614.9,
+        "prompt_per_token_ms": 1.484,
+        "prompt_per_second": 674.0,
+        "predicted_n": 256,
+        "predicted_ms": 4587.0,
+        "predicted_per_token_ms": 17.918,
+        "predicted_per_second": 55.8,
+        "draft_n": 0,
+        "draft_n_accepted": 0
+      },
+      "startup_residency": [
+        "strata generate: expert cache auto: 7.37 GiB free, 1248 MiB reserved (+502 MiB for the draft head) -> 1745 slots",
+        "strata generate: expert cache 2513 slots, 5.66 GiB of VRAM; policy is"
+      ]
+    },
+    "changed-full-cache-k2": {
+      "label": "4060 0–1 full cache; 5070 2–47 + head/MTP (compilation overlapped)",
+      "engine": "patched",
+      "source": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-dense-layer-placement/changed-full-cache-k2-results.json",
+      "status": "complete",
+      "pilot": false,
+      "short": {
+        "requests": 6,
+        "generated_tokens": 2804,
+        "decode_ms": 64524.5,
+        "decode_tok_s": 43.456361537090565,
+        "drafts_accepted": 1598,
+        "drafts_offered": 1987,
+        "draft_acceptance": 0.8042274786109713,
+        "expert_hit_rate": 0.6686353446968877
+      },
+      "by_language": {
+        "english": {
+          "requests": 2,
+          "generated_tokens": 879,
+          "decode_ms": 18404.1,
+          "decode_tok_s": 47.761096712145665,
+          "drafts_accepted": 470,
+          "drafts_offered": 665,
+          "draft_acceptance": 0.706766917293233,
+          "expert_hit_rate": 0.7627838206380415
+        },
+        "code": {
+          "requests": 2,
+          "generated_tokens": 1024,
+          "decode_ms": 25739.1,
+          "decode_tok_s": 39.78383082547564,
+          "drafts_accepted": 730,
+          "drafts_offered": 785,
+          "draft_acceptance": 0.9299363057324841,
+          "expert_hit_rate": 0.5078385053151508
+        },
+        "vietnamese": {
+          "requests": 2,
+          "generated_tokens": 901,
+          "decode_ms": 20381.3,
+          "decode_tok_s": 44.207189924097094,
+          "drafts_accepted": 398,
+          "drafts_offered": 537,
+          "draft_acceptance": 0.7411545623836127,
+          "expert_hit_rate": 0.7307818242839484
+        }
+      },
+      "long": {
+        "cache_n": 0,
+        "prompt_n": 9851,
+        "prompt_ms": 40964.1,
+        "prompt_per_token_ms": 4.158,
+        "prompt_per_second": 240.5,
+        "predicted_n": 256,
+        "predicted_ms": 6708.1,
+        "predicted_per_token_ms": 26.204,
+        "predicted_per_second": 38.2,
+        "draft_n": 176,
+        "draft_n_accepted": 140
+      },
+      "startup_residency": [
+        "strata generate: layer split: CUDA1 loads dense weights for layers 2-47: 1360.05 MiB canonical + 2848.16 MiB native (shared weights retained)",
+        "strata generate: layer split: CUDA0 loads dense weights for layers 0-1: 81.96 MiB canonical + 153.40 MiB native (shared weights retained)",
+        "strata generate: expert cache auto: 6.96 GiB free, 1248 MiB reserved (+0 MiB for the draft head) -> 1024 slots",
+        "strata generate: expert cache 1024 slots, 2.22 GiB of VRAM; policy is",
+        "strata generate: layer split: CUDA1 runs layers 2-47, expert cache 2771 slots (6.25 GiB), 2771 of its 23552 profiled pairs; slot 0 verified"
+      ]
+    }
+  },
+  "short_speed_delta_percent": {
+    "changed-full-cache-k4": -9.318925958421753,
+    "changed-fresh-k2": -0.4999145796486193,
+    "original-fresh-k2": -2.352995519918122,
+    "5070-alone-check": 1.6822422032733764,
+    "5070-head-mtp-4060-experts": -9.067943150064151,
+    "4060-first-5070-head-mtp": -10.284820443882193,
+    "4060-first-four-layers": -8.76048494219579,
+    "5070-4060-auto": 4.070479740534494,
+    "5070-4060-k44": 11.983586626633969,
+    "5070-4060-tuned-safe": 0.05094652065780192,
+    "5070-alone": 1.8950013771195762,
+    "changed-full-cache-k2": -2.4609891904283754
+  }
+}

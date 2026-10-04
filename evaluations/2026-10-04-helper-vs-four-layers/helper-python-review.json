@@ -1,0 +1,46 @@
+{
+  "note": "Subjective reviewer scores using the unchanged saved rubric. This evaluates the regenerated helper-python-5.md after both matched continuations. The superseded proposal is excluded.",
+  "scores": {
+    "current_code_diagnosis": 14,
+    "python_conversion_correctness": 13,
+    "engine_integration_correctness": 10,
+    "compatibility_memory_and_validation": 7,
+    "proposal_clarity_and_honesty": 7
+  },
+  "total": 51,
+  "ready_to_implement": false,
+  "strengths": [
+    "Identifies legacy Q2 expert layout incompatibility and retains supplied Q4_K gate/up and Q8_0 down bytes without the old forbidden fallback.",
+    "Uses contiguous gate/up/down native expert layout and native_expert_supported/layout/grouped helpers.",
+    "Skips already-offset norms, converts F32 router and Q4_K/Q6_K/Q5_0 hyper-connections to BF16, and converts attention/shared dense projections to Q8_0.",
+    "Identifies the Q8_1 activation requirement and proposes a mode-specific quantizer switch. Does not claim implementation or executed tests."
+  ],
+  "blocking_findings": [
+    {
+      "issue": "Under-sized Q8_1 activation buffer",
+      "response_evidence": "Section 4.2 sizes Q8_1 as 34 bytes per 32 values.",
+      "reference_fact": "The supplied tools/gguf_reader.py BLOCK_GEOMETRY defines Q8_1 as 36 bytes per 32 values; Q8_0 is 34. The stated native input buffer size is wrong."
+    },
+    {
+      "issue": "Fixed expert-address stride and native scratch allocation omitted",
+      "response_evidence": "Native allocation and dispatch are changed, but the cpu::BLOB stride in moe_group_resident is unaddressed. Scratch is mentioned only in a memory-leak test.",
+      "reference_fact": "The supplied src/core/mtp.cpp:530 uses the fixed Q2 stride. The native path needs its 3584000-byte expert stride and native_expert_scratch_bytes sizing."
+    },
+    {
+      "issue": "Incomplete source tensor mapping",
+      "response_evidence": "Naming normalization strips blk.48 and refers to self_attn.*, mlp.shared_expert.* and mlp.gate.weight without mapping the supplied attn_*, ffn_*_shexp and hc_* names. The 1-D shared gate is omitted.",
+      "reference_fact": "A complete map must include blk.48.attn_q/k/v/output, ffn_gate/up/down_shexp, ffn_gate_inp_shexp and the loader's exact hyper-connection names."
+    },
+    {
+      "issue": "Fused projection axis remains imprecise",
+      "response_evidence": "Describes an inner dimension of 2560 and block-boundary 10, without stating the decoded 2560-by-5120 matrix and per-row input-column split. Its scope review incorrectly suggested splitting decoded rows.",
+      "reference_fact": "The specimen is innermost-first: decoded rows are 2560, input columns are 5120. Split the first and last 2560 input columns in each output row. The block boundary is compatible, but shape semantics need an explicit correction."
+    },
+    {
+      "issue": "Incomplete format, import and last-GPU budgeting checks",
+      "response_evidence": "Detects native mode from q4_k dense kinds and gives about 2.2 GB for MTP, without versioned geometry/tokenizer/bounds checks, staged imports, exact expert bytes, full head/KV/cache accounting or generate.cpp budget changes.",
+      "reference_fact": "Native experts alone use 1835008000 bytes (1750 MiB), up 1075 MiB from Q2 experts. The full draft head, KV/work buffers, main-model dense/cache and reserve are additional. MTP placement follows the last-stage order."
+    }
+  ],
+  "review_history": "The regenerated final incorporates the activation-format switch and removes the forbidden down-requantization fallback. It preserves the wrong 34-byte Q8_1 size from its review and does not resolve the address stride, scratch sizing or exact tensor mappings."
+}

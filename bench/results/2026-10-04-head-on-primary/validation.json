@@ -1,0 +1,32 @@
+{
+  "protected_before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+  },
+  "new_engine_sha256": "1c7a564245ba9ed3da407f6668077c9d4a70bfe4d3209bedd9c849662594d1a6",
+  "two_stage_regression_identical": true,
+  "return_vs_contiguous_choices_identical": [
+    true,
+    true,
+    true
+  ],
+  "return_vs_contiguous_text_identical": [
+    true,
+    true,
+    true
+  ],
+  "five_layer_full_cache": false,
+  "status": "complete",
+  "selected_n": 44,
+  "four_layer_full_cache": true,
+  "head_only_stage_confirmed": true,
+  "protected_after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3f8beb7f0f8c07bc681dffc2be142553f426c67bb000e106636faf5a706489d5",
+    "/home/hnvcam/Workplace/Strata/engine/strata": "c6dfda3202fe723de920fd2510e2c386db1e26ea34d3bb22a62f88dbe19cc7ac",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+    "/home/hnvcam/Workplace/Strata/data/expert-profile.bin": "8f59b4aa8873209dff11c11e37bcda9529a1335b724a1afeea37bf6388975baf"
+  },
+  "protected_files_unchanged": true
+}

@@ -1,0 +1,10 @@
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 4-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 2-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 1-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata verify: captured the 3-token window (upload no error, sync no error)
+strata serve: prompt 37276 tokens = 0 reused + 37276 read in 137355 ms (271.4 tok/s), 2452 generated in 52551 ms (46.7 tok/s), drafts accepted 1502 of 1753, 3 checkpoints
+strata serve: decode expert cache hit rate: 66.5% (826305 hits / 1242500 lookups)

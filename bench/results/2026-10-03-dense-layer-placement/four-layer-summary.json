@@ -1,0 +1,10 @@
+{
+  "two_layers_tok_s": 42.59986812879623,
+  "four_layers_tok_s": 46.74283539878943,
+  "percent_change": 9.725305387019922,
+  "4060_cached_experts": 2048,
+  "4060_expert_gib": 4.99267578125,
+  "5070_cached_experts": 2939,
+  "production_unchanged": true,
+  "gpu_after": "index, name, memory.used [MiB]\n0, NVIDIA GeForce RTX 5070 Ti, 2 MiB\n1, NVIDIA GeForce RTX 4060, 2 MiB\n"
+}

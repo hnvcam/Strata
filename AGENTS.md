@@ -21,3 +21,20 @@ offers the same steps as tools.
   `tools/test_setup_amd.py`, `tools/test_setup_choices.py`).
 - Keep the docs' style: plain words, measured numbers with what they were measured on, no claims without a
   measurement.
+
+## Saved local MTP comparison
+
+Before repeating the IQ4_XS Q2 versus Q4_K_M MTP comparison, read
+[the saved full-vocabulary results](bench/results/2026-10-03-iq4-xs-mtp/full-vocab/report.md).
+Measured 2026-10-03 on the i5-13500, RTX 5070 Ti + RTX 4060, 64 GB RAM: both MTP
+models ran on the 5070 Ti with all 248,320 draft tokens and identical settings.
+Show these results first when asked to redo the comparison; avoid repeating it merely
+to recover forgotten measurements. Raw measurements are saved beside the report.
+The experimental code, models and configs were removed and original Strata restored.
+Historical test paths in those records are not active configurations. Do not apply
+benchmark settings or start more experiments unless the user asks.
+
+The user subsequently chose full draft vocabulary for the restored Q2 setup.
+`strata-iq4_xs.json` labels it `full`; its configured MTP runtime contains all
+248,320 token IDs in `draft_vocab.bin`. Keep this custom list when restoring settings;
+do not replace it with the English subset. Original setup preserves custom lists.

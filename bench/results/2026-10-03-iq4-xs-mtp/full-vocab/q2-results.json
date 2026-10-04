@@ -1,0 +1,1527 @@
+{
+  "started_at": "2026-10-03T08:48:13.277876+00:00",
+  "config": {
+    "exe": "/home/hnvcam/Workplace/Strata/engine/strata-mtp",
+    "args": [
+      "--pack",
+      "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+      "--native",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+      "--ple-gguf",
+      "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+      "--expert-profile",
+      "/home/hnvcam/Workplace/Strata/data/expert-profile.bin",
+      "--expert-cache",
+      "auto",
+      "--prefill",
+      "512",
+      "--spec",
+      "4",
+      "--mtp",
+      "/home/hnvcam/Workplace/Strata/data/mtp-full-vocab-test/q2/rt",
+      "--max-context",
+      "131072",
+      "--kv",
+      "int8",
+      "--vram-reserve-mib",
+      "1248",
+      "--pcie-frac",
+      "0.20",
+      "--spec-min-p",
+      "0.70",
+      "--suffix-draft",
+      "0"
+    ],
+    "cwd": "/home/hnvcam/Workplace/Strata",
+    "tokenizer": "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs/tokenizer",
+    "model_name": "qwen3.8-flash-next-iq4_xs",
+    "log": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-03-iq4-xs-mtp/full-vocab/q2-engine.log",
+    "lib_dirs": [
+      "/usr/local/cuda/bin",
+      "/usr/local/cuda/lib64"
+    ],
+    "port": 1112,
+    "draft_vocab": "full",
+    "gpu": [
+      1,
+      0
+    ],
+    "gpus_asked": true,
+    "layer_split": 2,
+    "host": "127.0.0.1"
+  },
+  "engine": {
+    "model": "qwen3.8-flash-next-iq4_xs",
+    "max_context": 131072,
+    "images": false,
+    "version": "0.1.34",
+    "context": 131072,
+    "kv": "int8",
+    "kv_resident": 0,
+    "expert_slots": 3408,
+    "expert_cache_mib": 7804,
+    "expert_slots_primary": 718,
+    "expert_cache_primary_mib": 1595,
+    "spec": 4,
+    "mtp_max": 0,
+    "lookup": 0,
+    "vram_free_mib": 986,
+    "cvec": 0,
+    "arena_mib": 56762,
+    "pool_workers": 13,
+    "pcie_frac": "0.20",
+    "spec_min_p": "0.70",
+    "conversation_cache_mib": 0,
+    "conversation_cache_slots": 4,
+    "conversation_cache_min_free_mib": 2560,
+    "engine": "0.1.34"
+  },
+  "hardware": {
+    "gpu_name": "NVIDIA GeForce RTX 4060 + NVIDIA GeForce RTX 5070 Ti",
+    "gpu_count": 2,
+    "cpu_name": "13th Gen Intel(R) Core(TM) i5-13500",
+    "cores": 14,
+    "threads": 20,
+    "psutil": true
+  },
+  "draft_vocab_count": 248320,
+  "draft_vocab_sha256": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2",
+  "max_tokens": 256,
+  "repeats": 2,
+  "runs": [
+    {
+      "language": "english",
+      "condition": "current_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-5ea4cd883bbe41b4852c1d35",
+        "object": "chat.completion",
+        "created": 1791017293,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized fluid known as a refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, which is typically located on the back or bottom of the refrigerator. Here, the hot refrigerant releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat to the environment, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid.\n\nOnce the refrigerant has become a high-pressure liquid, it flows toward the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. As the liquid passes through this narrow restriction, its pressure drops dramatically, causing a corresponding and rapid decrease in temperature. This sudden drop in pressure causes the liquid to partially vaporize and cool down significantly, resulting in a cold, low-pressure mixture of liquid and vapor. This chilled state is essential because it prepares"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 42,
+          "prompt_ms": 897.7,
+          "prompt_per_token_ms": 21.374,
+          "prompt_per_second": 46.8,
+          "predicted_n": 256,
+          "predicted_ms": 5301.7,
+          "predicted_per_token_ms": 20.71,
+          "predicted_per_second": 48.3,
+          "draft_n": 194,
+          "draft_n_accepted": 132
+        }
+      },
+      "wall_s": 6.253,
+      "engine_log": "strata serve: prompt 42 tokens = 0 reused + 42 read in 898 ms (46.8 tok/s), 256 generated in 5302 ms (48.3 tok/s), drafts accepted 132 of 194, 1 checkpoints\nstrata serve: decode expert cache hit rate: 75.0% (111215 hits / 148295 lookups)\n",
+      "mtp_offered": 194,
+      "mtp_accepted": 132,
+      "mtp_acceptance": 0.6804123711340206,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "unfiltered_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-04eca1926cac4b239486fe9e",
+        "object": "chat.completion",
+        "created": 1791017299,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized fluid known as a refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, which is typically located on the back or bottom of the refrigerator. Here, the hot refrigerant releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat to the environment, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid.\n\nOnce the refrigerant has become a high-pressure liquid, it flows toward the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. As the liquid passes through this narrow restriction, its pressure drops dramatically, causing a corresponding and rapid decrease in temperature. This sudden drop in pressure causes the liquid to partially vaporize and cool down significantly, resulting in a cold, low-pressure mixture of liquid and vapor. This chilled refrigerant is now ready to"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "timings": {
+          "cache_n": 35,
+          "prompt_n": 7,
+          "prompt_ms": 169.7,
+          "prompt_per_token_ms": 24.243,
+          "prompt_per_second": 41.2,
+          "predicted_n": 256,
+          "predicted_ms": 5453.8,
+          "predicted_per_token_ms": 21.304,
+          "predicted_per_second": 46.9,
+          "draft_n": 315,
+          "draft_n_accepted": 151
+        }
+      },
+      "wall_s": 5.625,
+      "engine_log": "strata serve: prompt 42 tokens = 35 reused + 7 read in 170 ms (41.2 tok/s), 256 generated in 5454 ms (46.9 tok/s), drafts accepted 151 of 315, 1 checkpoints\nstrata serve: decode expert cache hit rate: 79.5% (156502 hits / 196820 lookups)\n",
+      "mtp_offered": 315,
+      "mtp_accepted": 151,
+      "mtp_acceptance": 0.4793650793650794,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "current_sampled",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-97fed7e435104879b2c2539f",
+        "object": "chat.completion",
+        "created": 1791017305,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, often referred to as the heart of the refrigerator, which acts as a pump that circulates a special chemical called a refrigerant through the system. The compressor draws in low-pressure, low-temperature refrigerant gas and mechanically compresses it, significantly increasing both its pressure and temperature. This high-pressure, high-temperature gas is then routed to the **condenser coils**, typically located on the back or underneath the appliance. As the hot gas flows through these coils, it comes into contact with the cooler ambient air of the room. Because the gas is hotter than the surrounding air, it releases its thermal energy into the environment. This heat exchange causes the refrigerant to lose energy and condense back into a high-pressure liquid, effectively transferring the heat from the inside of the fridge to the outside kitchen air.\n\nOnce the refrigerant has become a high-pressure liquid, it travels to the **expansion valve** (or capillary tube), which serves as a critical pressure-regulating device. This component creates a small restriction in the flow path, causing a sudden and dramatic drop in pressure. According to the laws of thermodynamics, when a liquid experiences such a rapid pressure drop, it undergoes a phase change known as \"flash ev"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "timings": {
+          "cache_n": 35,
+          "prompt_n": 7,
+          "prompt_ms": 167.8,
+          "prompt_per_token_ms": 23.971,
+          "prompt_per_second": 41.7,
+          "predicted_n": 256,
+          "predicted_ms": 5006.0,
+          "predicted_per_token_ms": 19.555,
+          "predicted_per_second": 51.1,
+          "draft_n": 209,
+          "draft_n_accepted": 140
+        }
+      },
+      "wall_s": 5.176,
+      "engine_log": "strata serve: prompt 42 tokens = 35 reused + 7 read in 168 ms (41.7 tok/s), 256 generated in 5006 ms (51.1 tok/s), drafts accepted 140 of 209, 1 checkpoints\nstrata serve: decode expert cache hit rate: 77.6% (118606 hits / 152872 lookups)\n",
+      "mtp_offered": 209,
+      "mtp_accepted": 140,
+      "mtp_acceptance": 0.6698564593301436,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-a32370dc0d21454b9d225b36",
+        "object": "chat.completion",
+        "created": 1791017310,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function takes two lists that are already sorted in ascending order\n    and merges them into one sorted list in ascending order. It uses a two-pointer\n    technique to efficiently combine the lists.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists, sorted in ascending order.\n    \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 2, 3], [])\n        [1, 2, 3]\n    \"\"\"\n    merged = []\n    i, j = 0, 0\n    \n   "
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 44,
+          "prompt_ms": 1113.6,
+          "prompt_per_token_ms": 25.309,
+          "prompt_per_second": 39.5,
+          "predicted_n": 256,
+          "predicted_ms": 6322.7,
+          "predicted_per_token_ms": 24.698,
+          "predicted_per_second": 40.5,
+          "draft_n": 200,
+          "draft_n_accepted": 179
+        }
+      },
+      "wall_s": 7.45,
+      "engine_log": "strata serve: prompt 44 tokens = 0 reused + 44 read in 1114 ms (39.5 tok/s), 256 generated in 6323 ms (40.5 tok/s), drafts accepted 179 of 200, 1 checkpoints\nstrata serve: decode expert cache hit rate: 46.0% (56818 hits / 123590 lookups)\n",
+      "mtp_offered": 200,
+      "mtp_accepted": 179,
+      "mtp_acceptance": 0.895,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "unfiltered_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-1a8e8c6fe6ce4b189d5c24d6",
+        "object": "chat.completion",
+        "created": 1791017317,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function takes two lists that are already sorted in ascending order\n    and merges them into one sorted list in ascending order. It uses a two-pointer\n    technique to efficiently combine the lists.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists, sorted in ascending order.\n    \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 2, 3], [])\n        [1, 2, 3]\n    \"\"\"\n    merged = []\n    i, j = 0, 0\n    \n   "
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 37
+          }
+        },
+        "timings": {
+          "cache_n": 37,
+          "prompt_n": 7,
+          "prompt_ms": 142.8,
+          "prompt_per_token_ms": 20.4,
+          "prompt_per_second": 49.0,
+          "predicted_n": 256,
+          "predicted_ms": 5679.8,
+          "predicted_per_token_ms": 22.187,
+          "predicted_per_second": 45.1,
+          "draft_n": 216,
+          "draft_n_accepted": 185
+        }
+      },
+      "wall_s": 5.826,
+      "engine_log": "strata serve: prompt 44 tokens = 37 reused + 7 read in 143 ms (49.0 tok/s), 256 generated in 5680 ms (45.1 tok/s), drafts accepted 185 of 216, 1 checkpoints\nstrata serve: decode expert cache hit rate: 61.6% (80862 hits / 131217 lookups)\n",
+      "mtp_offered": 216,
+      "mtp_accepted": 185,
+      "mtp_acceptance": 0.8564814814814815,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_sampled",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-6d03aa25dd4741268f692572",
+        "object": "chat.completion",
+        "created": 1791017323,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(\n    list1: list[int], list2: list[int]\n) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n\n    This function takes two lists that are already sorted in ascending order\n    and merges them into a new list that is also sorted in ascending order.\n    The algorithm uses a two-pointer technique to achieve linear time complexity.\n\n    Args:\n        list1: A sorted list of integers in ascending order.\n        list2: A sorted list of integers in ascending order.\n\n    Returns:\n        A new list containing all elements from both input lists, sorted in\n        ascending order.\n\n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 2, 3], [])\n        [1, 2, 3]\n    \"\"\"\n    merged: list[int"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 37
+          }
+        },
+        "timings": {
+          "cache_n": 37,
+          "prompt_n": 7,
+          "prompt_ms": 157.5,
+          "prompt_per_token_ms": 22.5,
+          "prompt_per_second": 44.4,
+          "predicted_n": 256,
+          "predicted_ms": 5781.8,
+          "predicted_per_token_ms": 22.585,
+          "predicted_per_second": 44.3,
+          "draft_n": 191,
+          "draft_n_accepted": 175
+        }
+      },
+      "wall_s": 5.942,
+      "engine_log": "strata serve: prompt 44 tokens = 37 reused + 7 read in 158 ms (44.4 tok/s), 256 generated in 5782 ms (44.3 tok/s), drafts accepted 175 of 191, 1 checkpoints\nstrata serve: decode expert cache hit rate: 60.8% (75664 hits / 124398 lookups)\n",
+      "mtp_offered": 191,
+      "mtp_accepted": 175,
+      "mtp_acceptance": 0.9162303664921466,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-903baef9b57149278ffbe4cb",
+        "object": "chat.completion",
+        "created": 1791017329,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học khép kín, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong tủ ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong khoang tủ. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí bên trong, khiến nó sôi và chuyển hóa thành hơi. Quá trình hấp thụ nhiệt này làm giảm nhiệt độ bên trong tủ, tạo ra hiệu ứng làm lạnh, trong khi môi chất lạnh mang theo nhiệt lượng vừa thu được di chuyển ra ngoài để tiếp tục chu trình.\n\nĐể đẩy nhiệt lượng này ra khỏi hệ thống, máy nén đóng vai trò như trái tim của hệ thống, hút hơi môi chất lạnh từ dàn bay hơi và nén nó với áp suất và nhiệt độ rất cao. Hơi môi chất nóng này sau đó đi vào dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại dàn ngưng tụ, hơi môi chất lạnh tỏa nhiệt ra môi trường xung quanh, làm nóng không khí bên ngoài và dần dần ngưng tụ lại thành dạng lỏng. Đây là bước"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 56,
+          "prompt_ms": 1684.7,
+          "prompt_per_token_ms": 30.084,
+          "prompt_per_second": 33.2,
+          "predicted_n": 256,
+          "predicted_ms": 6700.3,
+          "predicted_per_token_ms": 26.173,
+          "predicted_per_second": 38.2,
+          "draft_n": 155,
+          "draft_n_accepted": 105
+        }
+      },
+      "wall_s": 8.43,
+      "engine_log": "strata serve: prompt 56 tokens = 0 reused + 56 read in 1685 ms (33.2 tok/s), 256 generated in 6700 ms (38.2 tok/s), drafts accepted 105 of 155, 1 checkpoints\nstrata serve: decode expert cache hit rate: 70.1% (99886 hits / 142467 lookups)\n",
+      "mtp_offered": 155,
+      "mtp_accepted": 105,
+      "mtp_acceptance": 0.6774193548387096,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "unfiltered_greedy",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-2ba205ad0cf24b3187ea8cd8",
+        "object": "chat.completion",
+        "created": 1791017338,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học khép kín, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong tủ ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong khoang tủ. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí bên trong, khiến nó sôi và chuyển hóa thành hơi. Quá trình hấp thụ nhiệt này làm giảm nhiệt độ bên trong tủ, tạo ra hiệu ứng làm lạnh, trong khi môi chất lạnh mang theo nhiệt lượng vừa thu được di chuyển ra ngoài để tiếp tục chu trình.\n\nĐể đẩy nhiệt lượng này ra khỏi hệ thống, máy nén đóng vai trò như trái tim của hệ thống, hút hơi môi chất lạnh từ dàn bay hơi và nén nó với áp suất và nhiệt độ rất cao. Hơi môi chất nóng này sau đó đi vào dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại dàn ngưng tụ, hơi môi chất lạnh tỏa nhiệt ra môi trường xung quanh, làm nóng không khí bên ngoài và dần dần ngưng tụ lại thành dạng lỏng. Đây là bước"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 49
+          }
+        },
+        "timings": {
+          "cache_n": 49,
+          "prompt_n": 7,
+          "prompt_ms": 180.0,
+          "prompt_per_token_ms": 25.714,
+          "prompt_per_second": 38.9,
+          "predicted_n": 256,
+          "predicted_ms": 6658.6,
+          "predicted_per_token_ms": 26.01,
+          "predicted_per_second": 38.4,
+          "draft_n": 375,
+          "draft_n_accepted": 131
+        }
+      },
+      "wall_s": 6.841,
+      "engine_log": "strata serve: prompt 56 tokens = 49 reused + 7 read in 180 ms (38.9 tok/s), 256 generated in 6659 ms (38.4 tok/s), drafts accepted 131 of 375, 1 checkpoints\nstrata serve: decode expert cache hit rate: 80.1% (188233 hits / 234897 lookups)\n",
+      "mtp_offered": 375,
+      "mtp_accepted": 131,
+      "mtp_acceptance": 0.34933333333333333,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_sampled",
+      "repeat": 0,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1234,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-505ab67e06b64d7d85793bfd",
+        "object": "chat.completion",
+        "created": 1791017344,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh bắt đầu với nguyên lý cơ bản là di chuyển nhiệt từ nơi có nhiệt độ thấp (bên trong tủ) ra nơi có nhiệt độ cao (môi trường bên ngoài), thay vì tạo ra hơi lạnh một cách trực tiếp. Vai trò trung tâm trong giai đoạn này thuộc về máy nén, được ví như trái tim của hệ thống. Máy nén hút môi chất lạnh ở dạng khí có áp suất và nhiệt độ thấp từ dàn bay hơi, sau đó nén chặt và đẩy nó đi với áp suất và nhiệt độ tăng vọt. Khi khí lạnh này rời khỏi máy nén, nó trở thành một loại khí rất nóng và có năng lượng cao, sẵn sàng di chuyển đến bộ phận tiếp theo để thải nhiệt.\n\nSau khi bị nén, dòng khí nóng này đi vào dàn ngưng tụ, thường là các lưới ống kim loại nằm ở phía sau hoặc hai bên tủ lạnh. Tại đây, khí môi chất lạnh tiếp xúc với không khí mát hơn của phòng, truyền nhiệt ra ngoài và ngưng tụ lại thành dạng lỏng dưới áp suất cao. Để giảm nhiệt độ của chất lỏng này xuống mức thấp hơn nữa, nó sẽ đi qua van tiết lưu, một thiết bị nhỏ hoạt động như một nút thắt cổ chai."
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 49
+          }
+        },
+        "timings": {
+          "cache_n": 49,
+          "prompt_n": 7,
+          "prompt_ms": 181.8,
+          "prompt_per_token_ms": 25.971,
+          "prompt_per_second": 38.5,
+          "predicted_n": 256,
+          "predicted_ms": 5254.1,
+          "predicted_per_token_ms": 20.524,
+          "predicted_per_second": 48.7,
+          "draft_n": 152,
+          "draft_n_accepted": 111
+        }
+      },
+      "wall_s": 5.438,
+      "engine_log": "strata serve: prompt 56 tokens = 49 reused + 7 read in 182 ms (38.5 tok/s), 256 generated in 5254 ms (48.7 tok/s), drafts accepted 111 of 152, 1 checkpoints\nstrata serve: decode expert cache hit rate: 78.0% (109225 hits / 140081 lookups)\n",
+      "mtp_offered": 152,
+      "mtp_accepted": 111,
+      "mtp_acceptance": 0.7302631578947368,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "current_sampled",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-30eab992f8454651bde47e94",
+        "object": "chat.completion",
+        "created": 1791017350,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins inside the refrigerator compartment with the evaporator coils, which are filled with a specialized chemical known as a refrigerant. As the refrigerator operates, the refrigerant flows through these coils in a low-pressure, low-temperature liquid state. Because the refrigerant is colder than the air inside the fridge, it absorbs thermal energy from the food and the surrounding air, causing the refrigerant to evaporate and turn into a low-pressure gas. This phase change is crucial because it captures the heat energy from the interior, effectively cooling the space. Once the refrigerant has absorbed this heat and become a gas, it is drawn toward the compressor, which is typically located at the back or bottom of the unit, marking the transition from the cooling cycle to the heat rejection cycle.\n\nThe compressor acts as the heart of the system, driving the circulation of the refrigerant and increasing its pressure. When the low-pressure gas enters the compressor, it is mechanically compressed, which significantly raises both its pressure and its temperature, turning it into a hot, high-pressure gas. This high-energy gas then flows into the condenser coils, which are usually positioned on the back or underside of the refrigerator and exposed to the room’s air. As the hot gas passes through the condenser, it releases"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 42,
+          "prompt_ms": 1052.4,
+          "prompt_per_token_ms": 25.057,
+          "prompt_per_second": 39.9,
+          "predicted_n": 256,
+          "predicted_ms": 5264.9,
+          "predicted_per_token_ms": 20.566,
+          "predicted_per_second": 48.6,
+          "draft_n": 189,
+          "draft_n_accepted": 126
+        }
+      },
+      "wall_s": 6.32,
+      "engine_log": "strata serve: prompt 42 tokens = 0 reused + 42 read in 1052 ms (39.9 tok/s), 256 generated in 5265 ms (48.6 tok/s), drafts accepted 126 of 189, 1 checkpoints\nstrata serve: decode expert cache hit rate: 77.1% (115108 hits / 149239 lookups)\n",
+      "mtp_offered": 189,
+      "mtp_accepted": 126,
+      "mtp_acceptance": 0.6666666666666666,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "unfiltered_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-169ed22e61e84d32ad1e6eb9",
+        "object": "chat.completion",
+        "created": 1791017356,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized fluid known as a refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, which is typically located on the back or bottom of the refrigerator. Here, the hot refrigerant releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid.\n\nOnce the refrigerant has become a high-pressure liquid, it flows toward the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. As the liquid passes through this narrow restriction, its pressure drops dramatically, causing a corresponding and rapid decrease in temperature. This sudden drop in pressure causes the liquid to partially vaporize and cool down significantly, resulting in a cold, low-pressure mixture of liquid and vapor. This chilled state is essential because it prepares the refrigerant"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "timings": {
+          "cache_n": 35,
+          "prompt_n": 7,
+          "prompt_ms": 175.8,
+          "prompt_per_token_ms": 25.114,
+          "prompt_per_second": 39.8,
+          "predicted_n": 256,
+          "predicted_ms": 5780.9,
+          "predicted_per_token_ms": 22.582,
+          "predicted_per_second": 44.3,
+          "draft_n": 318,
+          "draft_n_accepted": 150
+        }
+      },
+      "wall_s": 5.959,
+      "engine_log": "strata serve: prompt 42 tokens = 35 reused + 7 read in 176 ms (39.8 tok/s), 256 generated in 5781 ms (44.3 tok/s), drafts accepted 150 of 318, 1 checkpoints\nstrata serve: decode expert cache hit rate: 79.7% (158404 hits / 198784 lookups)\n",
+      "mtp_offered": 318,
+      "mtp_accepted": 150,
+      "mtp_acceptance": 0.4716981132075472,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "current_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Explain in three detailed paragraphs how a refrigerator moves heat from inside to outside. Include the compressor, condenser, expansion valve, and evaporator."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-018d3dc458874faf84069ab1",
+        "object": "chat.completion",
+        "created": 1791017362,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "The process begins with the **compressor**, which acts as the heart of the refrigeration system by pumping a specialized fluid known as a refrigerant through a closed loop of coils. As the compressor squeezes the low-pressure, low-temperature refrigerant gas, it significantly increases both its pressure and temperature, turning it into a hot, high-pressure vapor. This superheated gas then travels to the **condenser**, which is typically located on the back or bottom of the refrigerator. Here, the hot refrigerant releases its thermal energy to the surrounding room air, often aided by a fan that blows air over the condenser coils. As the refrigerant loses heat to the environment, it undergoes a phase change, condensing from a high-pressure gas into a high-pressure liquid.\n\nOnce the refrigerant has become a high-pressure liquid, it flows through the **expansion valve** (or capillary tube), which serves as a critical pressure-reducing device. This component restricts the flow of the liquid, causing a sudden and dramatic drop in pressure. According to the principles of thermodynamics, when a liquid undergoes such a rapid pressure reduction, its boiling point drops significantly, causing it to partially vaporize and cool down drastically. The result is a cold,"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 42,
+          "completion_tokens": 256,
+          "total_tokens": 298,
+          "prompt_tokens_details": {
+            "cached_tokens": 35
+          }
+        },
+        "timings": {
+          "cache_n": 35,
+          "prompt_n": 7,
+          "prompt_ms": 181.2,
+          "prompt_per_token_ms": 25.886,
+          "prompt_per_second": 38.6,
+          "predicted_n": 256,
+          "predicted_ms": 5027.4,
+          "predicted_per_token_ms": 19.638,
+          "predicted_per_second": 50.9,
+          "draft_n": 191,
+          "draft_n_accepted": 135
+        }
+      },
+      "wall_s": 5.211,
+      "engine_log": "strata serve: prompt 42 tokens = 35 reused + 7 read in 181 ms (38.6 tok/s), 256 generated in 5027 ms (50.9 tok/s), drafts accepted 135 of 191, 1 checkpoints\nstrata serve: decode expert cache hit rate: 78.7% (115415 hits / 146712 lookups)\n",
+      "mtp_offered": 191,
+      "mtp_accepted": 135,
+      "mtp_acceptance": 0.7068062827225131,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_sampled",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-d7f75c50e2dd405aa0c22363",
+        "object": "chat.completion",
+        "created": 1791017367,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\nfrom typing import List\n\n\ndef merge_sorted_lists(list1: List[int], list2: List[int]) -> List[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function uses the two-pointer technique to efficiently merge two\n    already-sorted lists into one sorted list. It assumes both input lists\n    are sorted in non-decreasing order.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists in sorted order.\n    \n    Raises:\n        TypeError: If either input is not a list or contains non-integer elements.\n    \"\"\"\n    if not isinstance(list1, list) or not isinstance(list2, list):\n        raise TypeError(\"Both inputs must be lists.\")\n    \n    for item in list1:\n        if not isinstance(item, int):\n            raise TypeError(\"All elements in list1 must be integers.\")\n    for item in list2:\n        if not isinstance(item, int):\n            raise TypeError(\"All elements in list2 must be integers.\")\n    \n    merged:"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 44,
+          "prompt_ms": 1510.8,
+          "prompt_per_token_ms": 34.336,
+          "prompt_per_second": 29.1,
+          "predicted_n": 256,
+          "predicted_ms": 7613.1,
+          "predicted_per_token_ms": 29.739,
+          "predicted_per_second": 33.6,
+          "draft_n": 191,
+          "draft_n_accepted": 178
+        }
+      },
+      "wall_s": 9.135,
+      "engine_log": "strata serve: prompt 44 tokens = 0 reused + 44 read in 1511 ms (29.1 tok/s), 256 generated in 7613 ms (33.6 tok/s), drafts accepted 178 of 191, 1 checkpoints\nstrata serve: decode expert cache hit rate: 48.7% (58457 hits / 120108 lookups)\n",
+      "mtp_offered": 191,
+      "mtp_accepted": 178,
+      "mtp_acceptance": 0.9319371727748691,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "unfiltered_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-cc7446bca2474f17a9adee18",
+        "object": "chat.completion",
+        "created": 1791017377,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function takes two lists that are already sorted in ascending order\n    and merges them into one sorted list in ascending order. It uses a two-pointer\n    technique to efficiently combine the lists.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n        \n    Returns:\n        A new list containing all elements from both input lists, sorted in ascending order.\n        \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 1, 2], [1, 3])\n        [1, 1, 1, 2, 3]\n    \"\"\"\n    merged = []\n   "
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 37
+          }
+        },
+        "timings": {
+          "cache_n": 37,
+          "prompt_n": 7,
+          "prompt_ms": 405.1,
+          "prompt_per_token_ms": 57.871,
+          "prompt_per_second": 17.3,
+          "predicted_n": 256,
+          "predicted_ms": 6053.4,
+          "predicted_per_token_ms": 23.646,
+          "predicted_per_second": 42.3,
+          "draft_n": 219,
+          "draft_n_accepted": 184
+        }
+      },
+      "wall_s": 6.525,
+      "engine_log": "strata serve: prompt 44 tokens = 37 reused + 7 read in 405 ms (17.3 tok/s), 256 generated in 6053 ms (42.3 tok/s), drafts accepted 184 of 219, 1 checkpoints\nstrata serve: decode expert cache hit rate: 59.6% (79070 hits / 132739 lookups)\n",
+      "mtp_offered": 219,
+      "mtp_accepted": 184,
+      "mtp_acceptance": 0.8401826484018264,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Write a Python function that merges two sorted lists into one sorted list, with a docstring, type hints, and three unit tests. Explain its time complexity."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-3d07eea8b1dc425b9da97009",
+        "object": "chat.completion",
+        "created": 1791017383,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "```python\ndef merge_sorted_lists(list1: list[int], list2: list[int]) -> list[int]:\n    \"\"\"\n    Merge two sorted lists into a single sorted list.\n    \n    This function uses a two-pointer technique to efficiently merge two\n    already-sorted lists into one sorted list. It assumes both input lists\n    are sorted in non-decreasing order.\n    \n    Args:\n        list1: The first sorted list of integers.\n        list2: The second sorted list of integers.\n    \n    Returns:\n        A new list containing all elements from both input lists, sorted\n        in non-decreasing order.\n    \n    Examples:\n        >>> merge_sorted_lists([1, 3, 5], [2, 4, 6])\n        [1, 2, 3, 4, 5, 6]\n        >>> merge_sorted_lists([], [1, 2, 3])\n        [1, 2, 3]\n        >>> merge_sorted_lists([1, 1, 2], [1, 3])\n        [1, 1, 1, 2, 3]\n    \"\"\"\n    merged = []"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 44,
+          "completion_tokens": 256,
+          "total_tokens": 300,
+          "prompt_tokens_details": {
+            "cached_tokens": 37
+          }
+        },
+        "timings": {
+          "cache_n": 37,
+          "prompt_n": 7,
+          "prompt_ms": 147.4,
+          "prompt_per_token_ms": 21.057,
+          "prompt_per_second": 47.5,
+          "predicted_n": 256,
+          "predicted_ms": 5632.9,
+          "predicted_per_token_ms": 22.004,
+          "predicted_per_second": 45.4,
+          "draft_n": 196,
+          "draft_n_accepted": 177
+        }
+      },
+      "wall_s": 5.783,
+      "engine_log": "strata serve: prompt 44 tokens = 37 reused + 7 read in 147 ms (47.5 tok/s), 256 generated in 5633 ms (45.4 tok/s), drafts accepted 177 of 196, 1 checkpoints\nstrata serve: decode expert cache hit rate: 61.4% (76703 hits / 124880 lookups)\n",
+      "mtp_offered": 196,
+      "mtp_accepted": 177,
+      "mtp_acceptance": 0.9030612244897959,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_sampled",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.8,
+        "top_p": 0.95,
+        "top_k": 20,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-c3098c6025754c4ab970c53f",
+        "object": "chat.completion",
+        "created": 1791017389,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh trong tủ lạnh bắt đầu bằng việc loại bỏ nhiệt lượng từ bên trong khoang chứa, một quy trình được khởi động bởi máy nén. Máy nén đóng vai trò như trái tim của hệ thống, có nhiệm vụ hút môi chất lạnh ở dạng hơi áp suất thấp từ dàn bay hơi và nén nó lên đến áp suất và nhiệt độ rất cao. Khi bị nén, các phân tử khí chuyển động nhanh hơn và va chạm mạnh hơn, làm tăng đáng kể nhiệt độ của dòng môi chất. Luồng khí nóng và áp suất cao này sau đó được đẩy ra ngoài để chuẩn bị cho bước thải nhiệt tiếp theo, đánh dấu sự khởi đầu của chu trình trao đổi nhiệt khép kín.\n\nSau khi rời khỏi máy nén, môi chất lạnh ở trạng thái hơi siêu nhiệt và áp suất cao sẽ đi vào dàn ngưng tụ, thường được đặt ở mặt sau hoặc hai bên hông của tủ lạnh. Tại đây, dàn ngưng tụ hoạt động như một bộ tản nhiệt, giúp môi chất lạnh tỏa nhiệt ra môi trường xung quanh. Quá trình này khiến môi chất lạnh mất đi nhiệt lượng, dẫn đến hiện tượng ngưng tụ và chuyển hóa từ thể khí sang thể lỏng. Để duy trì hiệu suất, các quạt gió thường hỗ trợ tăng cường lưu"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 0
+          }
+        },
+        "timings": {
+          "cache_n": 0,
+          "prompt_n": 56,
+          "prompt_ms": 1687.5,
+          "prompt_per_token_ms": 30.134,
+          "prompt_per_second": 33.2,
+          "predicted_n": 256,
+          "predicted_ms": 6495.1,
+          "predicted_per_token_ms": 25.371,
+          "predicted_per_second": 39.4,
+          "draft_n": 145,
+          "draft_n_accepted": 104
+        }
+      },
+      "wall_s": 8.227,
+      "engine_log": "strata serve: prompt 56 tokens = 0 reused + 56 read in 1687 ms (33.2 tok/s), 256 generated in 6495 ms (39.4 tok/s), drafts accepted 104 of 145, 1 checkpoints\nstrata serve: decode expert cache hit rate: 67.3% (92778 hits / 137777 lookups)\n",
+      "mtp_offered": 145,
+      "mtp_accepted": 104,
+      "mtp_acceptance": 0.7172413793103448,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "unfiltered_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.0
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-13dcc3e809764bf9ab04e350",
+        "object": "chat.completion",
+        "created": 1791017397,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học khép kín, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong tủ ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong khoang tủ. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí bên trong, khiến nó sôi và chuyển hóa thành hơi. Quá trình hấp thụ nhiệt này làm giảm nhiệt độ bên trong tủ, tạo ra hiệu ứng làm lạnh, trong khi môi chất lạnh mang theo nhiệt lượng vừa thu được di chuyển ra ngoài để tiếp tục chu trình.\n\nĐể đẩy nhiệt lượng này ra khỏi hệ thống, máy nén đóng vai trò như trái tim của hệ thống, hút hơi môi chất lạnh từ dàn bay hơi và nén nó với áp suất và nhiệt độ rất cao. Hơi môi chất nóng này sau đó đi vào dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại dàn ngưng tụ, hơi môi chất lạnh tỏa nhiệt ra môi trường xung quanh, làm nóng không khí bên ngoài và dần dần ngưng tụ lại thành dạng lỏng. Đây là bước"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 49
+          }
+        },
+        "timings": {
+          "cache_n": 49,
+          "prompt_n": 7,
+          "prompt_ms": 163.2,
+          "prompt_per_token_ms": 23.314,
+          "prompt_per_second": 42.9,
+          "predicted_n": 256,
+          "predicted_ms": 6494.2,
+          "predicted_per_token_ms": 25.368,
+          "predicted_per_second": 39.4,
+          "draft_n": 363,
+          "draft_n_accepted": 135
+        }
+      },
+      "wall_s": 6.663,
+      "engine_log": "strata serve: prompt 56 tokens = 49 reused + 7 read in 163 ms (42.9 tok/s), 256 generated in 6494 ms (39.4 tok/s), drafts accepted 135 of 363, 1 checkpoints\nstrata serve: decode expert cache hit rate: 79.7% (181052 hits / 227244 lookups)\n",
+      "mtp_offered": 363,
+      "mtp_accepted": 135,
+      "mtp_acceptance": 0.371900826446281,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_greedy",
+      "repeat": 1,
+      "request": {
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Hãy giải thích bằng tiếng Việt trong ba đoạn văn chi tiết cách tủ lạnh chuyển nhiệt từ bên trong ra bên ngoài. Nêu vai trò của máy nén, dàn ngưng tụ, van tiết lưu và dàn bay hơi."
+          }
+        ],
+        "temperature": 0.0,
+        "top_p": 1.0,
+        "top_k": 0,
+        "seed": 1235,
+        "max_tokens": 256,
+        "reasoning_effort": "none",
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "strata_tune": {
+          "spec_min_p": 0.7
+        },
+        "stream": false
+      },
+      "response": {
+        "id": "chatcmpl-fc1fdb3158534152b4953052",
+        "object": "chat.completion",
+        "created": 1791017404,
+        "model": "qwen3.8-flash-next-iq4_xs",
+        "choices": [
+          {
+            "index": 0,
+            "message": {
+              "role": "assistant",
+              "content": "Quá trình làm lạnh của tủ lạnh thực chất là một chu trình nhiệt động lực học liên tục, trong đó môi chất lạnh (gas lạnh) đóng vai trò trung gian vận chuyển nhiệt năng từ không gian bên trong ra môi trường bên ngoài. Mọi thứ bắt đầu tại dàn bay hơi, nơi đặt bên trong tủ lạnh. Tại đây, môi chất lạnh ở dạng lỏng áp suất thấp hấp thụ nhiệt lượng từ thực phẩm và không khí bên trong, khiến nó sôi và chuyển hóa thành hơi. Quá trình hấp thụ nhiệt này làm giảm nhiệt độ bên trong tủ, tạo ra hiệu ứng làm lạnh, trong khi môi chất lạnh mang theo nhiệt lượng vừa thu được di chuyển ra ngoài để tiếp tục chu trình.\n\nĐể đẩy nhiệt lượng này ra khỏi hệ thống, máy nén đóng vai trò như \"trái tim\" của tủ lạnh, hút hơi môi chất lạnh từ dàn bay hơi và nén nó lại. Khi bị nén, áp suất và nhiệt độ của hơi gas tăng vọt, biến nó thành một dòng khí nóng có năng lượng cao. Dòng khí nóng này sau đó đi vào dàn ngưng tụ, thường là các lưới kim loại đen nằm ở mặt sau hoặc hai bên hông tủ. Tại đây, do nhiệt độ của gas nóng hơn nhiệt độ môi trường xung"
+            },
+            "finish_reason": "length"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 56,
+          "completion_tokens": 256,
+          "total_tokens": 312,
+          "prompt_tokens_details": {
+            "cached_tokens": 49
+          }
+        },
+        "timings": {
+          "cache_n": 49,
+          "prompt_n": 7,
+          "prompt_ms": 171.6,
+          "prompt_per_token_ms": 24.514,
+          "prompt_per_second": 40.8,
+          "predicted_n": 256,
+          "predicted_ms": 5433.1,
+          "predicted_per_token_ms": 21.223,
+          "predicted_per_second": 47.1,
+          "draft_n": 153,
+          "draft_n_accepted": 102
+        }
+      },
+      "wall_s": 5.607,
+      "engine_log": "strata serve: prompt 56 tokens = 49 reused + 7 read in 172 ms (40.8 tok/s), 256 generated in 5433 ms (47.1 tok/s), drafts accepted 102 of 153, 1 checkpoints\nstrata serve: decode expert cache hit rate: 79.7% (115373 hits / 144686 lookups)\n",
+      "mtp_offered": 153,
+      "mtp_accepted": 102,
+      "mtp_acceptance": 0.6666666666666666,
+      "suffix_offered": 0,
+      "suffix_accepted": 0,
+      "visible_tokens": 256,
+      "visible_tokens_in_draft_vocab": 256,
+      "visible_draft_vocab_coverage": 1.0
+    }
+  ],
+  "summary": [
+    {
+      "language": "english",
+      "condition": "current_greedy",
+      "mtp_offered": 385,
+      "mtp_accepted": 267,
+      "mtp_acceptance": 0.6935064935064935,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.521484375,
+      "decode_tok_s": 49.568694271524144,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "unfiltered_greedy",
+      "mtp_offered": 633,
+      "mtp_accepted": 301,
+      "mtp_acceptance": 0.4755134281200632,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.587890625,
+      "decode_tok_s": 45.573090514210435,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "english",
+      "condition": "current_sampled",
+      "mtp_offered": 398,
+      "mtp_accepted": 266,
+      "mtp_acceptance": 0.6683417085427136,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.51953125,
+      "decode_tok_s": 49.84957501290052,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_greedy",
+      "mtp_offered": 396,
+      "mtp_accepted": 356,
+      "mtp_acceptance": 0.898989898989899,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.6953125,
+      "decode_tok_s": 42.82511960922079,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "unfiltered_greedy",
+      "mtp_offered": 435,
+      "mtp_accepted": 369,
+      "mtp_acceptance": 0.8482758620689655,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.720703125,
+      "decode_tok_s": 43.636859509767156,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "code",
+      "condition": "current_sampled",
+      "mtp_offered": 382,
+      "mtp_accepted": 353,
+      "mtp_acceptance": 0.9240837696335078,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.689453125,
+      "decode_tok_s": 38.22350297501288,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_greedy",
+      "mtp_offered": 308,
+      "mtp_accepted": 207,
+      "mtp_acceptance": 0.672077922077922,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.404296875,
+      "decode_tok_s": 42.19757034302009,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "unfiltered_greedy",
+      "mtp_offered": 738,
+      "mtp_accepted": 266,
+      "mtp_acceptance": 0.3604336043360434,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.51953125,
+      "decode_tok_s": 38.9270725624962,
+      "visible_draft_vocab_coverage": 1.0
+    },
+    {
+      "language": "vietnamese",
+      "condition": "current_sampled",
+      "mtp_offered": 297,
+      "mtp_accepted": 215,
+      "mtp_acceptance": 0.7239057239057239,
+      "generated": 512,
+      "mtp_accepted_per_generated": 0.419921875,
+      "decode_tok_s": 43.577435059408295,
+      "visible_draft_vocab_coverage": 1.0
+    }
+  ],
+  "finished_at": "2026-10-03T08:50:09.973179+00:00"
+}

@@ -1,5 +1,5 @@
 #include "strata/core/conversation_snapshot.hpp"
-#include "strata/core/prompt_disk_snapshot.hpp"
+#include "strata/core/chunk_cache_disk_snapshot.hpp"
 #include "strata/core/on_device.hpp"
 #include <memory>
 #include <chrono>
@@ -203,7 +203,7 @@ void disk_roundtrip(int devices) {
     std::array<std::unique_ptr<Fixture>, 2> main;
     std::array<SessionState, 2> sessions;
     std::array<ConversationStateSizes, 2> sizes;
-    std::vector<DiskPromptTarget> targets;
+    std::vector<DiskChunkTarget> targets;
     std::vector<int32_t> ids(9);
     for (size_t j = 0; j < ids.size(); ++j) ids[j] = int32_t(j + 1);
     std::string error;
@@ -236,20 +236,20 @@ void disk_roundtrip(int devices) {
         const OnDevice on(second_device);
         draft = std::make_unique<Fixture>(kKvInt8, 2); draft->fill(77);
     }
-    DiskPromptState captured;
-    check(prompt_disk_snapshot_save(captured, targets, main[0]->g, draft->state, ids, {}, true, error),
+    DiskChunkState captured;
+    check(chunk_cache_disk_snapshot_save(captured, targets, main[0]->g, draft->state, ids, {}, true, error),
           "capture both split GPUs and draft");
     const auto root = std::filesystem::temp_directory_path() / ("strata-disk-gpu-" +
             std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-    const auto identity = prompt_disk_sha256("GPU fixture");
-    PromptDiskCache cache(root, identity, 100000000, 3, 96);
+    const auto identity = chunk_cache_disk_sha256("GPU fixture");
+    ChunkCacheDisk cache(root, identity, 100000000, 3, 96);
     std::vector<int64_t> tokens(ids.begin(), ids.end()); tokens.push_back(10);
-    const auto key = cache.keys(tokens, {}, true, {9})[0].hash;
+    const auto key = cache.keys(tokens, {}, true, 9, 9)[0].hash;
     check(cache.store(key, captured, error), "serialize split GPU snapshot");
     auto loaded = cache.load(key, error);
     check(bool(loaded), "read split GPU snapshot");
-    DiskPromptFile source;
-    check(prompt_disk_stream_source(source, targets, main[0]->g, draft->state, ids, {}, true, error),
+    DiskChunkFile source;
+    check(chunk_cache_disk_stream_source(source, targets, main[0]->g, draft->state, ids, {}, true, error),
           "describe streaming GPU source without full host snapshot");
     check(cache.store_stream(key, source, error), "write GPU source through fixed buffer");
     auto streamed = cache.load_stream(key, error);
@@ -264,7 +264,7 @@ void disk_roundtrip(int devices) {
     }
     auto invalid = *loaded;
     invalid.stages[1].kv[0].k.pop_back();
-    check(prompt_disk_snapshot_restore(invalid, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
+    check(chunk_cache_disk_snapshot_restore(invalid, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
           "bad second GPU rejected before writing first GPU");
     {
         const OnDevice on(0);
@@ -273,12 +273,12 @@ void disk_roundtrip(int devices) {
     }
     auto bad_stream = *streamed;
     --bad_stream.stages[1].kv[0].data[0].size;
-    check(prompt_disk_stream_restore(bad_stream, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
+    check(chunk_cache_disk_stream_restore(bad_stream, targets, main[0]->g, draft->state, error) == ConversationRestore::invalid,
           "bad streaming second GPU rejected before writing first GPU");
-    check(prompt_disk_stream_restore(*streamed, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
+    check(chunk_cache_disk_stream_restore(*streamed, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
           "restore split GPUs and MTP from streaming disk file");
-    DiskPromptState stream_again;
-    check(prompt_disk_snapshot_save(stream_again, targets, main[0]->g, draft->state, ids, {}, true, error),
+    DiskChunkState stream_again;
+    check(chunk_cache_disk_snapshot_save(stream_again, targets, main[0]->g, draft->state, ids, {}, true, error),
           "recapture streaming restore for byte comparison");
     for (size_t i = 0; i < 2; ++i)
         check(stream_again.stages[i].running.gdn == captured.stages[i].running.gdn &&
@@ -288,10 +288,10 @@ void disk_roundtrip(int devices) {
               stream_again.stages[i].running.block_pos == captured.stages[i].running.block_pos &&
               equal(stream_again.stages[i].kv[0], captured.stages[i].kv[0]), "streaming restores original state bytes");
     check(equal(stream_again.draft, captured.draft), "streaming restores original MTP bytes");
-    check(prompt_disk_snapshot_restore(*loaded, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
+    check(chunk_cache_disk_snapshot_restore(*loaded, targets, main[0]->g, draft->state, error) == ConversationRestore::restored,
           "restore both split GPUs and draft from disk");
-    DiskPromptState again;
-    check(prompt_disk_snapshot_save(again, targets, main[0]->g, draft->state, ids, {}, true, error), "recapture restored split GPUs");
+    DiskChunkState again;
+    check(chunk_cache_disk_snapshot_save(again, targets, main[0]->g, draft->state, ids, {}, true, error), "recapture restored split GPUs");
     for (size_t i = 0; i < 2; ++i) {
         check(again.stages[i].running.gdn == captured.stages[i].running.gdn &&
               again.stages[i].running.ple == captured.stages[i].running.ple &&

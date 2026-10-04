@@ -1,0 +1,42 @@
+[
+  {
+    "section": "reasoning/header",
+    "tokens": 46,
+    "chars": 228
+  },
+  {
+    "section": "tool schemas and calling format",
+    "tokens": 5581,
+    "chars": 23228
+  },
+  {
+    "section": "OpenCode default instructions",
+    "tokens": 1828,
+    "chars": 8529
+  },
+  {
+    "section": "model/environment",
+    "tokens": 117,
+    "chars": 379
+  },
+  {
+    "section": "global CLAUDE.md",
+    "tokens": 248,
+    "chars": 1031
+  },
+  {
+    "section": "Strata AGENTS.md",
+    "tokens": 711,
+    "chars": 2558
+  },
+  {
+    "section": "skill catalog",
+    "tokens": 5503,
+    "chars": 21082
+  },
+  {
+    "section": "user and generation header",
+    "tokens": 41,
+    "chars": 118
+  }
+]

@@ -615,17 +615,35 @@ sizes and K/V bytes reused during capture. `STRATA_SNAPSHOT_FULL_CAPTURE=1` disa
 retention for diagnostic comparisons. Snapshots are not
 persisted across restarts.
 
-**Persistent prompt prefixes (opt-in).** Set `"prompt_cache_disk": ".strata-prompt-cache"`,
-`"prompt_cache_disk_mib": 16384` and `"prompt_cache_disk_days": 3` in `strata-<model>.json`.
-The equivalent engine arguments are `--prompt-cache-disk PATH --prompt-cache-disk-mib 16384
---prompt-cache-disk-days 3`. The default is off; when a path is supplied, the default cap is 8192 MiB
-and the inactivity limit is three days. A cap of 0 or `--prompt-cache 0` disables persistence.
+**Persistent chunks (opt-in).** Set `"chunk_cache_disk": ".strata-chunk-cache"`,
+`"chunk_cache_disk_mib": 16384`, `"chunk_cache_disk_days": 3` and
+`"chunk_cache_disk_max_tokens": 8192` in `strata-<model>.json`.
+The older `prompt_cache_disk*` config keys and `--prompt-cache-disk*` arguments remain aliases.
+The equivalent engine arguments are `--chunk-cache-disk PATH --chunk-cache-disk-mib 16384
+--chunk-cache-disk-days 3 --chunk-cache-disk-max-tokens 8192`. The chunk size comes from the
+config's `--prefill` argument, after any adjustment to fit VRAM. For example, `--prefill 512` saves
+complete snapshots at 512, 1024, ..., 8192 tokens. `--prefill auto` uses the resolved session chunk
+size. Only full chunks before the final prompt token and within the prefix limit are eligible;
+short prompts and a limit below one chunk create no entries. Message boundaries no longer select
+disk checkpoints. The live and parked RAM conversation caches retain their existing behavior.
+The default is off; when a path is supplied, the default disk cap is 8192 MiB, prefix limit 8192 tokens
+and inactivity limit three days. A disk cap of 0, prefix limit of 0, `--prompt-cache 0`, or a token-only
+prompt path without positive `--prefill` disables persistence.
 
-This works for any API client. The engine hashes cumulative rendered token prefixes, including image
-identity and steering mode, at each chat-message boundary and just before the final prompt token.
-A message's state depends on everything before it, so a hash of that message alone is insufficient.
+This works for any API client. The first chunk's key includes the model/runtime identity, steering
+mode and chunk size. Each later key hashes the previous key plus the next chunk's token IDs and
+image identities. Changing a later field in a system message leaves earlier chunk keys reusable.
+The engine retains the last request's cached token/image prefix and chunk hashes in RAM. It compares
+token IDs and image identities before reusing complete chunk hashes; unchanged chunks are not hashed
+again. A changed chunk and its descendants are hashed again, and extending a short prefix hashes only
+new complete chunks. Steering or chunk-size changes require new hashes. This token comparison runs
+on the CPU and does not read the live model state back from VRAM.
+An in-memory index tracks saved keys, file sizes and last use times. Startup cleanup scans the
+cache directory once; saves and discards update the index and enforce the byte cap directly.
+Disk lookup is skipped when live or parked RAM already covers the deepest eligible disk chunk.
 The deepest matching disk entry is restored only when it beats the live or parked RAM prefix;
-only the remaining tokens pass through the model. Each entry contains all main-layer K/V, recurrent
+the selected file is read without requiring earlier chunk files. Only the remaining tokens pass
+through the model. Each entry contains all main-layer K/V, recurrent
 state, indexer state, PLE history and MTP K/V. Layer splits save each device's own layer range and
 validate every range before restoring any device. Files survive engine restarts. Exact repeat requests
 still process the final prompt token to begin generation.
@@ -636,20 +654,36 @@ incompatible entries are misses. The namespace includes the engine build, argume
 environment, and model artifact identity. Artifact identity uses canonical paths, sizes and modification
 times; files up to 1 MiB are also content hashed. Replacing large weights while preserving both size
 and modification time requires clearing this directory. Changes to KV format, RoPE, MTP vocabulary,
-steering files or GPU placement invalidate the previous namespace.
+steering files, chunk size or GPU placement invalidate previous keys. Changing just the prefix limit
+preserves keys for chunks still in range. The earlier message-boundary keys are not reused; their files
+remain subject to the same disk cap and expiry.
 
-Use refreshes the entry's inactivity deadline, including matching prefixes already reused in RAM.
-Expired entries and abandoned temporary writes are removed at engine startup and on requests.
-Least recently used files are also removed when the disk cap is exceeded. Each prefix is a complete snapshot, so shared K/V pages are
-duplicated between files. The cap covers completed entries; a write temporarily needs additional disk
+Use updates last use times in RAM, including matching prefixes already reused by the memory cache.
+After one second without a queued request, the engine flushes changed timestamps to disk; orderly
+shutdown also flushes them. Unexpected termination can lose unflushed timestamp updates and cause
+earlier expiry at the next startup, but does not change snapshot correctness. Expired entries and
+abandoned temporary writes are removed only at engine startup. Expiry is not enforced during a
+running session. Least recently used files are removed on saves when the disk cap is exceeded.
+Each prefix is a complete snapshot, so shared K/V pages are duplicated between files. The cap covers completed entries; a write temporarily needs additional disk
 space. Save and restore stream the payload through a fixed 64 KiB transfer buffer plus token/image
 metadata; they do not allocate another complete snapshot in RAM. The checksum and every stage's
 metadata are validated before any restore writes. An oversized entry, metadata allocation failure
 or disk write failure skips persistence. This can avoid repeated prefill after restarts or conversation
 switches, but adds snapshot transfers and SSD writes on misses.
-It does not make decoding faster. A short prefix can cost more to save/load than to prefill; no end-to-end
-speedup has been measured for this implementation. Linux/CUDA synthetic round-trip tests cover two
-GPU stages; Windows/HIP runtime coverage remains separate. A correctness smoke test on 2026-10-04
+It does not make decoding faster. A short prefix can cost more to save/load than to prefill.
+A 2026-10-04 correctness check on the i5-13500, RTX 4060 + RTX 5070 Ti, 64 GB RAM, IQ4_XS,
+INT8 KV, 131072-token context, layer split at 4 and all 248320 draft tokens used two captured
+OpenCode system prompts with different skill paths. With 512-token chunks and an 8192-token prefix
+limit, the cold 14052-token request took 83.0 s to process its prompt; the changed 14049-token request
+reused 8192 tokens and took 31.1 s. The original request also reused 8192 tokens after a conversation
+switch and after an engine restart. Its checked eight-token greedy output matched the cold run.
+The 16 complete snapshots occupied 2.76 GiB and their save calls totaled 10.1 s on the cold request.
+These are measurements of that request sequence, not a general speedup claim. Raw results and
+settings are in [the chunk-cache validation](../bench/results/2026-10-04-disk-chunk-cache/results.json).
+Cold requests and disk restores preserve the same system-message prefill boundary; the disk files
+themselves are selected only at chunk boundaries. Linux/CUDA synthetic round-trip tests cover two
+GPU stages; Windows/HIP runtime coverage remains separate. A correctness smoke test of the earlier
+message-boundary cache on 2026-10-04
 with the i5-13500, RTX 5070 Ti + RTX 4060, 64 GB RAM, IQ4_XS, INT8 KV, 131072-token context,
 layer split at 4 and all 248320 draft tokens reused 45 of a 46-token prompt after a conversation switch
 through OpenAI Chat Completions and after an engine restart through Anthropic Messages.

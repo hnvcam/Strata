@@ -798,12 +798,16 @@ def engine_args(cfg: dict) -> list[str]:
     # opt-in: an auto split runs on the first card alone when it holds every profiled expert and the KV
     if len(gpu_list(cfg)) > 1 and cfg.get("split_skip_if_fits") and "--split-skip-if-fits" not in args:
         args.append("--split-skip-if-fits")
-    if cfg.get("prompt_cache_disk") and "--prompt-cache-disk" not in args:
-        args += ["--prompt-cache-disk", str(cfg["prompt_cache_disk"])]
-    for key, flag in (("prompt_cache_disk_mib", "--prompt-cache-disk-mib"),
-                      ("prompt_cache_disk_days", "--prompt-cache-disk-days")):
-        if cfg.get(key) is not None and flag not in args:
-            args += [flag, str(cfg[key])]
+    # Keep old config/CLI names as aliases; write and document the chunk names.
+    for key, flag in (("chunk_cache_disk", "--chunk-cache-disk"),
+                      ("chunk_cache_disk_mib", "--chunk-cache-disk-mib"),
+                      ("chunk_cache_disk_days", "--chunk-cache-disk-days"),
+                      ("chunk_cache_disk_max_tokens", "--chunk-cache-disk-max-tokens")):
+        legacy_key = key.replace("chunk_cache_disk", "prompt_cache_disk")
+        legacy_flag = flag.replace("chunk-cache-disk", "prompt-cache-disk")
+        value = cfg[key] if key in cfg else cfg.get(legacy_key)
+        if value is not None and (key != "chunk_cache_disk" or value) and flag not in args and legacy_flag not in args:
+            args += [flag, str(value)]
     return learned_profile_args(cfg, args)
 
 

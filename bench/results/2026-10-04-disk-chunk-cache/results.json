@@ -1,0 +1,136 @@
+{
+  "records": [
+    {
+      "label": "initial",
+      "elapsed_s": 84.051,
+      "usage": {
+        "prompt_tokens": 14052,
+        "completion_tokens": 8,
+        "total_tokens": 14060,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "prompt_tokens": 14052,
+      "reused": 0,
+      "read": 14052,
+      "prompt_ms": 82970,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "reasoning_content": "The user is asking me to check what"
+      },
+      "disk_restored": false
+    },
+    {
+      "label": "changed-skill-paths",
+      "elapsed_s": 31.911,
+      "usage": {
+        "prompt_tokens": 14049,
+        "completion_tokens": 8,
+        "total_tokens": 14057,
+        "prompt_tokens_details": {
+          "cached_tokens": 8192
+        }
+      },
+      "prompt_tokens": 14049,
+      "reused": 8192,
+      "read": 5857,
+      "prompt_ms": 31113,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "reasoning_content": "The user is asking me to check what"
+      },
+      "disk_restored": true
+    },
+    {
+      "label": "same-request-after-conversation-switch",
+      "elapsed_s": 31.273,
+      "usage": {
+        "prompt_tokens": 14052,
+        "completion_tokens": 8,
+        "total_tokens": 14060,
+        "prompt_tokens_details": {
+          "cached_tokens": 8192
+        }
+      },
+      "prompt_tokens": 14052,
+      "reused": 8192,
+      "read": 5860,
+      "prompt_ms": 31043,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "reasoning_content": "The user is asking me to check what"
+      },
+      "disk_restored": true
+    },
+    {
+      "label": "after-engine-restart",
+      "elapsed_s": 33.345,
+      "usage": {
+        "prompt_tokens": 14052,
+        "completion_tokens": 8,
+        "total_tokens": 14060,
+        "prompt_tokens_details": {
+          "cached_tokens": 8192
+        }
+      },
+      "prompt_tokens": 14052,
+      "reused": 8192,
+      "read": 5860,
+      "prompt_ms": 32439,
+      "message": {
+        "role": "assistant",
+        "content": null,
+        "reasoning_content": "The user is asking me to check what"
+      },
+      "disk_restored": true
+    }
+  ],
+  "saved_prefixes": [
+    512,
+    1024,
+    1536,
+    2048,
+    2560,
+    3072,
+    3584,
+    4096,
+    4608,
+    5120,
+    5632,
+    6144,
+    6656,
+    7168,
+    7680,
+    8192
+  ],
+  "new_snapshot_bytes": 2958452864,
+  "first_vs_restart_output_equal": true,
+  "hardware": {
+    "cpu": "Intel Core i5-13500",
+    "gpus": [
+      "NVIDIA GeForce RTX 4060",
+      "NVIDIA GeForce RTX 5070 Ti"
+    ],
+    "ram_gib": 64
+  },
+  "settings": {
+    "model": "IQ4_XS",
+    "kv": "int8",
+    "context": 131072,
+    "layer_split": 4,
+    "chunk_tokens": 512,
+    "max_prefix_tokens": 8192,
+    "draft_vocab_tokens": 248320,
+    "temperature": 0,
+    "seed": 1234,
+    "max_generated_tokens": 8,
+    "api": "OpenAI Chat Completions"
+  },
+  "engine_sha256": "3c40e26cd9caa1ea484c0ee78b333924990931b46da2151c7d6e34676c9861a9",
+  "save_call_ms": 10122.0,
+  "scope": "Captured OpenCode TUI tool catalog and two system prompts differing only in duplicate skill paths; tool calls were not executed."
+}

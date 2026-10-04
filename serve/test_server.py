@@ -805,19 +805,43 @@ class DraftCounts(unittest.TestCase):
         self.assertEqual((m["totals"]["drafts_offered"], m["totals"]["drafts_accepted"]), (17, 10))
 
 
-class DiskPromptConfig(unittest.TestCase):
+class DiskChunkConfig(unittest.TestCase):
     def test_defaults_leave_engine_arguments_unchanged(self):
         self.assertEqual(engine_args({"args": ["--kv", "int8"]}), ["--kv", "int8"])
 
     def test_disk_settings_and_layer_split_reach_engine(self):
         cfg = {"args": ["--kv", "int8"], "gpu": [1, 0], "layer_split": 4,
-               "prompt_cache_disk": "/cache", "prompt_cache_disk_mib": 16384, "prompt_cache_disk_days": 3}
-        self.assertEqual(engine_args(cfg), ["--kv", "int8", "--layer-split", "4", "--prompt-cache-disk", "/cache",
-                                            "--prompt-cache-disk-mib", "16384", "--prompt-cache-disk-days", "3"])
+               "chunk_cache_disk": "/cache", "chunk_cache_disk_mib": 16384, "chunk_cache_disk_days": 3,
+               "chunk_cache_disk_max_tokens": 8192}
+        self.assertEqual(engine_args(cfg), ["--kv", "int8", "--layer-split", "4", "--chunk-cache-disk", "/cache",
+                                            "--chunk-cache-disk-mib", "16384", "--chunk-cache-disk-days", "3",
+                                            "--chunk-cache-disk-max-tokens", "8192"])
 
     def test_explicit_engine_flags_take_precedence(self):
-        args = ["--prompt-cache-disk", "/explicit", "--prompt-cache-disk-mib", "0", "--prompt-cache-disk-days", "7"]
-        cfg = {"args": args, "prompt_cache_disk": "/cache", "prompt_cache_disk_mib": 16384, "prompt_cache_disk_days": 3}
+        args = ["--prefill", "256", "--chunk-cache-disk", "/explicit", "--chunk-cache-disk-mib", "0",
+                "--chunk-cache-disk-days", "7", "--chunk-cache-disk-max-tokens", "4096"]
+        cfg = {"args": args, "chunk_cache_disk": "/cache", "chunk_cache_disk_mib": 16384,
+               "chunk_cache_disk_days": 3, "chunk_cache_disk_max_tokens": 8192}
+        self.assertEqual(engine_args(cfg), args)
+
+    def test_chunk_size_stays_in_configured_prefill_arguments(self):
+        cfg = {"args": ["--prefill", "256"], "chunk_cache_disk_max_tokens": 4096}
+        self.assertEqual(engine_args(cfg), ["--prefill", "256", "--chunk-cache-disk-max-tokens", "4096"])
+
+    def test_legacy_settings_use_new_flags(self):
+        cfg = {"args": [], "prompt_cache_disk": "/old", "prompt_cache_disk_mib": 42,
+               "prompt_cache_disk_days": 7, "prompt_cache_disk_max_tokens": 12288}
+        self.assertEqual(engine_args(cfg), ["--chunk-cache-disk", "/old", "--chunk-cache-disk-mib", "42",
+                                            "--chunk-cache-disk-days", "7", "--chunk-cache-disk-max-tokens", "12288"])
+
+    def test_new_settings_override_legacy_and_preserve_zero(self):
+        cfg = {"args": [], "prompt_cache_disk": "/old", "chunk_cache_disk": "/new",
+               "prompt_cache_disk_mib": 42, "chunk_cache_disk_mib": 0}
+        self.assertEqual(engine_args(cfg), ["--chunk-cache-disk", "/new", "--chunk-cache-disk-mib", "0"])
+
+    def test_legacy_explicit_flags_take_precedence(self):
+        args = ["--prompt-cache-disk", "/explicit", "--prompt-cache-disk-mib", "0"]
+        cfg = {"args": args, "chunk_cache_disk": "/new", "chunk_cache_disk_mib": 42}
         self.assertEqual(engine_args(cfg), args)
 
 

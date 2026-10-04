@@ -1,11 +1,11 @@
-#include "strata/core/prompt_disk_snapshot.hpp"
+#include "strata/core/chunk_cache_disk_snapshot.hpp"
 #include "strata/core/on_device.hpp"
 #include "conversation_checked.hpp"
 
 namespace strata::core {
 namespace {
 bool fail(std::string& error, const char* message) { error = message; return false; }
-bool targets_valid(const std::vector<DiskPromptTarget>& targets, const ModelGeometry& g, std::string& error) {
+bool targets_valid(const std::vector<DiskChunkTarget>& targets, const ModelGeometry& g, std::string& error) {
     int64_t at = 0;
     if (targets.empty() || targets.size() > 16) return fail(error, "invalid disk snapshot stage count");
     for (const auto& t : targets) {
@@ -21,7 +21,7 @@ bool sync(std::string& error) {
 }
 }
 namespace {
-DiskPromptBlob source_blob(int device, const void* src, size_t bytes, std::string& error) {
+DiskChunkBlob source_blob(int device, const void* src, size_t bytes, std::string& error) {
     return {0, bytes, [device, src, &error](void* dst, size_t n, size_t at) {
         const OnDevice on(device);
         const auto e = cudaMemcpy(dst, static_cast<const uint8_t*>(src)+at, n, cudaMemcpyDefault);
@@ -32,7 +32,7 @@ std::array<void*,5> running_pointers(const SessionState& s, size_t j) {
     const auto* q = s.qsa_alloc ? &s.qsa_states[s.qsa_ord0+j] : nullptr;
     return {s.gdn_state, s.ple_hist, q ? q->idx_tail : nullptr, q ? q->idx_dead : nullptr, q ? q->idx_block_pos : nullptr};
 }
-bool kv_metadata(const DiskPromptKv& k, const ConversationKvLayout& l) {
+bool kv_metadata(const DiskChunkKv& k, const ConversationKvLayout& l) {
     if(k.format!=l.format || k.cells!=l.cells || k.heads!=l.heads || k.head_dim!=l.head_dim ||
        k.page_size!=l.page_size || k.pooled_rows!=l.pooled_rows || k.idx_dim!=l.idx_dim)return false;
     for(size_t i=0;i<5;++i)if(k.data[i].size!=l.sizes[i])return false;
@@ -47,14 +47,14 @@ bool image_metadata(const std::vector<ConversationImageKey>& images, size_t toke
     return true;
 }
 }
-bool prompt_disk_stream_source(DiskPromptFile& image, const std::vector<DiskPromptTarget>& targets,
+bool chunk_cache_disk_stream_source(DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
                                const ModelGeometry& g, const QsaState& draft,
                                const std::vector<int32_t>& ids, const std::vector<ConversationImageKey>& images,
                                bool cvec, std::string& error) {
     size_t estimate=0;
-    if(!prompt_disk_snapshot_bytes(targets,g,draft,int64_t(ids.size()),images.size(),estimate,error))return false;
-    DiskPromptFile result;result.cvec=cvec;result.stages.resize(targets.size());
-    auto describe=[&](DiskPromptKv& out,const QsaState& st,bool index,int device) {
+    if(!chunk_cache_disk_snapshot_bytes(targets,g,draft,int64_t(ids.size()),images.size(),estimate,error))return false;
+    DiskChunkFile result;result.cvec=cvec;result.stages.resize(targets.size());
+    auto describe=[&](DiskChunkKv& out,const QsaState& st,bool index,int device) {
         ConversationKvLayout l;
         if(!conversation_kv_layout(st,g,int64_t(ids.size()),index,l,error))return false;
         out.format=l.format;out.cells=l.cells;out.heads=l.heads;out.head_dim=l.head_dim;
@@ -95,7 +95,7 @@ bool prompt_disk_stream_source(DiskPromptFile& image, const std::vector<DiskProm
     if(!describe(result.draft,draft,false,targets.back().device))return false;
     image=std::move(result);return true;
 }
-bool prompt_disk_stream_validate(const DiskPromptFile& image, const std::vector<DiskPromptTarget>& targets,
+bool chunk_cache_disk_stream_validate(const DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
                                  const ModelGeometry& g, const QsaState& draft, std::string& error) {
     if(!targets_valid(targets,g,error) || image.stages.size()!=targets.size())return false;
     const auto& first=image.stages.front();
@@ -121,12 +121,12 @@ bool prompt_disk_stream_validate(const DiskPromptFile& image, const std::vector<
     ConversationKvLayout l;
     return conversation_kv_layout(draft,g,L,false,l,error) && kv_metadata(image.draft,l);
 }
-ConversationRestore prompt_disk_stream_restore(const DiskPromptFile& image,
-                                               const std::vector<DiskPromptTarget>& targets,
+ConversationRestore chunk_cache_disk_stream_restore(const DiskChunkFile& image,
+                                               const std::vector<DiskChunkTarget>& targets,
                                                const ModelGeometry& g, const QsaState& draft, std::string& error) {
-    if(!image.file || !prompt_disk_stream_validate(image,targets,g,draft,error))return ConversationRestore::invalid;
+    if(!image.file || !chunk_cache_disk_stream_validate(image,targets,g,draft,error))return ConversationRestore::invalid;
     std::array<uint8_t,65536> scratch;
-    auto transfer=[&](const DiskPromptBlob& blob,void* dst,size_t off,size_t bytes) {
+    auto transfer=[&](const DiskChunkBlob& blob,void* dst,size_t off,size_t bytes) {
         for(size_t at=0;at<bytes;) {
             const size_t n=std::min(scratch.size(),bytes-at);
             if(!image.read(blob,scratch.data(),off+at,n))return fail(error,"streaming snapshot read failed");
@@ -137,7 +137,7 @@ ConversationRestore prompt_disk_stream_restore(const DiskPromptFile& image,
         return true;
     };
     const auto L=int64_t(image.stages[0].ids.size());
-    auto kv_restore=[&](const DiskPromptKv& k,const QsaState& st,bool index) {
+    auto kv_restore=[&](const DiskChunkKv& k,const QsaState& st,bool index) {
         ConversationKvLayout l;
         if(!conversation_kv_layout(st,g,L,index,l,error))return false;
         for(size_t j=0;j<5;++j)if(!transfer(k.data[j],l.pools[j],0,l.sizes[j]))return false;
@@ -171,7 +171,7 @@ ConversationRestore prompt_disk_stream_restore(const DiskPromptFile& image,
     if(!kv_restore(image.draft,draft,false) || !sync(error))return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
 }
-bool prompt_disk_snapshot_bytes(const std::vector<DiskPromptTarget>& targets, const ModelGeometry& g,
+bool chunk_cache_disk_snapshot_bytes(const std::vector<DiskChunkTarget>& targets, const ModelGeometry& g,
                                 const QsaState& draft, int64_t tokens, size_t images,
                                 size_t& bytes, std::string& error) {
     bytes = 0;
@@ -185,7 +185,7 @@ bool prompt_disk_snapshot_bytes(const std::vector<DiskPromptTarget>& targets, co
             !conversation_detail::product(imgs, {images, sizeof(ConversationImageKey)}) ||
             !conversation_detail::product(qsa, {uint64_t(s.qsa_alloc), z.tail + z.dead + z.block_pos + sizeof(ConversationKv)}))
             return fail(error, "disk snapshot size overflow");
-        for (const auto n : {ids, imgs, qsa, z.gdn, s.ple_hist ? z.ple : 0, sizeof(DiskPromptStage)})
+        for (const auto n : {ids, imgs, qsa, z.gdn, s.ple_hist ? z.ple : 0, sizeof(DiskChunkStage)})
             if (!conversation_detail::add(bytes, n)) return fail(error, "disk snapshot size overflow");
         for (int64_t j = 0; j < s.qsa_alloc; ++j) {
             const auto n = conversation_kv_bytes(s.qsa_states[s.qsa_ord0+j], g, tokens, true);
@@ -195,13 +195,13 @@ bool prompt_disk_snapshot_bytes(const std::vector<DiskPromptTarget>& targets, co
     const auto n = conversation_kv_bytes(draft, g, tokens, false);
     return (n && conversation_detail::add(bytes, n)) || fail(error, "invalid disk snapshot draft extent");
 }
-bool prompt_disk_snapshot_save(DiskPromptState& image, const std::vector<DiskPromptTarget>& targets,
+bool chunk_cache_disk_snapshot_save(DiskChunkState& image, const std::vector<DiskChunkTarget>& targets,
                                const ModelGeometry& g, const QsaState& draft,
                                const std::vector<int32_t>& ids, const std::vector<ConversationImageKey>& images,
                                bool cvec, std::string& error) {
     size_t bytes = 0;
-    if (!prompt_disk_snapshot_bytes(targets, g, draft, int64_t(ids.size()), images.size(), bytes, error)) return false;
-    DiskPromptState result;
+    if (!chunk_cache_disk_snapshot_bytes(targets, g, draft, int64_t(ids.size()), images.size(), bytes, error)) return false;
+    DiskChunkState result;
     result.cvec = cvec; result.stages.resize(targets.size());
     for (size_t i = 0; i < targets.size(); ++i) {
         const OnDevice on(targets[i].device);
@@ -221,7 +221,7 @@ bool prompt_disk_snapshot_save(DiskPromptState& image, const std::vector<DiskPro
     image = std::move(result);
     return true;
 }
-bool prompt_disk_snapshot_validate(const DiskPromptState& image, const std::vector<DiskPromptTarget>& targets,
+bool chunk_cache_disk_snapshot_validate(const DiskChunkState& image, const std::vector<DiskChunkTarget>& targets,
                                    const ModelGeometry& g, const QsaState& draft, std::string& error) {
     if (!targets_valid(targets, g, error) || image.stages.size() != targets.size()) return false;
     const auto& first = image.stages.front().running;
@@ -238,11 +238,11 @@ bool prompt_disk_snapshot_validate(const DiskPromptState& image, const std::vect
     }
     return conversation_kv_validate(image.draft, draft, g, int64_t(first.ids.size()), false, error);
 }
-ConversationRestore prompt_disk_snapshot_restore(const DiskPromptState& image,
-                                                 const std::vector<DiskPromptTarget>& targets,
+ConversationRestore chunk_cache_disk_snapshot_restore(const DiskChunkState& image,
+                                                 const std::vector<DiskChunkTarget>& targets,
                                                  const ModelGeometry& g, const QsaState& draft, std::string& error) {
     // Validate every device before applying anything to the first one.
-    if (!prompt_disk_snapshot_validate(image, targets, g, draft, error)) return ConversationRestore::invalid;
+    if (!chunk_cache_disk_snapshot_validate(image, targets, g, draft, error)) return ConversationRestore::invalid;
     const auto tokens = int64_t(image.stages[0].running.ids.size());
     for (size_t i = 0; i < targets.size(); ++i) {
         const OnDevice on(targets[i].device);

@@ -1,4 +1,4 @@
-#include "strata/core/prompt_disk_cache.hpp"
+#include "strata/core/chunk_cache_disk.hpp"
 
 #include <array>
 #include <chrono>
@@ -157,14 +157,14 @@ void read_kv(Reader& r,ConversationKv& k) {
 constexpr char magic[8]={'S','T','R','P','K','V','0','1'};
 }
 
-size_t DiskPromptState::bytes() const {
-    size_t n=stages.capacity()*sizeof(DiskPromptStage)+draft.bytes();
+size_t DiskChunkState::bytes() const {
+    size_t n=stages.capacity()*sizeof(DiskChunkStage)+draft.bytes();
     for(const auto& s:stages){n+=s.running.bytes()+s.kv.capacity()*sizeof(ConversationKv);for(const auto& k:s.kv)n+=k.bytes();}
     return n;
 }
-std::string prompt_disk_sha256(const std::string& value) { Sha256 h;h.update(value.data(),value.size());return h.finish(); }
+std::string chunk_cache_disk_sha256(const std::string& value) { Sha256 h;h.update(value.data(),value.size());return h.finish(); }
 
-PromptDiskCache::PromptDiskCache(std::filesystem::path root,std::string identity,uint64_t budget,int days,int64_t max_tokens)
+ChunkCacheDisk::ChunkCacheDisk(std::filesystem::path root,std::string identity,uint64_t budget,int days,int64_t max_tokens)
     :identity_(std::move(identity)),budget_(budget),days_(days),max_tokens_(max_tokens) {
     if(root.empty()||!valid_key(identity_)||!budget||days<=0||max_tokens<=0)return;
     std::error_code ec;
@@ -173,49 +173,123 @@ PromptDiskCache::PromptDiskCache(std::filesystem::path root,std::string identity
     if(ec){root_.clear();return;}
     // Prompt tokens and model state are private to this machine/user.
     std::filesystem::permissions(root_,std::filesystem::perms::owner_all,std::filesystem::perm_options::replace,ec);
-    prune();
+    startup_cleanup();
 }
-std::filesystem::path PromptDiskCache::path(const std::string& key) const {
+std::filesystem::path ChunkCacheDisk::path(const std::string& key) const {
     return enabled()&&valid_key(key) ? root_/(key+".spc") : std::filesystem::path{};
 }
-std::vector<DiskPromptKey> PromptDiskCache::keys(const std::vector<int64_t>& ids,
-        const std::vector<ConversationImageKey>& images,bool cvec,const std::vector<int64_t>& boundaries) const {
-    std::vector<DiskPromptKey> out;
-    if(!enabled())return out;
-    Sha256 h;h.text(identity_);h.number(cvec);size_t pos=0,image=0;
-    for(auto end:boundaries) {
-        if(end<=int64_t(pos)||end>=int64_t(ids.size()))continue;
+const std::vector<DiskChunkKey>& ChunkCacheDisk::keys(const std::vector<int64_t>& ids,
+        const std::vector<ConversationImageKey>& images,bool cvec,int64_t chunk_tokens,int64_t prefix_tokens) {
+    hashed_chunks_=0;
+    if(!enabled()||chunk_tokens<=0||prefix_tokens<=0||ids.empty()) {
+        keys_.clear();key_ids_.clear();key_images_.clear();return keys_;
+    }
+    // The final prompt token always starts generation; persist full chunks only.
+    const auto limit=std::min({prefix_tokens,max_tokens_,int64_t(ids.size()-1)});
+    const auto covered=limit/chunk_tokens*chunk_tokens;
+    int64_t common=0;
+    if(cvec==key_cvec_ && chunk_tokens==key_chunk_tokens_) {
+        const auto compare=std::min(covered,int64_t(key_ids_.size()));
+        while(common<compare && ids[size_t(common)]==key_ids_[size_t(common)])++common;
+        // Images affect the chunk containing their first token and all descendants.
+        size_t old=0,fresh=0;
+        while(old<key_images_.size() || fresh<images.size()) {
+            const auto before=old<key_images_.size() ? key_images_[old].start : INT64_MAX;
+            const auto after=fresh<images.size() ? images[fresh].start : INT64_MAX;
+            const auto at=std::min(before,after);
+            if(at>=common)break;
+            if(before!=after || key_images_[old].hash!=images[fresh].hash) {common=at;break;}
+            ++old;++fresh;
+        }
+    }
+    const auto reused=size_t(common/chunk_tokens);
+    keys_.resize(reused);
+    size_t pos=reused*size_t(chunk_tokens),image=0;
+    while(image<images.size() && images[image].start<int64_t(pos))++image;
+    std::string parent;
+    if(int64_t(pos)<covered) {
+        if(reused)parent=keys_.back().hash;
+        else {
+            Sha256 seed;seed.text("strata-chunk-v1");seed.text(identity_);seed.number(cvec);seed.number(chunk_tokens);
+            parent=seed.finish();
+        }
+    }
+    for(int64_t end=int64_t(pos)+chunk_tokens;end<=covered;end+=chunk_tokens) {
+        Sha256 h;h.text(parent);h.number(chunk_tokens);
         for(;pos<size_t(end);++pos) {
             h.number(uint64_t(ids[pos]));
-            if(image<images.size()&&images[image].start==int64_t(pos)) {
+            if(image<images.size() && images[image].start==int64_t(pos)) {
                 h.number(1);h.number(images[image++].hash);
-            } else h.number(0);
+            }else h.number(0);
         }
-        out.push_back({end,h.finish()});
+        parent=h.finish();keys_.push_back({end,parent});++hashed_chunks_;
     }
-    return out;
+    // Preserve the token allocation on the usual unchanged-prefix path.
+    if(common!=covered || int64_t(key_ids_.size())!=covered)
+        key_ids_.assign(ids.begin(),ids.begin()+covered);
+    key_images_.clear();
+    for(const auto& im:images)if(im.start<covered)key_images_.push_back(im);
+    key_chunk_tokens_=chunk_tokens;key_cvec_=cvec;
+    return keys_;
 }
-uint64_t PromptDiskCache::file_bytes(const std::string& key) const {
+uint64_t ChunkCacheDisk::file_bytes(const std::string& key) const {
     const auto p=path(key);if(p.empty())return 0;
     std::error_code ec;
     if(!std::filesystem::is_regular_file(std::filesystem::symlink_status(p,ec))||ec)return 0;
-    const auto at=std::filesystem::last_write_time(p,ec);
-    if(ec||std::chrono::duration_cast<std::chrono::hours>(std::filesystem::file_time_type::clock::now()-at).count()>=int64_t(days_)*24)return 0;
     const auto size=std::filesystem::file_size(p,ec);
     return ec||size<200||size>budget_ ? 0 : size;
 }
-bool PromptDiskCache::contains(const std::string& key) const { return file_bytes(key)!=0; }
-void PromptDiskCache::touch(const std::string& key) {
+bool ChunkCacheDisk::contains(const std::string& key) const {
+    return cached_.find(key)!=cached_.end();
+}
+void ChunkCacheDisk::touch(const std::string& key) {
+    const auto it=cached_.find(key);if(it==cached_.end())return;
+    it->second.used=std::filesystem::file_time_type::clock::now();it->second.dirty=true;
+}
+void ChunkCacheDisk::flush_touches() {
+    for(auto it=cached_.begin();it!=cached_.end();) {
+        if(!it->second.dirty){++it;continue;}
+        std::error_code ec;std::filesystem::last_write_time(path(it->first),it->second.used,ec);
+        if(ec) {
+            // A removed file is a miss; retry other errors on the next idle flush.
+            if(ec==std::errc::no_such_file_or_directory) {
+                cached_bytes_-=it->second.bytes;it=cached_.erase(it);continue;
+            }
+        }else it->second.dirty=false;
+        ++it;
+    }
+}
+void ChunkCacheDisk::forget(const std::string& key) {
+    const auto it=cached_.find(key);
+    if(it!=cached_.end()){cached_bytes_-=it->second.bytes;cached_.erase(it);}
+}
+void ChunkCacheDisk::discard(const std::string& key) {
     const auto p=path(key);if(p.empty())return;
-    std::error_code ec;std::filesystem::last_write_time(p,std::filesystem::file_time_type::clock::now(),ec);
+    std::error_code ec;std::filesystem::remove(p,ec);
+    if(!ec)forget(key);
 }
-void PromptDiskCache::discard(const std::string& key) {
-    const auto p=path(key);if(p.empty())return;std::error_code ec;std::filesystem::remove(p,ec);
+void ChunkCacheDisk::published(const std::string& key,uint64_t bytes) {
+    forget(key);
+    // Enforce the cap from the in-memory index, without another directory scan.
+    while(cached_bytes_>budget_-bytes && !cached_.empty()) {
+        auto oldest=cached_.end();
+        for(auto it=cached_.begin();it!=cached_.end();++it)
+            if(oldest==cached_.end() || it->second.used<oldest->second.used)oldest=it;
+        const auto victim=oldest->first;
+        std::error_code ec;std::filesystem::remove(path(victim),ec);
+        if(ec) {
+            // Do not accept a new entry if the cap cannot be enforced.
+            std::filesystem::remove(path(key),ec);return;
+        }
+        forget(victim);
+    }
+    cached_[key]={std::filesystem::file_time_type::clock::now(),bytes,false};cached_bytes_+=bytes;
 }
-void PromptDiskCache::prune() {
+void ChunkCacheDisk::startup_cleanup() {
     if(!enabled())return;
-    struct Entry { std::filesystem::path p;std::filesystem::file_time_type at;uint64_t size; };
-    std::vector<Entry> entries;uint64_t total=0;std::error_code ec;
+    struct StartupEntry { std::filesystem::path p;std::filesystem::file_time_type at;uint64_t size; };
+    std::vector<StartupEntry> entries;uint64_t total=0;std::error_code ec;
+    cached_.clear();cached_bytes_=0;
     const auto now=std::filesystem::file_time_type::clock::now();
     for(std::filesystem::directory_iterator it(root_,ec),end;!ec&&it!=end;it.increment(ec)) {
         const auto p=it->path();const auto name=p.filename().string();
@@ -230,26 +304,29 @@ void PromptDiskCache::prune() {
                 std::filesystem::remove(p,e);
             continue;
         }
-        if(std::chrono::duration_cast<std::chrono::hours>(now-at).count()>=int64_t(days_)*24||size>budget_||size>UINT64_MAX-total) {
+        if(std::chrono::duration_cast<std::chrono::hours>(now-at).count()>=int64_t(days_)*24||size<200||size>budget_||size>UINT64_MAX-total) {
             std::filesystem::remove(p,e);continue;
         }
         total+=size;entries.push_back({p,at,size});
     }
     std::sort(entries.begin(),entries.end(),[](const auto& a,const auto& b){return a.at<b.at;});
     for(const auto& e:entries) {
-        if(total<=budget_)break;
-        std::error_code ignored;if(std::filesystem::remove(e.p,ignored))total-=e.size;
+        if(total>budget_) {
+            std::error_code ignored;
+            if(std::filesystem::remove(e.p,ignored)){total-=e.size;continue;}
+        }
+        cached_.emplace(e.p.stem().string(),Entry{e.at,e.size,false});cached_bytes_+=e.size;
     }
 }
-std::optional<DiskPromptState> PromptDiskCache::load(const std::string& key,std::string& error) {
-    error.clear();const auto size=file_bytes(key);if(!size)return std::nullopt;
+std::optional<DiskChunkState> ChunkCacheDisk::load(const std::string& key,std::string& error) {
+    error.clear();const auto size=file_bytes(key);if(!size){forget(key);return std::nullopt;}
     try {
         Reader r(path(key),size-64);char head[8];r.raw(head,8);
         if(std::memcmp(head,magic,8))throw std::runtime_error("unsupported prompt cache schema");
         char identity[64],stored_key[64];r.raw(identity,64);r.raw(stored_key,64);
         if(std::string(identity,64)!=identity_||std::string(stored_key,64)!=key)throw std::runtime_error("cache identity mismatch");
         const auto cvec=r.num();if(cvec>1)throw std::runtime_error("invalid steering mode");
-        DiskPromptState state;state.cvec=cvec!=0;state.stages.resize(r.count(16,16));
+        DiskChunkState state;state.cvec=cvec!=0;state.stages.resize(r.count(16,16));
         if(state.stages.empty())throw std::runtime_error("missing device stages");
         for(auto& s:state.stages) {
             s.layer_lo=int64_t(r.num());s.layer_hi=int64_t(r.num());read_checkpoint(r,s.running,max_tokens_);
@@ -262,7 +339,7 @@ std::optional<DiskPromptState> PromptDiskCache::load(const std::string& key,std:
         return state;
     }catch(const std::exception& e){error=e.what();discard(key);return std::nullopt;}
 }
-bool PromptDiskCache::store(const std::string& key,const DiskPromptState& state,std::string& error) {
+bool ChunkCacheDisk::store(const std::string& key,const DiskChunkState& state,std::string& error) {
     error.clear();const auto target=path(key);if(target.empty())return false;
     std::filesystem::path temp;
     try {
@@ -285,23 +362,23 @@ bool PromptDiskCache::store(const std::string& key,const DiskPromptState& state,
                                      std::filesystem::perm_options::replace,ec);
         std::filesystem::rename(temp,target,ec);
         if(ec)throw std::runtime_error("cache publish failed: "+ec.message());
-        prune();return contains(key);
+        published(key,budget_-w.left);return contains(key);
     }catch(const std::exception& e){error=e.what();std::error_code ec;if(!temp.empty())std::filesystem::remove(temp,ec);return false;}
 }
-bool DiskPromptFile::read(const DiskPromptBlob& blob, void* target, size_t offset, size_t count) const {
+bool DiskChunkFile::read(const DiskChunkBlob& blob, void* target, size_t offset, size_t count) const {
     if(!file || offset>blob.size || count>blob.size-offset || blob.offset>uint64_t(INT64_MAX)-offset)return false;
     file->clear();file->seekg(std::streamoff(blob.offset+offset));
     file->read(static_cast<char*>(target),std::streamsize(count));
     return bool(*file);
 }
-size_t DiskPromptFile::bytes() const {
-    size_t n=stages.capacity()*sizeof(DiskPromptFileStage);
+size_t DiskChunkFile::bytes() const {
+    size_t n=stages.capacity()*sizeof(DiskChunkFileStage);
     for(const auto& s:stages)n+=s.ids.capacity()*sizeof(int32_t)+s.images.capacity()*sizeof(ConversationImageKey)+
-                              s.kv.capacity()*sizeof(DiskPromptKv);
+                              s.kv.capacity()*sizeof(DiskChunkKv);
     return n;
 }
 namespace {
-void write_blob(Writer& w,const DiskPromptBlob& b) {
+void write_blob(Writer& w,const DiskChunkBlob& b) {
     w.num(b.size);std::array<uint8_t,65536> scratch;
     for(uint64_t at=0;at<b.size;) {
         const auto n=size_t(std::min<uint64_t>(scratch.size(),b.size-at));
@@ -309,17 +386,17 @@ void write_blob(Writer& w,const DiskPromptBlob& b) {
         w.raw(scratch.data(),n);at+=n;
     }
 }
-void read_blob(Reader& r,DiskPromptBlob& b) {
+void read_blob(Reader& r,DiskChunkBlob& b) {
     b.size=r.count(1);b.offset=uint64_t(r.in.tellg());std::array<uint8_t,65536> scratch;
     for(uint64_t at=0;at<b.size;) {
         const auto n=size_t(std::min<uint64_t>(scratch.size(),b.size-at));r.raw(scratch.data(),n);at+=n;
     }
 }
-void write_stream_kv(Writer& w,const DiskPromptKv& k) {
+void write_stream_kv(Writer& w,const DiskChunkKv& k) {
     for(auto v:{int64_t(k.format),k.cells,k.heads,k.head_dim,k.page_size,k.pooled_rows,k.idx_dim})w.num(uint64_t(v));
     for(const auto& b:k.data)write_blob(w,b);
 }
-void read_stream_kv(Reader& r,DiskPromptKv& k) {
+void read_stream_kv(Reader& r,DiskChunkKv& k) {
     const auto format=r.num();
     if(format>3 && format!=16 && format!=17)throw std::runtime_error("invalid K/V format");
     k.format=int(format);
@@ -329,15 +406,15 @@ void read_stream_kv(Reader& r,DiskPromptKv& k) {
     for(auto& b:k.data)read_blob(r,b);
 }
 }
-std::optional<DiskPromptFile> PromptDiskCache::load_stream(const std::string& key,std::string& error) {
-    error.clear();const auto size=file_bytes(key);if(!size)return std::nullopt;
+std::optional<DiskChunkFile> ChunkCacheDisk::load_stream(const std::string& key,std::string& error) {
+    error.clear();const auto size=file_bytes(key);if(!size){forget(key);return std::nullopt;}
     try {
         Reader r(path(key),size-64);char head[8];r.raw(head,8);
         if(std::memcmp(head,magic,8))throw std::runtime_error("unsupported prompt cache schema");
         char identity[64],stored_key[64];r.raw(identity,64);r.raw(stored_key,64);
         if(std::string(identity,64)!=identity_||std::string(stored_key,64)!=key)throw std::runtime_error("cache identity mismatch");
         const auto mode=r.num();if(mode>1)throw std::runtime_error("invalid steering mode");
-        DiskPromptFile image;image.cvec=mode!=0;image.stages.resize(r.count(16,16));
+        DiskChunkFile image;image.cvec=mode!=0;image.stages.resize(r.count(16,16));
         if(image.stages.empty())throw std::runtime_error("missing device stages");
         for(auto& s:image.stages) {
             s.layer_lo=int64_t(r.num());s.layer_hi=int64_t(r.num());r.vec(s.ids,uint64_t(max_tokens_));
@@ -353,7 +430,7 @@ std::optional<DiskPromptFile> PromptDiskCache::load_stream(const std::string& ke
         image.file=std::make_shared<std::ifstream>(std::move(r.in));return image;
     }catch(const std::exception& e){error=e.what();discard(key);return std::nullopt;}
 }
-bool PromptDiskCache::store_stream(const std::string& key,const DiskPromptFile& state,std::string& error) {
+bool ChunkCacheDisk::store_stream(const std::string& key,const DiskChunkFile& state,std::string& error) {
     error.clear();const auto target=path(key);if(target.empty())return false;
     std::filesystem::path temp;
     try {
@@ -375,11 +452,11 @@ bool PromptDiskCache::store_stream(const std::string& key,const DiskPromptFile& 
                                      std::filesystem::perm_options::replace,ec);
         std::filesystem::rename(temp,target,ec);
         if(ec)throw std::runtime_error("cache publish failed: "+ec.message());
-        prune();return contains(key);
+        published(key,budget_-w.left);return contains(key);
     }catch(const std::exception& e){error=e.what();std::error_code ec;if(!temp.empty())std::filesystem::remove(temp,ec);return false;}
 }
 
-std::string prompt_disk_identity(const std::vector<std::string>& options,const std::vector<std::filesystem::path>& artifacts) {
+std::string chunk_cache_disk_identity(const std::vector<std::string>& options,const std::vector<std::filesystem::path>& artifacts) {
     try {
         Sha256 h;h.text("Strata prompt snapshot v1; little endian host payload");
         const uint32_t endian=1;h.update(&endian,sizeof endian);h.number(sizeof(size_t));

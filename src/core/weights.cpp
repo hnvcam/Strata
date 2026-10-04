@@ -86,6 +86,39 @@ bool read_at(std::FILE* f, uint64_t off, void* dst, size_t n, std::string& err, 
 
 }  // namespace
 
+bool WeightTable::allocation_bytes(const std::string& pack_dir, std::map<std::string, uint64_t>& out,
+                                   std::string& err) {
+    const std::string path = pack_dir + "/index.txt";
+    std::FILE* f = std::fopen(path.c_str(), "rb");
+    if (!f) { err = "cannot open " + path; return false; }
+    out.clear();
+    char line[1024];
+    uint64_t alignment = 0;
+    while (std::fgets(line, sizeof line, f)) {
+        if (line[0] == '#') {
+            unsigned long long pool = 0;
+            int align = 0, count = 0;
+            if (std::sscanf(line, "# align %d pool %llu tensors %d", &align, &pool, &count) == 3 && align > 0)
+                alignment = (uint64_t) align;
+            continue;
+        }
+        char name[256] = {};
+        unsigned long long bytes = 0, dummy = 0;
+        int file = 0, kind = 0;
+        if (!alignment || std::sscanf(line, "%255s %d %d %llu %llu %llu %llu", name, &file, &kind,
+                                     &dummy, &dummy, &dummy, &bytes) != 7 ||
+            bytes > UINT64_MAX - alignment + 1 || out.count(name)) {
+            err = "index.txt: invalid allocation row or header";
+            std::fclose(f);
+            return false;
+        }
+        out[name] = (bytes + alignment - 1) / alignment * alignment;
+    }
+    std::fclose(f);
+    if (!alignment || out.empty()) { err = "index.txt has no header or no rows"; return false; }
+    return true;
+}
+
 bool WeightTable::pool_bytes(const std::string& pack_dir, uint64_t& out, std::string& err,
                              const std::set<std::string>* skip) {
     const std::string path = pack_dir + "/index.txt";

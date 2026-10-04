@@ -106,6 +106,10 @@ struct LoadReport {
 
 class WeightTable {
 public:
+    /// Per-tensor arena allocations, including index alignment, without uploading
+    /// any payload. Used to price and filter each GPU's layer range.
+    static bool allocation_bytes(const std::string& pack_dir, std::map<std::string, uint64_t>& out,
+                                 std::string& err);
     /// The arena size the index asks for, readable WITHOUT loading anything - so a caller can size its
     /// `DeviceArena` before committing to the load, and a plan that cannot fit is refused at startup rather
     /// than halfway through a 5 GB upload.

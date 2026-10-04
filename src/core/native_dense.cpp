@@ -1,5 +1,6 @@
 #include "strata/core/native_dense.hpp"
 #include "strata/core/weights.hpp"
+#include "strata/core/dense_placement.hpp"
 #include "strata/artifact/gguf_reader.hpp"
 #include "strata/kernels/native_mmvq.hpp"
 
@@ -37,14 +38,23 @@ struct Pending {
 }
 
 bool NativeDense::served_names(const std::vector<std::string>& shards, bool include_ple_key,
-                               std::set<std::string>& out, std::string& err) {
+                               std::set<std::string>& out, std::string& err,
+                               std::map<std::string, uint64_t>* allocation_bytes) {
     try {
         for (const auto& path : shards) {
             strata::GgufFile gguf(path);
             for (const auto& tensor : gguf.tensors())
                 if (eligible(tensor, include_ple_key) && strata::kernels::native_mmvq_supported(tensor.type) &&
-                    tensor.shape.size() == 2)
+                    tensor.shape.size() == 2) {
                     out.insert(tensor.name);
+                    if (allocation_bytes) {
+                        if (tensor.shape[0] > INT_MAX || tensor.shape[1] > INT_MAX) {
+                            err = "native dense: matrix dimensions exceed int32"; return false;
+                        }
+                        (*allocation_bytes)[tensor.name] = strata::kernels::native_mmvq_weight_bytes(
+                            (int) tensor.type, (int) tensor.shape[0], (int) tensor.shape[1]);
+                    }
+                }
         }
         return true;
     } catch (const std::exception& error) {
@@ -69,7 +79,7 @@ NativeDense::~NativeDense() {
 }
 
 bool NativeDense::load(const std::vector<std::string>& shards, WeightTable& table, std::string& err,
-                       bool include_ple_key) {
+                       bool include_ple_key, int64_t layer_lo, int64_t layer_hi) {
     if (scratch_ || !weights_.empty()) { err = "native dense: already loaded"; return false; }
     if (shards.empty()) { err = "native dense: at least one GGUF shard is required"; return false; }
     try {
@@ -139,6 +149,7 @@ bool NativeDense::load(const std::vector<std::string>& shards, WeightTable& tabl
             }
             for (const auto& tensor : gguf.tensors()) {
                 if (!eligible(tensor, include_ple_key)) continue;
+                if (!dense_weight_needed(tensor.name, layer_lo, layer_hi)) continue;
                 if (!seen.insert(tensor.name).second) {
                     err = "native dense: duplicate tensor " + tensor.name; return false;
                 }
@@ -171,7 +182,10 @@ bool NativeDense::load(const std::vector<std::string>& shards, WeightTable& tabl
                 pending.push_back(Pending{&ref, (int) tensor.type, bytes, std::move(data)});
             }
         }
-        if (pending.empty()) { err = "native dense: no supported GDN/QSA matrices in supplied shards"; return false; }
+        if (pending.empty()) {
+            if (layer_lo != 0 || layer_hi != std::numeric_limits<int64_t>::max()) return true;
+            err = "native dense: no supported GDN/QSA matrices in supplied shards"; return false;
+        }
         void* allocation = nullptr;
         const auto status = cudaMalloc(&allocation, strata::kernels::native_q8_1_bytes(max_in));
         DevicePtr scratch(allocation);

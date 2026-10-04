@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
+#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -20,11 +22,13 @@ public:
     NativeDense(const NativeDense&) = delete;
     NativeDense& operator=(const NativeDense&) = delete;
     bool load(const std::vector<std::string>& shards, WeightTable& table, std::string& err,
-              bool include_ple_key = false);
+              bool include_ple_key = false, int64_t layer_lo = 0,
+              int64_t layer_hi = std::numeric_limits<int64_t>::max());
     /// Plan v0.3 P1: the canonical tensor names `load` would serve natively from these shards (eligible name,
     /// supported type, 2-D), read from the GGUF headers only - so the canonical arena can skip them.
     static bool served_names(const std::vector<std::string>& shards, bool include_ple_key,
-                             std::set<std::string>& out, std::string& err);
+                             std::set<std::string>& out, std::string& err,
+                             std::map<std::string, uint64_t>* allocation_bytes = nullptr);
     /// #326: a native pack whose `blk.1.ple_key.weight` row is unquantized (iq_pack --compat-bf16 of a GGUF key
     /// the native kernel also reads, e.g. OrcaRouter's IQ3_XXS) serves the PLE from that row, so it is taken out
     /// of `skip` and `load` does not upload the GGUF key over it.  A quantized row leaves `skip` unchanged.

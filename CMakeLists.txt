@@ -191,6 +191,15 @@ if(STRATA_ENABLE_CUDA OR STRATA_ENABLE_HIP)
   # linker error ("unresolved external symbol cudaGraphInstantiate") names the function rather than the cause.
   target_link_libraries(strata_core PUBLIC strata_plan strata_warnings ${_strata_gpu_runtime_target})
 
+  # Header/index-only placement checks: linked to the runtime, but need no GPU or model download.
+  if(STRATA_BUILD_TESTS)
+    add_executable(dense_placement_test src/core/dense_placement_test.cpp)
+    add_test(NAME dense_placement_test COMMAND dense_placement_test)
+  else()
+    add_executable(dense_placement_test EXCLUDE_FROM_ALL src/core/dense_placement_test.cpp)
+  endif()
+  target_link_libraries(dense_placement_test PRIVATE strata_core)
+
   add_executable(strata-device src/core/device_main.cpp)
   target_link_libraries(strata-device PRIVATE strata_core)
 

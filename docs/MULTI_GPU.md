@@ -43,8 +43,8 @@ now on; the answer is kept.
 
 **Not supported** (setup says so and names the cards that can be used instead):
 - a card older than the RTX 20 series (compute capability below 7.5: GTX 10 and older);
-- a card with less than 8 GB of VRAM, together with others (each card holds a copy of the dense weights and its
-  own prompt buffers) - unless you name it with `--gpus`: then setup says the risk and asks (`--yes` with the named
+- a card with less than 8 GB of VRAM, together with others (each card needs shared weights, its layer weights and
+  its own prompt buffers) - unless you name it with `--gpus`: then setup says the risk and asks (`--yes` with the named
   cards goes ahead);
 - Intel GPUs, and a mix of NVIDIA and AMD cards. (AMD cards share a model among themselves: `./setup.sh --backend
   hip --gpus 1,0`, see [AMD_HIP.md](AMD_HIP.md).)
@@ -75,9 +75,10 @@ The engine flags behind it: `--layer-split K1[,K2..]|auto` and `--split-device D
 devices; default the next visible ones). `--layer-split K --split-device 0` runs both stages on one card sharing
 everything - the bit-exact check of the hand-off, not a speed mode.
 
-**auto** tries every placement (all of them for two or three cards; proportional to the free VRAM beyond that) and
-keeps the one whose caches would hold the most of the expert profile, hottest pairs weighted most; ties go to the
-placement that leaves the fullest card the most room. The startup log prints the choice:
+**auto** tries every placement for two or three cards; beyond that it shares layers in proportion to estimated GPU
+speed. It estimates layer compute time and the cost of experts missing from the caches, with hotter pairs weighted
+more. Each candidate accounts for its own layer weights, shared weights and session state before pricing the cache.
+The choice is made from file headers before any dense weights are uploaded. The startup log prints the choice:
 
 ```
 strata generate: layer split auto: K=19 - the caches hold 11767 of 12288 profiled pairs (fullest device 100%)
@@ -86,10 +87,20 @@ strata serve: layer split: layers 0-18 (CUDA0), 19-47 (CUDA1), one hand-off per 
 
 ## What each card holds
 
-- **every card**: a copy of the dense weights (~3.4 GB for the Coder), its own session state (the KV cache of the full
-  context), its verify window and its prompt-path buffers, and an expert cache for its layers filled from the profile;
-- **the last card**: also the output head and the draft layer (~0.8 GB);
+- **every card**: dense weights for its own layers, retained shared/global weights, its own session state (its layers'
+  KV cache at the configured context capacity), its verify window and its prompt-path buffers, and an expert cache
+  for its layers filled from the profile. Per-layer canonical and native weights outside its range are not uploaded.
+  The PLE input module's weights are retained even though their names start with `blk.1.ple_`;
+- **the last card**: also runs the output head and the draft layer (MTP); the full-vocabulary draft head also uses VRAM;
 - **host RAM**: the expert arena once, shared by all cards (the CPU pool computes whatever no card holds).
+
+Measured 2026-10-03 on an i5-13500, RTX 5070 Ti 16 GB + RTX 4060 8 GB, 64 GB RAM, IQ4_XS with Q2 MTP and
+all 248,320 draft tokens: with layers 0–1 on the 4060 and layers 2–47 plus output head/MTP on the 5070 Ti,
+limiting dense weights to each card's layers reduced the 4060's dense allocation from about 4.29 GiB to
+0.23 GiB. Its cache grew from 718 to all 1,024 experts; the 5070 Ti's grew from 2,690 to 2,771.
+A fresh six-request comparison generated 43.41 tok/s before and 42.60 tok/s after: the memory saving did
+not establish a speed gain. Identical-residency checks produced the same three greedy responses.
+[Settings and raw results](../bench/results/2026-10-03-dense-layer-placement/report.md).
 
 Prompts are read in chunks that flow through the cards in turn; while a later card reads chunk c, the first card
 already reads chunk c+1. Conversation checkpoints save and restore every card's state; the adaptive expert swaps copy

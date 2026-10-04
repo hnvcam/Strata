@@ -7,7 +7,7 @@ struct DiskChunkTarget { int device; SessionState* session; };
 bool chunk_cache_disk_stream_source(DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
                                const ModelGeometry& g, const QsaState& draft,
                                const std::vector<int32_t>& ids, const std::vector<ConversationImageKey>& images,
-                               bool cvec, std::string& error);
+                               bool cvec, int64_t parent_tokens, std::string& error);
 bool chunk_cache_disk_stream_validate(const DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
                                  const ModelGeometry& g, const QsaState& draft, std::string& error);
 ConversationRestore chunk_cache_disk_stream_restore(const DiskChunkFile& image,

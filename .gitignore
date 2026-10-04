@@ -52,3 +52,5 @@ build-vision.bat
 
 /.rocm-win/
 /.strata-prompt-cache/
+/.strata-cache.img
+/.strata-cache-mnt/

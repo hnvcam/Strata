@@ -68,6 +68,8 @@ if(STRATA_BUILD_CONVERSATION_TESTS)
   add_test(NAME conversation_memory_test COMMAND conversation_memory_test)
   add_executable(chunk_cache_disk_test src/core/chunk_cache_disk_test.cpp src/core/chunk_cache_disk.cpp)
   target_include_directories(chunk_cache_disk_test PRIVATE include)
+  find_package(Threads REQUIRED)
+  target_link_libraries(chunk_cache_disk_test PRIVATE Threads::Threads)
   add_test(NAME chunk_cache_disk_test COMMAND chunk_cache_disk_test)
 endif()
 

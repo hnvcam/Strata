@@ -3,7 +3,9 @@
 #include <chrono>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
+#include <memory>
 
 using namespace strata::core;
 namespace fs = std::filesystem;
@@ -34,6 +36,60 @@ DiskChunkState fixture(size_t payload = 257) {
     return state;
 }
 fs::path entry(const fs::path& dir, const std::string& key) { return dir / "prompt-v1" / (key + ".spc"); }
+DiskChunkBlob host_blob(std::vector<uint8_t> v, uint64_t reuse) {
+    auto buf = std::make_shared<std::vector<uint8_t>>(std::move(v));
+    DiskChunkBlob b; b.size = buf->size(); b.reuse = reuse;
+    b.read = [buf](void* d, size_t n, size_t at) {
+        if (at > buf->size() || n > buf->size() - at) return false;
+        std::memcpy(d, buf->data() + at, n); return true;
+    };
+    return b;
+}
+std::vector<uint8_t> to_vec(const ConversationBuffer& b) {
+    std::vector<uint8_t> v(b.size()); size_t at = 0;
+    b.visit(0, b.size(), [&](const uint8_t* p, size_t n, size_t) {
+        std::memcpy(v.data() + at, p, n); at += n; return true;
+    });
+    return v;
+}
+// A chained child: same fixture with 64 bytes appended to every K/V blob.
+DiskChunkState fixture_child() {
+    auto state = fixture();
+    for (auto& s : state.stages) {
+        s.kv[0].k.resize(s.kv[0].k.size() + 64, uint8_t(9));
+        s.kv[0].v.resize(s.kv[0].v.size() + 64, uint8_t(9));
+    }
+    state.draft = state.stages.back().kv[0]; state.draft.format = 17;
+    state.draft.pooled_rows = 0; state.draft.pooled.resize(0);
+    return state;
+}
+DiskChunkFile stream_image(const DiskChunkState& st, uint64_t reuse) {
+    DiskChunkFile f; f.cvec = st.cvec;
+    auto kv = [&](DiskChunkKv& o, const ConversationKv& k) {
+        o.format = k.format; o.cells = k.cells; o.heads = k.heads; o.head_dim = k.head_dim;
+        o.page_size = k.page_size; o.pooled_rows = k.pooled_rows; o.idx_dim = k.idx_dim;
+        o.data[0] = host_blob(to_vec(k.k), reuse); o.data[1] = host_blob(to_vec(k.v), reuse);
+        o.data[2] = host_blob(to_vec(k.k_scale), 0); o.data[3] = host_blob(to_vec(k.v_scale), 0);
+        o.data[4] = host_blob(to_vec(k.pooled), 0);
+    };
+    for (const auto& s : st.stages) {
+        DiskChunkFileStage o; o.layer_lo = s.layer_lo; o.layer_hi = s.layer_hi;
+        o.ids = s.running.ids; o.images = s.running.imgs;
+        o.running[0] = host_blob(s.running.gdn, 0);
+        o.running[1] = host_blob(s.running.ple, 0);
+        o.running[2] = host_blob(s.running.tails, 0);
+        o.running[3] = host_blob(s.running.dead, 0);
+        o.running[4] = host_blob(s.running.block_pos, 0);
+        o.kv.resize(1); kv(o.kv[0], s.kv[0]); f.stages.push_back(std::move(o));
+    }
+    kv(f.draft, st.draft);
+    return f;
+}
+std::vector<uint8_t> read_all(const DiskChunkFile& f, const DiskChunkBlob& b) {
+    std::vector<uint8_t> v(size_t(b.size));
+    if (!f.read(b, v.data(), 0, v.size())) v.clear();
+    return v;
+}
 }
 int main() {
     check(chunk_cache_disk_sha256("") == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "SHA-256 empty vector");
@@ -254,6 +310,47 @@ int main() {
     check(eviction.contains(keys[2].hash), "touch does not probe missing file on request path");
     eviction.flush_touches();
     check(!eviction.contains(keys[2].hash), "idle flush removes missing entry from index");
+    {
+        ChunkCacheDisk chain(root / "chain", identity, 100000, 3, 131072);
+        auto parent = stream_image(state, 0);
+        check(chain.store_stream(keys[0].hash, parent, "", error), "chained root saved");
+        const auto root_bytes = chain.file_bytes(keys[0].hash);
+        auto child = stream_image(fixture_child(), 257);
+        check(chain.store_stream(keys[1].hash, child, keys[0].hash, error), "chained child saved on parent");
+        const auto child_bytes = chain.file_bytes(keys[1].hash);
+        check(child_bytes > root_bytes && child_bytes < root_bytes + 2 * 64 + 4096,
+              "chained child stores only appended bytes, not a second full snapshot");
+        auto loaded = chain.load_stream(keys[1].hash, error);
+        check(bool(loaded) && loaded->stages.size() == 2 && !loaded->cvec, "chained child loads");
+        auto want = fixture_child();
+        check(read_all(*loaded, loaded->stages[0].kv[0].data[0]) == to_vec(want.stages[0].kv[0].k) &&
+              read_all(*loaded, loaded->stages[1].kv[0].data[1]) == to_vec(want.stages[1].kv[0].v) &&
+              read_all(*loaded, loaded->draft.data[0]) == to_vec(want.draft.k),
+              "chained child restores parent prefix and appended bytes");
+        check(read_all(*loaded, loaded->stages[0].running[0]) == state.stages[0].running.gdn,
+              "chained child restores running state");
+        {
+            std::fstream f(entry(root / "chain", keys[1].hash), std::ios::binary | std::ios::in | std::ios::out);
+            f.seekp(10); f.put(char(255));
+        }
+        check(!chain.load_stream(keys[1].hash, error) && !chain.contains(keys[1].hash),
+              "corrupt chained child rejected and removed");
+        check(bool(chain.load_stream(keys[0].hash, error)), "chained root survives child removal");
+        check(chain.store_stream(keys[1].hash, child, keys[0].hash, error), "repopulate chained child");
+        fs::remove(entry(root / "chain", keys[0].hash));
+        auto orphan = chain.load_stream(keys[1].hash, error);
+        check(bool(orphan) && read_all(*orphan, orphan->stages[0].kv[0].data[0]) == to_vec(want.stages[0].kv[0].k),
+              "chained child loads after parent eviction: file is self-contained");
+        auto stranded = stream_image(fixture_child(), 257);
+        check(!chain.store_stream(keys[2].hash, stranded, "", error) && !error.empty(),
+              "reuse without parent fails instead of storing wrong bytes");
+        ChunkCacheDiskWriter writer(chain);
+        auto queued = stream_image(state, 0);
+        check(writer.queue(keys[2].hash, keys[1].hash, std::move(queued), error), "writer accepts save");
+        writer.drain();
+        check(chain.contains(keys[2].hash) && bool(chain.load_stream(keys[2].hash, error)),
+              "background writer publishes readable entry");
+    }
     ChunkCacheDisk too_small(root/"small",identity,500,3,131072);
     check(!too_small.store(keys[2].hash,state,error), "oversized entry skipped");
     ChunkCacheDisk disabled(root/"off",identity,0,3,131072);

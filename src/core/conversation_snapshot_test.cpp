@@ -249,9 +249,9 @@ void disk_roundtrip(int devices) {
     auto loaded = cache.load(key, error);
     check(bool(loaded), "read split GPU snapshot");
     DiskChunkFile source;
-    check(chunk_cache_disk_stream_source(source, targets, main[0]->g, draft->state, ids, {}, true, error),
+    check(chunk_cache_disk_stream_source(source, targets, main[0]->g, draft->state, ids, {}, true, 0, error),
           "describe streaming GPU source without full host snapshot");
-    check(cache.store_stream(key, source, error), "write GPU source through fixed buffer");
+    check(cache.store_stream(key, source, "", error), "write GPU source through fixed buffer");
     auto streamed = cache.load_stream(key, error);
     check(bool(streamed), "validate streaming file without full host snapshot");
     for (int i = 0; i < 2; ++i) {

@@ -4708,9 +4708,10 @@ int main(int argc, char** argv) {
         std::vector<strata::core::DiskChunkKey> disk_keys;
         std::vector<strata::core::DiskChunkTarget> disk_targets{{0, &ss}};
         for (auto& st : stages) disk_targets.push_back({st->dev, &st->ss});
+        strata::core::ChunkCacheDiskWriter disk_writer(disk);
         auto disk_save = [&](int64_t L) -> bool {
             const auto key = std::find_if(disk_keys.begin(), disk_keys.end(), [&](const auto& k) { return k.tokens == L; });
-            if (key == disk_keys.end() || disk.contains(key->hash)) return true;
+            if (key == disk_keys.end() || disk.contains(key->hash) || disk_writer.pending(key->hash)) return true;
             size_t estimate = 0;
             if (!strata::core::chunk_cache_disk_snapshot_bytes(disk_targets, g, mtp.kv_state(), L, req_imgs.size(), estimate, err)) {
                 std::fprintf(stderr, "strata serve: disk chunk cache: skip save (%s)\n", err.c_str());
@@ -4724,13 +4725,21 @@ int main(int argc, char** argv) {
                 std::vector<int32_t> prefix(cur.begin(), cur.begin() + L);
                 std::vector<ImgKey> images;
                 for (const auto& k : req_imgs) if (k.start < L) images.push_back(k);
+                // A chunk chains onto the previous boundary when its entry is
+                // stored or still being written; otherwise it saves whole.
+                std::string parent;
+                int64_t parent_tokens = 0;
+                if (key != disk_keys.begin()) {
+                    const auto& p = *(key - 1);
+                    if (disk.contains(p.hash) || disk_writer.pending(p.hash)) { parent = p.hash; parent_tokens = p.tokens; }
+                }
                 if (!strata::core::chunk_cache_disk_stream_source(image, disk_targets, g, mtp.kv_state(),
-                        prefix, images, cvec_cached, err)) return false;
+                        prefix, images, cvec_cached, parent_tokens, err)) return false;
                 std::string io_error;
-                const bool stored = disk.store_stream(key->hash, image, io_error);
-                if (!stored && !err.empty()) return false;
-                std::fprintf(stderr, "strata serve: disk chunk cache: %s %lld tokens bytes=%zu in %.1f ms%s%s\n",
-                             stored ? "saved" : "skipped", (long long) L, estimate,
+                const bool queued = disk_writer.queue(key->hash, parent, std::move(image), io_error);
+                if (!queued) return false;
+                std::fprintf(stderr, "strata serve: disk chunk cache: queued %lld tokens full=%zu bytes in %.1f ms%s%s\n",
+                             (long long) L, estimate,
                              std::chrono::duration<double, std::milli>(Clock::now() - t0).count(),
                              io_error.empty() ? "" : "; ", io_error.c_str());
             } catch (const std::bad_alloc&) {
@@ -6282,6 +6291,7 @@ int main(int argc, char** argv) {
                              remote_experts[(size_t) r].ms_begin() - begin_before[(size_t) r],
                              remote_experts[(size_t) r].ms_wait() - wait_before[(size_t) r]);
         }
+        disk_writer.drain();   // queued chunk saves finish before the server exits
         disk.flush_touches();
         save_profile("exit");   // #477: QUIT, or the server closed stdin
         return 0;

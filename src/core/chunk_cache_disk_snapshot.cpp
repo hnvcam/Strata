@@ -46,20 +46,32 @@ bool image_metadata(const std::vector<ConversationImageKey>& images, size_t toke
     }
     return true;
 }
+// Bytes a chunk's K/V blob shares with its parent's chunk: whole pages of K/V
+// and whole index blocks below the parent's token count stay byte-identical.
+uint64_t reuse_bytes(const ConversationKvLayout& l,size_t j,int64_t parent) {
+    if(parent<=0||!l.cells)return 0;
+    if(j<4)return l.cells&&l.page_size ? l.sizes[j]/l.cells*((parent/l.page_size)*l.page_size) : 0;
+    if(!l.pooled_rows)return 0;
+    return (uint64_t(parent)/strata::kernels::qsa_real_shapes().idx_block)*(l.sizes[j]/l.pooled_rows);
+}
 }
 bool chunk_cache_disk_stream_source(DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
                                const ModelGeometry& g, const QsaState& draft,
                                const std::vector<int32_t>& ids, const std::vector<ConversationImageKey>& images,
-                               bool cvec, std::string& error) {
+                               bool cvec, int64_t parent_tokens, std::string& error) {
     size_t estimate=0;
     if(!chunk_cache_disk_snapshot_bytes(targets,g,draft,int64_t(ids.size()),images.size(),estimate,error))return false;
+    if(parent_tokens>int64_t(ids.size()))parent_tokens=int64_t(ids.size());
     DiskChunkFile result;result.cvec=cvec;result.stages.resize(targets.size());
     auto describe=[&](DiskChunkKv& out,const QsaState& st,bool index,int device) {
         ConversationKvLayout l;
         if(!conversation_kv_layout(st,g,int64_t(ids.size()),index,l,error))return false;
         out.format=l.format;out.cells=l.cells;out.heads=l.heads;out.head_dim=l.head_dim;
         out.page_size=l.page_size;out.pooled_rows=l.pooled_rows;out.idx_dim=l.idx_dim;
-        for(size_t j=0;j<5;++j)out.data[j]=source_blob(device,l.pools[j],l.sizes[j],error);
+        for(size_t j=0;j<5;++j) {
+            out.data[j]=source_blob(device,l.pools[j],l.sizes[j],error);
+            out.data[j].reuse=std::min<uint64_t>(l.sizes[j],reuse_bytes(l,j,parent_tokens));
+        }
         return true;
     };
     for(size_t i=0;i<targets.size();++i) {

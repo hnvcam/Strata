@@ -664,7 +664,14 @@ shutdown also flushes them. Unexpected termination can lose unflushed timestamp 
 earlier expiry at the next startup, but does not change snapshot correctness. Expired entries and
 abandoned temporary writes are removed only at engine startup. Expiry is not enforced during a
 running session. Least recently used files are removed on saves when the disk cap is exceeded.
-Each prefix is a complete snapshot, so shared K/V pages are duplicated between files. The cap covers completed entries; a write temporarily needs additional disk
+Each chunk file chains onto the previous chunk: the file starts as a copy-on-write clone of its
+parent (or a byte copy where the filesystem has no `FICLONE`) and appends only the bytes the new
+chunk adds, so shared K/V pages occupy disk once instead of once per file. The 16 chained files of
+the 2026-10-04 check above stored 2.76 GiB as separate snapshots; chained, the same chain's files
+share their common prefix. A file stays self-contained: it loads after its parent is evicted.
+Saves run on a background writer thread: the request thread copies the added bytes from VRAM to
+host memory and queues the entry, the writer clones, appends and publishes in queue order. A full
+queue (eight entries) skips the save; a failed save only logs. The cap covers completed entries; a write temporarily needs additional disk
 space. Save and restore stream the payload through a fixed 64 KiB transfer buffer plus token/image
 metadata; they do not allocate another complete snapshot in RAM. The checksum and every stage's
 metadata are validated before any restore writes. An oversized entry, metadata allocation failure

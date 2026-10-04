@@ -2,13 +2,20 @@
 
 #include "strata/core/conversation_cache.hpp"
 
+#include <condition_variable>
+#include <cstdint>
+#include <deque>
 #include <filesystem>
 #include <functional>
 #include <fstream>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <string>
+#include <thread>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 namespace strata::core {
 
@@ -28,11 +35,19 @@ struct DiskChunkState {
 
 struct DiskChunkKey { int64_t tokens = 0; std::string hash; };
 
-// Streaming codec uses the same file schema, with payloads kept on disk.
+// Streaming codec keeps payloads on disk. A chained entry stores only the bytes
+// a chunk adds to its parent's payload; the rest are file spans of earlier chunks.
 // Capture callbacks fill at most 64 KiB; restore spans reference an open file.
+struct DiskChunkSpan { uint64_t offset = 0, size = 0; };
 struct DiskChunkBlob {
     uint64_t offset = 0, size = 0;
     std::function<bool(void*, size_t, size_t)> read;
+    // Capture: bytes [0, reuse) are identical to the parent chunk's payload and
+    // are not transferred again; read() still reports logical offsets [0, size).
+    uint64_t reuse = 0;
+    // Load: file locations of the logical bytes [0, size); empty means one span
+    // at offset (the whole payload contiguous).
+    std::vector<DiskChunkSpan> spans;
 };
 struct DiskChunkKv {
     int format = 0;
@@ -73,7 +88,11 @@ public:
     std::optional<DiskChunkState> load(const std::string& key, std::string& error);
     bool store(const std::string& key, const DiskChunkState& state, std::string& error);
     std::optional<DiskChunkFile> load_stream(const std::string& key, std::string& error);
-    bool store_stream(const std::string& key, const DiskChunkFile& state, std::string& error);
+    // `parent` (a stored key or empty) selects the chained format: the entry
+    // stores only bytes its blobs add beyond the parent's payload. Blobs with
+    // reuse > 0 require a parent; without one the save fails.
+    bool store_stream(const std::string& key, const DiskChunkFile& state,
+                      const std::string& parent, std::string& error);
     void touch(const std::string& key);
     // Called only while idle or at orderly shutdown; touch itself does no I/O.
     void flush_touches();
@@ -88,13 +107,17 @@ private:
     int days_;
     int64_t max_tokens_;
     void published(const std::string& key, uint64_t bytes);
-    void forget(const std::string& key);
+    // Callers hold index_mu_; public methods lock it themselves.
+    void forget_locked(const std::string& key);
     struct Entry {
         std::filesystem::file_time_type used;
         uint64_t bytes;
         bool dirty = false;
     };
     // Startup scans once. Saves/discards update the index and byte total directly.
+    // The background writer publishes while request threads look up, so the
+    // index and byte total sit behind this mutex.
+    mutable std::mutex index_mu_;
     std::unordered_map<std::string, Entry> cached_;
     uint64_t cached_bytes_ = 0;
     // Hash identity belongs to this exact token/image prefix, independently of
@@ -112,5 +135,32 @@ private:
 std::string chunk_cache_disk_identity(const std::vector<std::string>& options,
                                  const std::vector<std::filesystem::path>& artifacts);
 std::string chunk_cache_disk_sha256(const std::string& value);
+
+// Replace capture callbacks with host-memory copies of the bytes a save adds,
+// so the request thread finishes GPU transfers before generation moves on.
+bool chunk_cache_disk_stage(DiskChunkFile& image, std::string& error);
+
+// Background writer: request threads stage a capture and queue it; this thread
+// writes files in queue order, so a chained child follows its parent. Saves are
+// best effort: a full queue skips the save, and errors only reach the log.
+class ChunkCacheDiskWriter {
+public:
+    explicit ChunkCacheDiskWriter(ChunkCacheDisk& cache);
+    ~ChunkCacheDiskWriter();
+    bool queue(std::string key, std::string parent, DiskChunkFile image, std::string& error);
+    bool pending(const std::string& key) const;
+    void drain();
+
+private:
+    void run();
+    struct Item { std::string key, parent; DiskChunkFile image; };
+    ChunkCacheDisk& cache_;
+    std::thread thread_;
+    mutable std::mutex mu_;
+    std::condition_variable cv_;
+    std::deque<Item> items_;
+    std::unordered_set<std::string> keys_;
+    bool stop_ = false, busy_ = false;
+};
 
 } // namespace strata::core

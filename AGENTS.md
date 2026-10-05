@@ -14,6 +14,10 @@ offers the same steps as tools.
 
 ## Working on the code
 
+- **Never kill or restart the Strata server or engine on your own: it runs the model you are running on.**
+  Replacing `engine/strata` or applying a config change that needs a restart means asking the user first and
+  letting them restart it (their own terminal, or START-HERE). This also means a running engine holds
+  `engine/strata` busy: copy the new binary only after the user has stopped it.
 - How the engine works, every measured number, the API and all settings: [docs/DETAILS.md](docs/DETAILS.md) and
   the [paper](docs/paper/Strata-Paper.pdf).
 - AMD (HIP) build and validation: [docs/AMD_HIP.md](docs/AMD_HIP.md); multi-GPU: [docs/MULTI_GPU.md](docs/MULTI_GPU.md).

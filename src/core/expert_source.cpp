@@ -1310,7 +1310,7 @@ bool FileExpertSource::pin_cache_complement(
         lend_from_slot = -1;
     }
 
-    const bool lend = lend_from_slot >= 0 && lend_from_slot < n_slots && additional_gpu_pairs.empty();
+    const bool lend = lend_from_slot >= 0 && lend_from_slot < n_slots;
     uint64_t budget = std::numeric_limits<uint64_t>::max();
     if (bytes > 0 || lend) {
         // #403: with a budget, the reading it was sized from - a second reading a few MB lower (the engine's own

@@ -246,17 +246,13 @@ class LowRamGpus(unittest.TestCase):
 
 
 class StartOnSeveralGpus(unittest.TestCase):
-    """A resident low-RAM config started on several GPUs reads the experts through the file cache (#364 #384)."""
+    """A resident low-RAM config on several GPUs keeps its mode: the engine dedups RAM against every
+    stage's cache (#364 #384 - it used to downgrade the config to the plain file-cache mode)."""
 
-    def test_split_mmap(self):
+    def test_resident_survives_a_split(self):
         cfg = {"args": ["--pack", "p", "--resident-experts", "--kv", "int8"]}
-        out = io.StringIO()
-        with contextlib.redirect_stdout(out):
-            self.assertTrue(setup.split_mmap(cfg))
-            self.assertFalse(setup.split_mmap(cfg))
-            self.assertFalse(setup.split_mmap({"args": ["--mmap-experts"]}))
-        self.assertEqual(cfg["args"], ["--pack", "p", "--mmap-experts", "--kv", "int8"])
-        self.assertIn("no layer split yet", out.getvalue())
+        self.assertFalse(hasattr(setup, "split_mmap"))
+        self.assertEqual(cfg["args"], ["--pack", "p", "--resident-experts", "--kv", "int8"])
 
     def offer(self, args, stdin):
         found = PROFILES["32GB-2x24GB"][1]
@@ -276,7 +272,7 @@ class StartOnSeveralGpus(unittest.TestCase):
         code, out, asked, cfg = self.offer(["--resident-experts"], "y")
         self.assertIn("[n]", asked[0])
         self.assertEqual(cfg["gpu"], [0, 1])
-        self.assertEqual(cfg["args"], ["--mmap-experts"])
+        self.assertEqual(cfg["args"], ["--resident-experts"])
         code, out, asked, cfg = self.offer(["--mmap-experts"], None)           # other configs: as before
         self.assertEqual(cfg["gpu"], [0, 1])
 
@@ -296,8 +292,7 @@ class StartOnSeveralGpus(unittest.TestCase):
             cfg = json.loads(p.read_text())
         self.assertIsNone(code, out)
         self.assertEqual(cfg["gpu"], [0, 1])
-        self.assertEqual(cfg["args"], ["--mmap-experts"])
-        self.assertIn("no layer split yet", out)
+        self.assertEqual(cfg["args"], ["--resident-experts"])
         self.assertTrue(call.called)
 
 

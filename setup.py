@@ -592,22 +592,6 @@ def choose_gpus(a, found) -> list:
     return [g["index"] for g in pick]
 
 
-def split_mmap(cfg: dict) -> bool:
-    """#364 #384: the low-RAM mode's resident variant (--resident-experts) has no layer split yet.  A config with it
-    that runs on several GPUs reads the experts the GPUs do not hold through the OS file cache instead
-    (--mmap-experts: the placement those reports measured 1.3-1.6x faster than one GPU), said plainly - the engine
-    used to refuse the pair.  True when the config changed."""
-    a = cfg.get("args", [])
-    if "--resident-experts" not in a:
-        return False
-    a[a.index("--resident-experts")] = "--mmap-experts"
-    warn("the low-RAM mode's resident variant (--resident-experts) has no layer split yet: on several GPUs the experts "
-         "the GPUs do not hold are read through the OS file cache (--mmap-experts) instead, and RAM can fill up to 0 "
-         "free during long prompts. One GPU keeps them in RAM (steady RAM use): START-HERE --setup, or --gpu N for a "
-         "start")
-    return True
-
-
 def unsloth_split_need_gb(model="UD-Q4_K_XL") -> float:
     """#498: the RAM UD-Q4_K_XL needs on several GPUs, where it has no RAM budget (the engine refuses
     --resident-budget-gib with a layer split): its GGUF files and UNSLOTH_RAM_LEFT_GB more (~135 GB).  Measured safe
@@ -674,7 +658,6 @@ def offer_together(cfg_path: Path, cfg: dict, yes: bool) -> dict:
              ["y", "n"], "n" if resident or short or budget else "y", yes) == "y":
         cfg["gpu"] = [g["index"] for g in pair]
         cfg["layer_split"] = cfg.get("layer_split") or "auto"
-        split_mmap(cfg)
         split_budget(cfg)
         ok("from now on this model runs on " + " + ".join(gpu_name(g) for g in pair))
     else:
@@ -2683,8 +2666,9 @@ def start(cfg_path: Path, port: int | None, gpu: int | list | None = None, open_
     else:
         cfg = offer_together(cfg_path, cfg, yes)
     use = gpu if gpu is not None else cfg.get("gpu")
-    # #364 #384: a resident low-RAM config on several GPUs; #498: a UD-Q4_K_XL config with its RAM budget (by hand)
-    if isinstance(use, list) and (split_mmap(cfg) | split_budget(cfg)):
+    # #498: a UD-Q4_K_XL config with its RAM budget (by hand); the resident mode on several GPUs keeps the experts
+    # the GPU caches do not hold in RAM once (the engine dedups against every stage's cache)
+    if isinstance(use, list) and split_budget(cfg):
         write_config(cfg_path, cfg)
     if cfg.get("backend") == "hip":
         pass

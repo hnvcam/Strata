@@ -75,6 +75,12 @@ The engine flags behind it: `--layer-split K1[,K2..]|auto` and `--split-device D
 devices; default the next visible ones). `--layer-split K --split-device 0` runs both stages on one card sharing
 everything - the bit-exact check of the hand-off, not a speed mode.
 
+`--vram-reserve-mib` takes a comma list per card: `1024,384` keeps 1024 MiB free on CUDA0 and 384 MiB on CUDA1 (a
+single value is every card's, the last value repeats for further cards). One reserve for both cards over-holds the
+card that only carries layers: the last card also runs the output head and the draft layer, and its reserve is where
+those come from, so it wants the bigger number and the plain layer card the smaller one. The split's boundary search
+and each card's expert cache then size themselves from their own card's reserve.
+
 **auto** tries every placement for two or three cards; beyond that it shares layers in proportion to estimated GPU
 speed. It estimates layer compute time and the cost of experts missing from the caches, with hotter pairs weighted
 more. Each candidate accounts for its own layer weights, shared weights and session state before pricing the cache.

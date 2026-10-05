@@ -199,7 +199,10 @@ more: `START-HERE.bat --vram-reserve-mib 2048` (Linux: `./setup.sh --vram-reserv
 model's `strata-<model>.json` and starts it; at setup (`--setup --vram-reserve-mib 2048`) it goes into the new config.
 By hand: add `"--vram-reserve-mib", "2048"` to the config's `"args"` list and restart. The expert cache is then that
 much smaller, so answers can be a little slower. The engine sizes its cache from the VRAM free when it starts: what
-another program already holds then is left alone anyway; the reserve is room for what it takes later.
+another program already holds then is left alone anyway; the reserve is room for what it takes later. With two cards
+a comma list gives each card its own reserve: `"--vram-reserve-mib", "1024,384"` keeps 1024 MiB on CUDA0 and 384 MiB
+on CUDA1 (one value per card in CUDA order, the last repeats; a single value is every card's). On a layer split the
+card that runs the draft layer and the output head needs more than a card that only carries layers.
 
 **An AMD card that also drives a Linux desktop (#560 #516):** with the default reserve the expert cache fills the
 card, and when the desktop (the compositor, a browser, a new app) needs more VRAM, the amdgpu driver moves GPU memory

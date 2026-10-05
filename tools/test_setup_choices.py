@@ -302,6 +302,23 @@ class VramReserve(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("--vram-reserve-mib takes a number of MiB", err.getvalue())
 
+    def test_a_reserve_per_card(self):
+        """A comma list gives each card its own reserve: "1024,384" = CUDA0 1024, CUDA1 384 (a layer split:
+        the drafter's card needs more than a card that only carries layers)."""
+        code, out, cfg, _ = self.install("--vram-reserve-mib", "1024,384")
+        self.assertEqual(code, 0, out)
+        a = cfg["args"]
+        self.assertEqual(a[a.index("--vram-reserve-mib") + 1], "1024,384")
+        self.assertIn("1024,384 MiB, per card in CUDA order", out)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "strata-q2_0.json"
+            p.write_text(json.dumps({"args": ["--vram-reserve-mib", "1024,384"]}))
+            self.assertEqual(setup.choices_from_config(p)["vram_reserve_mib"], "1024,384")
+        with contextlib.redirect_stderr(io.StringIO()) as err:
+            code, out, cfg, _ = self.install("--vram-reserve-mib", "1024;384")
+        self.assertEqual(code, 2)
+        self.assertIn("--vram-reserve-mib takes a number of MiB", err.getvalue())
+
     def test_kept_from_an_earlier_install(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "strata-q2_0.json"

@@ -2379,6 +2379,16 @@ def previous_config(elsewhere_first: list, settings: dict):
     return next((c for c in sorted(cands, key=lambda p: p.stat().st_mtime, reverse=True) if readable_config(c)), None)
 
 
+def parse_vram_reserve(val):
+    """--vram-reserve-mib: "2048" keeps the same on every card, "1024,384" keeps 1024 MiB on CUDA0 and 384 MiB
+    on every later one (a layer split: the drafter's card needs more than a card that only carries layers);
+    None when it is not a comma list of numbers."""
+    val = (val or "").strip()
+    if not re.fullmatch(r"\d+(,\d+)*", val):
+        return None
+    return int(val) if "," not in val else val
+
+
 def choices_from_config(cfg_path: Path) -> dict:
     """The setup answers a config was written with (family, size, context, KV, images, projection, network)."""
     cfg = json.loads(cfg_path.read_text(encoding="utf-8-sig"))
@@ -2390,6 +2400,7 @@ def choices_from_config(cfg_path: Path) -> dict:
     a = cfg.get("args", [])
     val = lambda k: a[a.index(k) + 1] if k in a and a.index(k) + 1 < len(a) else None   # noqa: E731
     vis = cfg.get("vision")
+    reserve = parse_vram_reserve(val("--vram-reserve-mib"))
     esp = val("--control-vector-scaled")
     esp_path = esp.rsplit(":", 1)[0] if esp else None
     return {"family": family, "model": model if model in MODELS else None,
@@ -2400,8 +2411,8 @@ def choices_from_config(cfg_path: Path) -> dict:
             "host": cfg.get("host"), "api_key": cfg.get("api_key"), "port": cfg.get("port"), "gpu": cfg.get("gpu"),
             "layer_split": cfg.get("layer_split"),
             # #493: --vram-reserve-mib given at setup (images write the default 700 themselves)
-            "vram_reserve_mib": int(val("--vram-reserve-mib")) if (val("--vram-reserve-mib") or "").isdigit() and (
-                vis is None or int(val("--vram-reserve-mib")) != VISION["gpu"]["reserve_mib"]) else None}
+            "vram_reserve_mib": reserve if reserve is not None and (
+                vis is None or str(reserve) != str(VISION["gpu"]["reserve_mib"])) else None}
 
 
 def find_in(roots: list, rel: str):
@@ -2961,9 +2972,10 @@ def main() -> int:
     ap.add_argument("--resident-budget-gib", type=float, metavar="N",
                     help="UD-Q4_K_XL: the GiB of its experts kept in RAM (default: the RAM less 24 GB, 40 on 64 GB; "
                          "more is kept as you choose, with a note)")
-    ap.add_argument("--vram-reserve-mib", type=int, metavar="N",
+    ap.add_argument("--vram-reserve-mib", metavar="N",
                     help="VRAM in MiB the engine leaves free for other programs (a game, another model; the engine's "
-                         "default: 700); the expert cache takes that much less")
+                         "default: 700); the expert cache takes that much less. With two cards a comma list gives "
+                         "each card its own: 1024,384 = 1024 MiB on CUDA0, 384 MiB on CUDA1")
     ap.add_argument("--kv-streaming", choices=["auto", "on", "off"], default="auto",
                     help="from a 64K context: keep the KV cache in RAM and only the attention's window in VRAM (more "
                          "experts fit on the GPU); auto: when the RAM has room for it")
@@ -2974,8 +2986,11 @@ def main() -> int:
     a = ap.parse_args()
     if a.resident_budget_gib is not None and not a.resident_budget_gib > 0:
         ap.error("--resident-budget-gib takes a number of GiB above 0, e.g. --resident-budget-gib 32")
-    if a.vram_reserve_mib is not None and a.vram_reserve_mib < 0:
-        ap.error("--vram-reserve-mib takes a number of MiB, 0 or more, e.g. --vram-reserve-mib 2048")
+    if a.vram_reserve_mib is not None:
+        a.vram_reserve_mib = parse_vram_reserve(a.vram_reserve_mib)
+        if a.vram_reserve_mib is None:
+            ap.error("--vram-reserve-mib takes a number of MiB, 0 or more - one per card with a comma "
+                     "(1024,384) - e.g. --vram-reserve-mib 2048")
     if a.gpu is not None:                             # --gpu 0,2 means --gpus 0,2 (a user tried it: issue report)
         if "," in a.gpu:
             a.gpus, a.gpu = a.gpus or a.gpu, None
@@ -3590,14 +3605,15 @@ def main() -> int:
     if a.vram_reserve_mib is not None:                 # #493: VRAM left free for other programs (only when given)
         if "--vram-reserve-mib" in args:
             i = args.index("--vram-reserve-mib") + 1
-            if vision == "gpu" and a.vram_reserve_mib < int(args[i]):
+            if vision == "gpu" and int(str(a.vram_reserve_mib).split(",")[0]) < int(args[i]):
                 warn(f"--vram-reserve-mib {a.vram_reserve_mib}: the image encoder on the GPU needs ~{args[i]} MiB of "
                      "it; kept as you chose (it may run out of VRAM when it reads a picture)")
             args[i] = str(a.vram_reserve_mib)
         else:
             args += ["--vram-reserve-mib", str(a.vram_reserve_mib)]
-        ok(f"VRAM kept free for other programs: {a.vram_reserve_mib} MiB (--vram-reserve-mib; the expert cache takes "
-           "that much less)")
+        ok(f"VRAM kept free for other programs: {a.vram_reserve_mib} MiB"
+           + (", per card in CUDA order (CUDA0, CUDA1, ...)" if "," in str(a.vram_reserve_mib) else "")
+           + " (--vram-reserve-mib; the expert cache takes that much less)")
     if not multi and 0 < gpu.get("vram_gb", 0.0) < SMALL_CARD_GB:
         # #496: on a 6 GB card the expert cache can get no room at all; the engine lowers its own reserve when that
         # is what it takes, and says what is short when even that is not enough.  Setup only says what helps.

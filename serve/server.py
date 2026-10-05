@@ -2572,7 +2572,8 @@ def desktop_vram_note(backend, vram_free_mib, args: list, desktop: bool) -> str:
     if backend != "hip" or not desktop or not isinstance(vram_free_mib, int) or vram_free_mib >= DESKTOP_FREE_MIB:
         return ""
     try:
-        reserve = int(args[args.index("--vram-reserve-mib") + 1]) if "--vram-reserve-mib" in args else 700
+        # "1024,384" (per CUDA device): the note is about this one card, so its own value - CUDA0's, the first
+        reserve = int(args[args.index("--vram-reserve-mib") + 1].split(",")[0]) if "--vram-reserve-mib" in args else 700
     except (ValueError, IndexError):
         reserve = 700
     if reserve >= DESKTOP_RESERVE_MIB:

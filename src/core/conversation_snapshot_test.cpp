@@ -198,6 +198,37 @@ void full_session(int fmt, int mode, int experts) {
           restored.live.dead==a.live.dead && restored.live.block_pos==a.live.block_pos &&
           equal(restored.kv[0],a.kv[0]) && equal(restored.kv[1],a.kv[1]),"whole-session A/B/A exactness including spare key");
     check(ss.ple_prev[0]==64 && ss.ple_prev[1]==65,"PLE token window reconstructed");
+    {
+        // a borrowed prefix (ConversationCache::borrows): the K/V of A's first tokens and A's checkpoint there, A
+        // untouched - the same bytes as restoring A whole and rewinding to that checkpoint
+        const int64_t at = (int64_t) a.checkpoints[0].ids.size();
+        check(conversation_snapshot_restore(a,ss,g,draft.state,err)==ConversationRestore::restored,"restore A whole");
+        check(conversation_checkpoint_restore(a.checkpoints[0],ss,g,err),"rewind it to its checkpoint");
+        ConversationKv want_main,want_draft,got_main,got_draft;
+        ConversationCheckpoint want_state,got_state;
+        want_state.ids=got_state.ids=a.checkpoints[0].ids;
+        check(conversation_kv_save(want_main,main.state,g,at,true,err) &&
+              conversation_kv_save(want_draft,draft.state,g,at,false,err) &&
+              conversation_checkpoint_save(want_state,ss,g,err),"capture the rewound prefix");
+        fill(201);   // another conversation in the session
+        const SavedConversation untouched=a;
+        check(conversation_snapshot_restore_prefix(a,(int64_t)a.live.ids.size()+1,ss,g,draft.state,err)==
+                  ConversationRestore::invalid &&
+              conversation_snapshot_restore_prefix(a,0,ss,g,draft.state,err)==ConversationRestore::invalid,
+              "a prefix outside the image is refused");
+        check(conversation_snapshot_restore_prefix(a,at,ss,g,draft.state,err)==ConversationRestore::restored,
+              "restore A's prefix only");
+        check(conversation_checkpoint_restore(a.checkpoints[0],ss,g,err),"mount the checkpoint over it");
+        check(conversation_kv_save(got_main,main.state,g,at,true,err) &&
+              conversation_kv_save(got_draft,draft.state,g,at,false,err) &&
+              conversation_checkpoint_save(got_state,ss,g,err),"capture the borrowed prefix");
+        check(equal(got_main,want_main) && equal(got_draft,want_draft),
+              "borrowed K/V equals the whole restore's prefix");
+        check(got_state.gdn==want_state.gdn && got_state.ple==want_state.ple && got_state.tails==want_state.tails &&
+              got_state.dead==want_state.dead && got_state.block_pos==want_state.block_pos,"the same running state");
+        check(untouched.live.ids==a.live.ids && equal(untouched.kv[0],a.kv[0]) && equal(untouched.kv[1],a.kv[1]),
+              "the parked image is unchanged");
+    }
     for (int64_t dirty : {65, 3, 0}) {
         check(conversation_snapshot_restore(a,ss,g,draft.state,err)==ConversationRestore::restored,"restore growth fixture base");
         ConversationKvReuse reuse{a.kv,65,dirty};
@@ -275,8 +306,9 @@ void full_session(int fmt, int mode, int experts) {
     check(ss.ple_prev[0]==2 && ss.ple_prev[1]==3,"checkpoint PLE token window");
 }
 
-void disk_roundtrip(int devices) {
+void disk_roundtrip(int devices, bool mtp_first = false) {
     const int second_device = devices > 1 ? 1 : 0;
+    const int draft_device = mtp_first ? 0 : second_device;
     std::array<std::unique_ptr<Fixture>, 2> main;
     std::array<SessionState, 2> sessions;
     std::array<ConversationStateSizes, 2> sizes;
@@ -306,11 +338,11 @@ void disk_roundtrip(int devices) {
             cuda_check(cudaMemset(ptr, 31 + i, n));
         cuda_check(cudaMemcpy(ss.qsa_states[i].idx_pooled + (ids.size()/4)*g.idx_key_dim,
                               ss.qsa_states[i].idx_dead, sizes[i].dead, cudaMemcpyDeviceToDevice));
-        targets.push_back({i == 0 ? 0 : second_device, &ss});
+        targets.push_back({i == 0 ? 0 : second_device, &ss, mtp_first && i == 0});
     }
     std::unique_ptr<Fixture> draft;
     {
-        const OnDevice on(second_device);
+        const OnDevice on(draft_device);
         draft = std::make_unique<Fixture>(kKvInt8, 2); draft->fill(77);
     }
     DiskChunkState captured;
@@ -337,7 +369,7 @@ void disk_roundtrip(int devices) {
         cuda_check(cudaMemset(sessions[i].gdn_state, 177, sizes[i].gdn));
     }
     {
-        const OnDevice on(second_device); draft->fill(177);
+        const OnDevice on(draft_device); draft->fill(177);
     }
     auto invalid = *loaded;
     invalid.stages[1].kv[0].k.pop_back();
@@ -381,7 +413,7 @@ void disk_roundtrip(int devices) {
     check(equal(again.draft, captured.draft), "restored MTP bytes equal captured state");
     std::filesystem::remove_all(root);
     {
-        const OnDevice on(second_device); draft.reset();
+        const OnDevice on(draft_device); draft.reset();
     }
     for (int i = 0; i < 2; ++i) {
         const OnDevice on(targets[i].device); delete[] sessions[i].qsa_states; main[i].reset();
@@ -395,6 +427,7 @@ int main() {
     int devices=0;
     if (cudaGetDeviceCount(&devices)!=cudaSuccess || !devices) return 77;
     disk_roundtrip(devices);
+    disk_roundtrip(devices, true);
     for (int fmt : std::array<int,4>{kKvF16,kKvInt8,kKvQ4,3}) for (int mode : {0,1,2}) {
         if (fmt==3 && mode!=0) continue;
         Fixture f(fmt,mode);

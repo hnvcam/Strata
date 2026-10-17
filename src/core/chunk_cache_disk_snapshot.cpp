@@ -4,6 +4,10 @@
 
 namespace strata::core {
 namespace {
+int draft_device(const std::vector<DiskChunkTarget>& targets) {
+    for (const auto& target : targets) if (target.carries_draft) return target.device;
+    return targets.back().device;
+}
 bool fail(std::string& error, const char* message) { error = message; return false; }
 bool targets_valid(const std::vector<DiskChunkTarget>& targets, const ModelGeometry& g, std::string& error) {
     int64_t at = 0;
@@ -104,7 +108,7 @@ bool chunk_cache_disk_stream_source(DiskChunkFile& image, const std::vector<Disk
         for(size_t j=0;j<out.kv.size();++j)
             if(!describe(out.kv[j],s.qsa_states[s.qsa_ord0+j],true,targets[i].device))return false;
     }
-    if(!describe(result.draft,draft,false,targets.back().device))return false;
+    if(!describe(result.draft,draft,false,draft_device(targets)))return false;
     image=std::move(result);return true;
 }
 bool chunk_cache_disk_stream_validate(const DiskChunkFile& image, const std::vector<DiskChunkTarget>& targets,
@@ -179,7 +183,7 @@ ConversationRestore chunk_cache_disk_stream_restore(const DiskChunkFile& image,
         s.ple_prev[1]=image.stages[i].ids[size_t(L-1)];
         if(!sync(error))return ConversationRestore::transfer_failed;
     }
-    const OnDevice on(targets.back().device);
+    const OnDevice on(draft_device(targets));
     if(!kv_restore(image.draft,draft,false) || !sync(error))return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
 }
@@ -227,7 +231,7 @@ bool chunk_cache_disk_snapshot_save(DiskChunkState& image, const std::vector<Dis
             if (!conversation_kv_save(part.kv[j], s.qsa_states[s.qsa_ord0+j], g, int64_t(ids.size()), true, error)) return false;
     }
     {
-        const OnDevice on(targets.back().device);
+        const OnDevice on(draft_device(targets));
         if (!conversation_kv_save(result.draft, draft, g, int64_t(ids.size()), false, error)) return false;
     }
     image = std::move(result);
@@ -265,7 +269,7 @@ ConversationRestore chunk_cache_disk_snapshot_restore(const DiskChunkState& imag
                 return ConversationRestore::transfer_failed;
         if (!conversation_checkpoint_restore(image.stages[i].running, s, g, error)) return ConversationRestore::transfer_failed;
     }
-    const OnDevice on(targets.back().device);
+    const OnDevice on(draft_device(targets));
     if (!conversation_kv_restore(image.draft, draft, g, tokens, false, error) || !sync(error)) return ConversationRestore::transfer_failed;
     return ConversationRestore::restored;
 }

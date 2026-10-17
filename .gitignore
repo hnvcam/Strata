@@ -64,3 +64,6 @@ build-vision-cuda12.bat
 /.strata-prompt-cache/
 /.strata-cache.img
 /.strata-cache-mnt/
+
+# local Windows HIP packaging output
+dist-hip/

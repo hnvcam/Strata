@@ -76,8 +76,11 @@ struct DiskChunkFile {
 class ChunkCacheDisk {
 public:
     ChunkCacheDisk(std::filesystem::path root, std::string identity,
-                    uint64_t budget, int days, int64_t max_tokens);
+                    uint64_t budget, int days, int64_t max_tokens, bool filesystem_usage = false);
     bool enabled() const { return !root_.empty() && budget_ != 0; }
+    // Filesystem accounting counts shared blocks once. It requires a dedicated
+    // filesystem: its metadata and unrelated files count toward the cap too.
+    uint64_t max_file_bytes() const { return filesystem_usage_ ? uint64_t(INT64_MAX) : budget_; }
     const std::vector<DiskChunkKey>& keys(const std::vector<int64_t>& ids,
                                    const std::vector<ConversationImageKey>& images,
                                    bool cvec, int64_t chunk_tokens, int64_t prefix_tokens);
@@ -106,6 +109,10 @@ private:
     uint64_t budget_;
     int days_;
     int64_t max_tokens_;
+    bool filesystem_usage_;
+    std::optional<uint64_t> filesystem_bytes(bool reclaim = false) const;
+    // Caller holds index_mu_ (or is in startup). Never removes `protect`.
+    bool trim_filesystem(const std::string& protect);
     void published(const std::string& key, uint64_t bytes);
     // Callers hold index_mu_; public methods lock it themselves.
     void forget_locked(const std::string& key);

@@ -95,8 +95,12 @@ int main() {
     check(chunk_cache_disk_sha256("") == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "SHA-256 empty vector");
     check(chunk_cache_disk_sha256("abc") == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 abc vector");
     check(chunk_cache_disk_sha256(std::string(1000000, 'a')) == "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0", "SHA-256 multi-block vector");
-    const auto root = fs::temp_directory_path() / ("strata-disk-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const char* test_root = std::getenv("STRATA_DISK_TEST_ROOT");
+    const auto root = (test_root ? fs::path(test_root) : fs::temp_directory_path()) /
+        ("strata-disk-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     fs::create_directories(root);
+    const auto owned_root=fs::canonical(root);
+    std::printf("isolated cache test directory: %s\n",owned_root.string().c_str());
     const auto identity = chunk_cache_disk_sha256("model A");
     ChunkCacheDisk cache(root, identity, 100000, 3, 131072);
     std::vector<int64_t> ids{1,2,3,4,5};
@@ -355,6 +359,106 @@ int main() {
     check(!too_small.store(keys[2].hash,state,error), "oversized entry skipped");
     ChunkCacheDisk disabled(root/"off",identity,0,3,131072);
     check(!disabled.enabled() && !fs::exists(root/"off"), "disabled cache does not create files");
+    {
+        const auto physical_root=root/"filesystem";
+        fs::create_directories(physical_root/"prompt-v1");
+        const auto space=fs::space(physical_root);
+        const uint64_t budget=space.capacity-space.free+64*1024*1024;
+        // Sparse files distinguish allocated space from logical length even
+        // on a test filesystem without reflinks. Do not read their payloads.
+        for(size_t i=0;i<2;++i) {
+            std::ofstream(entry(physical_root,keys[i].hash)).close();
+            fs::resize_file(entry(physical_root,keys[i].hash),budget+4096);
+        }
+        std::ofstream(physical_root/"prompt-v1"/"unrelated.txt")<<"keep";
+        ChunkCacheDisk physical(physical_root,identity,budget,3,131072,true);
+        check(physical.contains(keys[0].hash) && physical.contains(keys[1].hash),
+              "filesystem startup keeps sparse entries whose logical sizes exceed the budget");
+        check(physical.file_bytes(keys[0].hash)==budget+4096,
+              "filesystem mode does not apply logical byte cap to individual files");
+        check(physical.store(keys[2].hash,state,error) && physical.contains(keys[0].hash) &&
+              physical.contains(keys[1].hash) && physical.contains(keys[2].hash),
+              "filesystem save keeps entries while actual usage remains below budget");
+        check(bool(physical.load(keys[2].hash,error)), "filesystem mode preserves snapshot round trip");
+        {
+            ChunkCacheDisk restarted(physical_root,identity,budget,3,131072,true);
+            check(restarted.contains(keys[0].hash) && restarted.contains(keys[1].hash) &&
+                  bool(restarted.load_stream(keys[2].hash,error)),
+                  "filesystem accounting survives restart without logical-size eviction");
+        }
+        fs::last_write_time(entry(physical_root,keys[0].hash),fs::file_time_type::clock::now()-std::chrono::hours(73));
+        {
+            ChunkCacheDisk restarted(physical_root,identity,budget,3,131072,true);
+            check(!restarted.contains(keys[0].hash) && restarted.contains(keys[1].hash),
+                  "filesystem accounting retains the existing inactivity expiry");
+        }
+        ChunkCacheDisk pressure(physical_root,identity,1,3,131072,true);
+        check(!pressure.contains(keys[1].hash) && !pressure.contains(keys[2].hash) &&
+              !fs::exists(entry(physical_root,keys[1].hash)) && !fs::exists(entry(physical_root,keys[2].hash)),
+              "filesystem pressure evicts managed entries at startup");
+        check(!pressure.store(keys[2].hash,state,error) && !pressure.contains(keys[2].hash) &&
+              !fs::exists(entry(physical_root,keys[2].hash)),
+              "filesystem pressure rejects new snapshot when usage cannot fit the cap");
+        check(fs::exists(physical_root/"prompt-v1"/"unrelated.txt"),
+              "filesystem pressure never deletes unrelated files");
+    }
+    if(std::getenv("STRATA_DISK_TEST_REFLINK")) {
+        // Optional integration check on an otherwise idle, dedicated reflink
+        // filesystem. The test root must not be the live prompt-v1 directory.
+        const auto reflink_root=root/"reflink";
+        fs::create_directories(reflink_root);
+        const auto space=fs::space(reflink_root);
+        const uint64_t budget=space.capacity-space.free+128*1024*1024;
+        ChunkCacheDisk physical(reflink_root,identity,budget,3,131072,true);
+        constexpr size_t payload=8*1024*1024;
+        auto large=fixture(payload);
+        auto first=stream_image(large,0);
+        std::string previous=chunk_cache_disk_sha256("reflink root");
+        const auto first_key=previous;
+        check(physical.store_stream(previous,first,"",error), "reflink integration root saved");
+        first={};
+        const auto child=stream_image(large,payload);
+        uint64_t logical=physical.file_bytes(previous);
+        // Enough shared files to exceed the budget in logical sizes while
+        // adding only small changed blobs and metadata to actual disk usage.
+        const auto count=budget/logical+2;
+        for(uint64_t i=0;i<count;++i) {
+            const auto key=chunk_cache_disk_sha256("reflink child "+std::to_string(i));
+            check(physical.store_stream(key,child,previous,error), "reflink integration child saved");
+            logical+=physical.file_bytes(key);previous=key;
+        }
+        check(logical>budget && physical.contains(first_key),
+              "reflink cache retains shared root when logical total exceeds budget");
+        const auto after=fs::space(reflink_root);
+        check(after.capacity-after.free<=budget, "reflink chain actual filesystem use fits budget");
+        ChunkCacheDisk restarted(reflink_root,identity,budget,3,131072,true);
+        check(restarted.contains(first_key) && restarted.contains(previous),
+              "reflink shared root and last child survive restart");
+        const auto loaded=restarted.load_stream(previous,error);
+        check(loaded && read_all(*loaded,loaded->draft.data[0])==to_vec(large.draft.k),
+              "reflink child beyond logical aggregate cap restores exact payload");
+        std::printf("reflink accounting: logical=%llu MiB; filesystem used=%llu MiB; cap=%llu MiB\n",
+                    (unsigned long long)(logical/(1024*1024)),
+                    (unsigned long long)((after.capacity-after.free)/(1024*1024)),
+                    (unsigned long long)(budget/(1024*1024)));
+        const auto lru_root=root/"filesystem-lru";
+        fs::create_directories(lru_root);
+        const auto before_lru=fs::space(lru_root);
+        const uint64_t lru_budget=before_lru.capacity-before_lru.free+112*1024*1024;
+        ChunkCacheDisk lru(lru_root,identity,lru_budget,3,131072,true);
+        const auto full=stream_image(large,0);
+        // Each independent file occupies about 48 MiB. Two fit, three do not;
+        // a RAM-only touch must keep the first ahead of the second in LRU.
+        check(lru.store_stream(keys[0].hash,full,"",error) &&
+              lru.store_stream(keys[1].hash,full,"",error), "two independent files fit physical budget");
+        lru.touch(keys[0].hash);
+        check(lru.store_stream(keys[2].hash,full,"",error) && lru.contains(keys[0].hash) &&
+              !lru.contains(keys[1].hash) && lru.contains(keys[2].hash),
+              "physical budget evicts least recently used file and honors unflushed touch");
+        const auto after_lru=fs::space(lru_root);
+        check(after_lru.capacity-after_lru.free<=lru_budget,
+              "physical eviction settles freed blocks and brings usage below cap");
+    }
     std::ofstream(root/"artifact") << "first";
     const auto a=chunk_cache_disk_identity({"kv=int8"},{root/"artifact"});
     std::ofstream(root/"artifact") << "other";
@@ -362,6 +466,9 @@ int main() {
     check(!a.empty() && a!=b, "artifact changes invalidate identity");
     check(b!=chunk_cache_disk_identity({"kv=q4"},{root/"artifact"}), "runtime settings invalidate identity");
     check(chunk_cache_disk_identity({}, {root/"missing"}).empty(), "missing artifacts disable persistence");
-    fs::remove_all(root);
+    check(fs::canonical(root)==owned_root && root.filename().string().starts_with("strata-disk-test-") &&
+          fs::canonical(root.parent_path())!=owned_root,
+          "cleanup is restricted to this test's generated temporary child directory");
+    fs::remove_all(owned_root);
     std::printf("chunk_cache_disk_test: %d checks passed\n",checks);
 }

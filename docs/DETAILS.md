@@ -1278,6 +1278,18 @@ shutdown also flushes them. Unexpected termination can lose unflushed timestamp 
 earlier expiry at the next startup, but does not change snapshot correctness. Expired entries and
 abandoned temporary writes are removed only at engine startup. Expiry is not enforced during a
 running session. Least recently used files are removed on saves when the disk cap is exceeded.
+The cap normally sums logical file sizes. For a dedicated cache filesystem, set
+`"chunk_cache_disk_usage": "filesystem"` (engine: `--chunk-cache-disk-usage filesystem`).
+The cap then measures the entire filesystem's used space (`capacity - free`), counting shared
+reflink blocks once, including filesystem metadata and any unrelated files on that filesystem.
+Use this only when the cache has its own filesystem; a cache folder on the system disk would
+count the system disk's other files too. Cleanup still removes only managed cache entries,
+oldest first, and rechecks used space after each deletion. On Linux it syncs the cache filesystem
+before checking the cap at startup, after publishing an entry, and after each eviction: new
+allocations and deleted blocks may not be reflected immediately. This adds disk flushes on
+the background writer. A failed space query stops size cleanup rather than falling back to
+logical sizes; a failed initial query disables persistence without deleting entries. The default
+`logical` mode and the inactivity expiry are unchanged. Accounting mode is not part of chunk keys.
 Each chunk file chains onto the previous chunk: the file starts as a copy-on-write clone of its
 parent (or a byte copy where the filesystem has no `FICLONE`) and appends only the bytes the new
 chunk adds, so shared K/V pages occupy disk once instead of once per file. The 16 chained files of

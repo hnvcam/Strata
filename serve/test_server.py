@@ -2103,6 +2103,14 @@ class DiskChunkConfig(unittest.TestCase):
     def test_defaults_leave_engine_arguments_unchanged(self):
         self.assertEqual(engine_args({"args": ["--kv", "int8"]}), ["--kv", "int8"])
 
+    def test_dedicated_filesystem_accounting_is_opt_in(self):
+        cfg = {"args": [], "chunk_cache_disk_usage": "filesystem"}
+        self.assertEqual(engine_args(cfg), ["--chunk-cache-disk-usage", "filesystem"])
+        cfg["args"] = ["--chunk-cache-disk-usage", "logical"]
+        self.assertEqual(engine_args(cfg), cfg["args"])
+        cfg["args"] = ["--prompt-cache-disk-usage", "logical"]
+        self.assertEqual(engine_args(cfg), cfg["args"])
+
     def test_disk_settings_and_layer_split_reach_engine(self):
         cfg = {"args": ["--kv", "int8"], "gpu": [1, 0], "layer_split": 4,
                "chunk_cache_disk": "/cache", "chunk_cache_disk_mib": 16384, "chunk_cache_disk_days": 3,

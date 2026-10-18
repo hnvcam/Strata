@@ -351,8 +351,9 @@ size_t DiskChunkState::bytes() const {
 }
 std::string chunk_cache_disk_sha256(const std::string& value) { Sha256 h;h.update(value.data(),value.size());return h.finish(); }
 
-ChunkCacheDisk::ChunkCacheDisk(std::filesystem::path root,std::string identity,uint64_t budget,int days,int64_t max_tokens)
-    :identity_(std::move(identity)),budget_(budget),days_(days),max_tokens_(max_tokens) {
+ChunkCacheDisk::ChunkCacheDisk(std::filesystem::path root,std::string identity,uint64_t budget,int days,int64_t max_tokens,
+                             bool filesystem_usage)
+    :identity_(std::move(identity)),budget_(budget),days_(days),max_tokens_(max_tokens),filesystem_usage_(filesystem_usage) {
     if(root.empty()||!valid_key(identity_)||!budget||days<=0||max_tokens<=0)return;
     std::error_code ec;
     root_=std::move(root)/"prompt-v1";
@@ -360,6 +361,9 @@ ChunkCacheDisk::ChunkCacheDisk(std::filesystem::path root,std::string identity,u
     if(ec){root_.clear();return;}
     // Prompt tokens and model state are private to this machine/user.
     std::filesystem::permissions(root_,std::filesystem::perms::owner_all,std::filesystem::perm_options::replace,ec);
+    // A failed usage query must not fall back to summing logical sizes and
+    // deleting shared entries. Leave the files intact and disable persistence.
+    if(filesystem_usage_ && !filesystem_bytes()) {root_.clear();return;}
     startup_cleanup();
 }
 std::filesystem::path ChunkCacheDisk::path(const std::string& key) const {
@@ -424,7 +428,7 @@ uint64_t ChunkCacheDisk::file_bytes(const std::string& key) const {
     std::error_code ec;
     if(!std::filesystem::is_regular_file(std::filesystem::symlink_status(p,ec))||ec)return 0;
     const auto size=std::filesystem::file_size(p,ec);
-    return ec||size<200||size>budget_ ? 0 : size;
+    return ec||size<200||size>max_file_bytes() ? 0 : size;
 }
 bool ChunkCacheDisk::contains(const std::string& key) const {
     std::lock_guard<std::mutex> lock(index_mu_);
@@ -443,7 +447,8 @@ void ChunkCacheDisk::flush_touches() {
         if(ec) {
             // A removed file is a miss; retry other errors on the next idle flush.
             if(ec==std::errc::no_such_file_or_directory) {
-                cached_bytes_-=it->second.bytes;it=cached_.erase(it);continue;
+                if(!filesystem_usage_)cached_bytes_-=it->second.bytes;
+                it=cached_.erase(it);continue;
             }
         }else it->second.dirty=false;
         ++it;
@@ -451,7 +456,10 @@ void ChunkCacheDisk::flush_touches() {
 }
 void ChunkCacheDisk::forget_locked(const std::string& key) {
     const auto it=cached_.find(key);
-    if(it!=cached_.end()){cached_bytes_-=it->second.bytes;cached_.erase(it);}
+    if(it!=cached_.end()){
+        if(!filesystem_usage_)cached_bytes_-=it->second.bytes;
+        cached_.erase(it);
+    }
 }
 void ChunkCacheDisk::discard(const std::string& key) {
     const auto p=path(key);if(p.empty())return;
@@ -461,6 +469,14 @@ void ChunkCacheDisk::discard(const std::string& key) {
 void ChunkCacheDisk::published(const std::string& key,uint64_t bytes) {
     std::lock_guard<std::mutex> lock(index_mu_);
     forget_locked(key);
+    if(filesystem_usage_) {
+        cached_[key]={std::filesystem::file_time_type::clock::now(),bytes,false};
+        if(!trim_filesystem(key)) {
+            std::error_code ec;std::filesystem::remove(path(key),ec);
+            if(!ec)forget_locked(key);
+        }
+        return;
+    }
     // Enforce the cap from the in-memory index, without another directory scan.
     while(cached_bytes_>budget_-bytes && !cached_.empty()) {
         auto oldest=cached_.end();
@@ -475,6 +491,42 @@ void ChunkCacheDisk::published(const std::string& key,uint64_t bytes) {
         forget_locked(victim);
     }
     cached_[key]={std::filesystem::file_time_type::clock::now(),bytes,false};cached_bytes_+=bytes;
+}
+std::optional<uint64_t> ChunkCacheDisk::filesystem_bytes(bool reclaim) const {
+#if defined(__linux__)
+    if(reclaim) {
+        // Btrfs may defer allocation accounting for new writes and keep deleted
+        // extents pinned until a transaction commits. Settle both before
+        // comparing used space to the cap or evicting another shared file.
+        const int fd=::open(root_.c_str(),O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+        if(fd<0)return std::nullopt;
+        const bool ok=::syncfs(fd)==0;
+        ::close(fd);
+        if(!ok)return std::nullopt;
+    }
+#else
+    (void)reclaim;
+#endif
+    std::error_code ec;
+    const auto space=std::filesystem::space(root_,ec);
+    if(ec || space.capacity==uintmax_t(-1) || space.free>space.capacity)return std::nullopt;
+    return uint64_t(space.capacity-space.free);
+}
+bool ChunkCacheDisk::trim_filesystem(const std::string& protect) {
+    auto used=filesystem_bytes(true);
+    while(used && *used>budget_) {
+        auto oldest=cached_.end();
+        for(auto it=cached_.begin();it!=cached_.end();++it)
+            if(it->first!=protect && (oldest==cached_.end() || it->second.used<oldest->second.used))oldest=it;
+        if(oldest==cached_.end())break;
+        const auto victim=oldest->first;
+        std::error_code ec;std::filesystem::remove(path(victim),ec);
+        if(ec)return false;
+        forget_locked(victim);
+        used=filesystem_bytes(true);
+    }
+    if(!used)std::cerr<<"disk chunk cache: filesystem usage unavailable; cleanup stopped\n";
+    return used && *used<=budget_;
 }
 void ChunkCacheDisk::startup_cleanup() {
     if(!enabled())return;
@@ -495,10 +547,12 @@ void ChunkCacheDisk::startup_cleanup() {
                 std::filesystem::remove(p,e);
             continue;
         }
-        if(std::chrono::duration_cast<std::chrono::hours>(now-at).count()>=int64_t(days_)*24||size<200||size>budget_||size>UINT64_MAX-total) {
+        if(std::chrono::duration_cast<std::chrono::hours>(now-at).count()>=int64_t(days_)*24||size<200||
+           size>max_file_bytes()||(!filesystem_usage_ && size>UINT64_MAX-total)) {
             std::filesystem::remove(p,e);continue;
         }
-        total+=size;entries.push_back({p,at,size});
+        if(!filesystem_usage_)total+=size;
+        entries.push_back({p,at,size});
     }
     std::sort(entries.begin(),entries.end(),[](const auto& a,const auto& b){return a.at<b.at;});
     for(const auto& e:entries) {
@@ -506,8 +560,10 @@ void ChunkCacheDisk::startup_cleanup() {
             std::error_code ignored;
             if(std::filesystem::remove(e.p,ignored)){total-=e.size;continue;}
         }
-        cached_.emplace(e.p.stem().string(),Entry{e.at,e.size,false});cached_bytes_+=e.size;
+        cached_.emplace(e.p.stem().string(),Entry{e.at,e.size,false});
+        if(!filesystem_usage_)cached_bytes_+=e.size;
     }
+    if(filesystem_usage_) {cached_bytes_=0;trim_filesystem("");}
 }
 std::optional<DiskChunkState> ChunkCacheDisk::load(const std::string& key,std::string& error) {
     error.clear();const auto size=file_bytes(key);
@@ -536,10 +592,11 @@ bool ChunkCacheDisk::store(const std::string& key,const DiskChunkState& state,st
     std::filesystem::path temp;
     try {
         // A snapshot larger than the cap is refused before opening any file.
-        if(state.bytes()>budget_)return false;
+        const auto limit=max_file_bytes();
+        if(state.bytes()>limit)return false;
         temp=target;temp+="."+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())+
                            "."+std::to_string(std::random_device{}())+".tmp";
-        Writer w(temp,budget_-std::min<uint64_t>(budget_,64));
+        Writer w(temp,limit-std::min<uint64_t>(limit,64));
         w.raw(magic,8);w.raw(identity_.data(),64);w.raw(key.data(),64);w.num(state.cvec);w.num(state.stages.size());
         for(const auto& s:state.stages) {
             w.num(uint64_t(s.layer_lo));w.num(uint64_t(s.layer_hi));write_checkpoint(w,s.running);
@@ -554,7 +611,7 @@ bool ChunkCacheDisk::store(const std::string& key,const DiskChunkState& state,st
                                      std::filesystem::perm_options::replace,ec);
         std::filesystem::rename(temp,target,ec);
         if(ec)throw std::runtime_error("cache publish failed: "+ec.message());
-        published(key,budget_-w.left);return contains(key);
+        published(key,limit-w.left);return contains(key);
     }catch(const std::exception& e){error=e.what();std::error_code ec;if(!temp.empty())std::filesystem::remove(temp,ec);return false;}
 }
 bool DiskChunkFile::read(const DiskChunkBlob& blob, void* target, size_t offset, size_t count) const {
@@ -676,9 +733,15 @@ bool ChunkCacheDisk::store_stream(const std::string& key,const DiskChunkFile& st
             pblobs.clear();
             for(const auto* b:blobs)if(b->reuse)throw std::runtime_error("chain parent unavailable");
         }
+        const auto limit=max_file_bytes();
         uint64_t delta=0;
-        for(const auto* b:blobs)delta+=b->size-(chained?b->reuse:0);
-        if(delta>budget_||payload_end+footer_size>budget_-delta)throw std::runtime_error("entry exceeds disk budget");
+        for(const auto* b:blobs) {
+            const auto added=b->size-(chained?b->reuse:0);
+            if(added>limit-delta)throw std::runtime_error("entry exceeds disk budget");
+            delta+=added;
+        }
+        if(delta>limit||payload_end>limit-delta||footer_size>limit-delta-payload_end)
+            throw std::runtime_error("entry exceeds disk budget");
         temp=target;temp+="."+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count())+
                            "."+std::to_string(std::random_device{}())+".tmp";
         Sha256 payload;
@@ -705,7 +768,7 @@ bool ChunkCacheDisk::store_stream(const std::string& key,const DiskChunkFile& st
         // truncate the cloned parent payload before anything is appended.
         std::ofstream out(temp,std::ios::binary|std::ios::app);
         if(!out)throw std::runtime_error("cache write failed");
-        uint64_t left=budget_-payload_end-footer_size,total=payload_end;
+        uint64_t left=limit-payload_end-footer_size,total=payload_end;
         auto raw=[&](const void* p,size_t n){
             if(!n)return;
             if(n>left)throw std::runtime_error("entry exceeds disk budget");

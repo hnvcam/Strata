@@ -729,6 +729,7 @@ struct Options {
     int64_t chunk_cache_disk_mib = 8192;
     int chunk_cache_disk_days = 3;
     int64_t chunk_cache_disk_max_tokens = 8192;
+    bool chunk_cache_disk_filesystem_usage = false;
     /// --serve: park only conversations of at least this many tokens.  Every parked conversation costs one of
     /// conversation_cache_slots whatever its length, so without it a client that interleaves short side requests
     /// with one long conversation evicts the long one (oldest first).  0 = park every conversation.
@@ -916,6 +917,7 @@ void usage() {
                  "  --trim-stage-weights an explicit --layer-split: each GPU loads only its own layers' dense weights\n"
                  "  --chunk-cache-disk PATH  --serve: complete snapshots at --prefill chunk boundaries (default off)\n"
                  "  --chunk-cache-disk-mib N  disk byte cap in MiB (default 8192; 0 = off)\n"
+                 "  --chunk-cache-disk-usage logical|filesystem  cap file sizes (default) or used space on a dedicated filesystem\n"
                  "  --chunk-cache-disk-days N  expire after N days without use (default 3)\n"
                  "  --chunk-cache-disk-max-tokens N  cache full chunks within the first N tokens (default 8192; 0 = off)\n"
                  "  --prompt-cache-every N  --serve: also checkpoint every N fresh prompt tokens (default 16384, 0 = off)\n"
@@ -2532,6 +2534,14 @@ int main(int argc, char** argv) {
         else if (a == "--session-save-reclaim") o.session_save_reclaim = true;
         else if (a == "--prompt-cache") o.prompt_cache = std::max(0, std::atoi(next("--prompt-cache")));
         else if (a == "--chunk-cache-disk") o.chunk_cache_disk = next("--chunk-cache-disk");
+        else if (a == "--chunk-cache-disk-usage") {
+            const std::string value = next(a.c_str());
+            if (value != "logical" && value != "filesystem") {
+                std::fprintf(stderr, "%s needs logical or filesystem\n", a.c_str());
+                return 2;
+            }
+            o.chunk_cache_disk_filesystem_usage = value == "filesystem";
+        }
         else if (a == "--chunk-cache-disk-mib" || a == "--chunk-cache-disk-days" ||
                  a == "--chunk-cache-disk-max-tokens") {
             const std::string value = next(a.c_str());
@@ -8850,7 +8860,7 @@ int main(int argc, char** argv) {
             if (a.starts_with("--prompt-cache-disk"))
                 a.replace(0, std::string("--prompt-cache-disk").size(), "--chunk-cache-disk");
             if (a == "--chunk-cache-disk" || a == "--chunk-cache-disk-mib" || a == "--chunk-cache-disk-days" ||
-                a == "--chunk-cache-disk-max-tokens") {
+                a == "--chunk-cache-disk-max-tokens" || a == "--chunk-cache-disk-usage") {
                 ++ai;
                 continue;
             }
@@ -8867,12 +8877,15 @@ int main(int argc, char** argv) {
         strata::core::ChunkCacheDisk disk(
             o.prompt_cache > 0 && disk_chunk_tokens > 0 && o.chunk_cache_disk_max_tokens > 0 ? o.chunk_cache_disk : "",
             o.chunk_cache_disk.empty() ? "" : strata::core::chunk_cache_disk_identity(disk_options, disk_artifacts),
-            uint64_t(o.chunk_cache_disk_mib) * 1024 * 1024, o.chunk_cache_disk_days, ss.max_cells);
+            uint64_t(o.chunk_cache_disk_mib) * 1024 * 1024, o.chunk_cache_disk_days, ss.max_cells,
+            o.chunk_cache_disk_filesystem_usage);
         if (!o.chunk_cache_disk.empty())
             std::fprintf(stderr, "strata serve: disk chunk cache: %s; chunk=%lld tokens max_prefix=%lld tokens cap=%lld MiB idle_days=%d stages=%zu\n",
                          disk.enabled() ? "enabled" : "disabled (options or artifact identity unavailable)",
                          (long long) disk_chunk_tokens, (long long) o.chunk_cache_disk_max_tokens,
                          (long long) o.chunk_cache_disk_mib, o.chunk_cache_disk_days, stages.size() + 1);
+        if (disk.enabled() && o.chunk_cache_disk_filesystem_usage)
+            std::fprintf(stderr, "strata serve: disk chunk cache: cap counts used space on the entire cache filesystem\n");
         std::vector<strata::core::DiskChunkKey> disk_keys;
         std::vector<strata::core::DiskChunkTarget> disk_targets{{0, &ss, mtp_first}};
         for (auto& st : stages) disk_targets.push_back({st->dev, &st->ss});
@@ -8886,7 +8899,7 @@ int main(int argc, char** argv) {
                 err.clear();
                 return true;
             }
-            if (estimate > uint64_t(o.chunk_cache_disk_mib) * 1024 * 1024) return true;
+            if (estimate > disk.max_file_bytes()) return true;
             try {
                 const auto t0 = Clock::now();
                 strata::core::DiskChunkFile image;

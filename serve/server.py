@@ -2666,6 +2666,7 @@ def engine_args(cfg: dict) -> list[str]:
     for key, flag in (("chunk_cache_disk", "--chunk-cache-disk"),
                       ("chunk_cache_disk_mib", "--chunk-cache-disk-mib"),
                       ("chunk_cache_disk_days", "--chunk-cache-disk-days"),
+                      ("chunk_cache_disk_usage", "--chunk-cache-disk-usage"),
                       ("chunk_cache_disk_max_tokens", "--chunk-cache-disk-max-tokens")):
         legacy_key = key.replace("chunk_cache_disk", "prompt_cache_disk")
         legacy_flag = flag.replace("chunk-cache-disk", "prompt-cache-disk")

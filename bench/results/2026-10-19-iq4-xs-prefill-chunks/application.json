@@ -1,0 +1,13 @@
+{
+  "saved_config": "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json",
+  "prefill": 4096,
+  "resident_budget_gib": 40,
+  "backup": "/home/hnvcam/Workplace/Strata/bench/results/2026-10-19-iq4-xs-prefill-chunks/original-config.json",
+  "other_protected_files_unchanged": {
+    "/home/hnvcam/Workplace/Strata/engine/strata": true,
+    "/home/hnvcam/Workplace/Strata/engine/profiles/expert-profile-iq4_xs.bin": true,
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": true
+  },
+  "server_running_at_save": false,
+  "restart_performed": false
+}

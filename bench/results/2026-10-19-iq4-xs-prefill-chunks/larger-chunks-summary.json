@@ -1,0 +1,89 @@
+{
+  "ram_budget_gib": 40,
+  "runs_per_timed_case": 3,
+  "timed": {
+    "control-4096-after-6k-40g": {
+      "asked": 4096,
+      "actual": 4096,
+      "ring": 96,
+      "measurements": {
+        "4k": {
+          "median": 501.29116743565584,
+          "runs": [
+            305.89307185051865,
+            529.2741862538604,
+            501.29116743565584
+          ]
+        },
+        "16k": {
+          "median": 657.3662818923353,
+          "runs": [
+            646.5794510546775,
+            742.7421255916007,
+            657.3662818923353
+          ]
+        },
+        "decode": {
+          "median": 38.59136155483413,
+          "runs": [
+            38.59136155483413,
+            38.96875894410074,
+            37.653099427715674
+          ]
+        }
+      }
+    },
+    "tuned-6144-ring32-40g": {
+      "asked": 6144,
+      "actual": 6144,
+      "ring": 32,
+      "measurements": {
+        "4k": {
+          "median": 443.35721862619874,
+          "runs": [
+            447.92441275534753,
+            374.245068389266,
+            443.35721862619874
+          ]
+        },
+        "16k": {
+          "median": 578.6536695627605,
+          "runs": [
+            448.0836656219404,
+            578.6536695627605,
+            620.2231198161742
+          ]
+        },
+        "decode": {
+          "median": 42.13903487244563,
+          "runs": [
+            40.95004095004095,
+            42.13903487244563,
+            42.85522967724655
+          ]
+        }
+      }
+    }
+  },
+  "fit_checks": {
+    "matched-6144-40g": {
+      "asked": 6144,
+      "actual": 3072,
+      "ring": null,
+      "status": "fallback"
+    },
+    "matched-8192-40g": {
+      "asked": 8192,
+      "actual": 4096,
+      "ring": null,
+      "status": "fallback"
+    },
+    "fit-8192-ring16-40g": {
+      "asked": 8192,
+      "actual": 4096,
+      "ring": 16,
+      "status": "fallback"
+    }
+  },
+  "decision": "retain saved prefill=4096; no production setting changed in follow-up"
+}

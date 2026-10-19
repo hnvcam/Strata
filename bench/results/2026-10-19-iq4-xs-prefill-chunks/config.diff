@@ -1,0 +1,16 @@
+--- strata-iq4_xs.json (before)
++++ strata-iq4_xs.json (proposed)
+@@ -10,10 +10,12 @@
+   "--expert-profile",
+   "/home/hnvcam/Workplace/Strata/engine/profiles/expert-profile-iq4_xs.bin",
+   "--resident-experts",
++  "--resident-budget-gib",
++  "40",
+   "--expert-cache",
+   "auto",
+   "--prefill",
+-  "512",
++  "4096",
+   "--spec",
+   "4",
+   "--mtp",

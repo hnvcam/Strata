@@ -1,0 +1,75 @@
+{
+  "unit": "tokens/s",
+  "ram_budget_gib": 40,
+  "runs_per_case": 3,
+  "metrics": {
+    "prefill_4k": {
+      "before": 205.81880307522235,
+      "after": 644.6333018570979,
+      "ratio": 3.1320428076802016,
+      "percent": 213.20428076802017,
+      "before_runs": [
+        207.00982993455133,
+        205.81880307522235,
+        204.19252723148634
+      ],
+      "after_runs": [
+        376.31148595263033,
+        644.6333018570979,
+        650.489137339601
+      ]
+    },
+    "prefill_16k": {
+      "before": 199.0139190704262,
+      "after": 947.4298997866201,
+      "ratio": 4.760621288259479,
+      "percent": 376.06212882594787,
+      "before_runs": [
+        197.43755362531212,
+        203.6827998428619,
+        199.0139190704262
+      ],
+      "after_runs": [
+        917.6963491547828,
+        947.4627728784155,
+        947.4298997866201
+      ]
+    },
+    "decode": {
+      "before": 47.08463195066815,
+      "after": 51.76327699136797,
+      "ratio": 1.0993667115334311,
+      "percent": 9.936671153343113,
+      "before_runs": [
+        46.198654213116406,
+        47.08463195066815,
+        50.07941163845527
+      ],
+      "after_runs": [
+        51.76327699136797,
+        51.90209377764671,
+        50.491793153498136
+      ]
+    }
+  },
+  "validation": {
+    "matched-512-40g": {
+      "retrieval_checks": 7,
+      "coding_answers_checked": 0,
+      "protected_unchanged": true,
+      "engine_exit": 0
+    },
+    "matched-4096-40g": {
+      "retrieval_checks": 7,
+      "coding_answers_checked": 3,
+      "protected_unchanged": true,
+      "engine_exit": 0
+    },
+    "decode-warm-512-40g": {
+      "retrieval_checks": 1,
+      "coding_answers_checked": 3,
+      "protected_unchanged": true,
+      "engine_exit": 0
+    }
+  }
+}

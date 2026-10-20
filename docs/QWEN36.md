@@ -183,6 +183,16 @@ were not attempted.
 
 The fork's shared `strata` executable runs both Flash-Next and Qwen3.6; no separate model executable is needed.
 
+This fork's local RTX 5070 Ti profile is [`strata-qwen36-ud-q4_k_xl.json`](../strata-qwen36-ud-q4_k_xl.json),
+started by [`run-qwen36-ud-q4_k_xl.sh`](../run-qwen36-ud-q4_k_xl.sh). It serves both the web chat and API on
+`127.0.0.1:1234`: 131,072 context capacity, Q8 KV, 2K prefill chunks, 13 workers plus the host, MTP 2 and greedy
+sampling with penalties off. The `llama-cli/qwen3.6-35b-a3b.sh` launcher delegates to that same script.
+On i5-13500 / RTX 5070 Ti / 64 GB RAM it measured 78.8 and 83.6 decode TPS over ten short upstream prompts,
+in fresh processes, versus 95.9 and 99.7 at 8K Q8 capacity with the same settings. These are capacity tests,
+not decode after reading a full 128K history; [raw timings and validation](../bench/results/2026-10-20-qwen36-q8-kv/README.md)
+are retained. Client-supplied nonzero temperature or active penalties override these defaults and bypass
+Qwen3.6 MTP. The engine-wide default and the Flash-Next profile are unchanged.
+
 `--kv int8` stores both K and V in signed 8-bit groups of 64 values, with one FP16 scale per group. Without
 `--kv` (or with `--kv fp32`) this engine keeps its FP32 cache. Q8 covers the main attention layers and the MTP
 block, including batch slots, copied conversation prefixes and speculative windows. The recurrent GDN state

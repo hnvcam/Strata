@@ -210,8 +210,9 @@ def fresh_decode():
 
 def candidate_smoke():
     tok = tokenizer()
-    cfg = json.loads((OUT / "candidate-config.json").read_text())
-    e = Eng(cfg["exe"], cfg["args"], env=ENV, log=str(OUT / "candidate-smoke.log"))
+    cfg = json.loads((ROOT / "strata-qwen36-ud-q4_k_xl.json").read_text())
+    exe = str((ROOT / cfg["exe"]).resolve())
+    e = Eng(exe, cfg["args"], env=ENV, log=str(OUT / "candidate-smoke.log"))
     try:
         filler = "The following is ordinary reference text about trains, weather, gardens and software. " * 1200
         prompt = chat(tok, "Remember this code: STRATA-73921.\n" + filler + "\nWhat code was given at the beginning? Return only that code.")

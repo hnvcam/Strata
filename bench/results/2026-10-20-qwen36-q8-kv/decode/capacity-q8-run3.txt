@@ -1,0 +1,18 @@
+strata-q36: /media/hnvcam/AI/LLAMA_Models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf: 753 tensors (layout checked), 4.40 GiB on the GPU in 1.2 s (the routed experts are placed after the engine's buffers)
+strata: K-quant prompt kernels from /home/hnvcam/Workplace/Strata/engine/libstrata_kq.so (STRATA_MMQ_KQ=1)
+strata-q36: prompt experts on MMQ (int8)
+strata-q36: KV int8 (64 values / FP16 scale), 0.09 GiB per session at 8192 cells
+strata-q36: context 8192 cells, prompt chunk 2048, MTP block loaded, 8.42 GiB of VRAM free
+strata-q36: hybrid experts: 89 of 256 per layer in VRAM (6.52 GiB), all 18.75 GiB in pinned host memory, the rest of a batch of <= 128 rows on 14 CPU threads, bigger prompt chunks streamed (1.10 GiB staging); 8.2 s
+strata-q36: warmed up in 1.2 s (one prompt chunk, a decode step, a speculative step)
+strata serve: session 0: prompt 29 tokens = 0 reused + 29 read in 361 ms (80.3 tok/s), 128 generated in 1277 ms (100.2 tok/s), drafts accepted 65 of 124 (length)
+strata serve: session 0: prompt 34 tokens = 0 reused + 34 read in 257 ms (132.1 tok/s), 128 generated in 1187 ms (107.8 tok/s), drafts accepted 82 of 94 (length)
+strata serve: session 0: prompt 35 tokens = 0 reused + 35 read in 250 ms (140.0 tok/s), 128 generated in 1344 ms (95.3 tok/s), drafts accepted 84 of 88 (length)
+strata serve: session 0: prompt 24 tokens = 0 reused + 24 read in 210 ms (114.3 tok/s), 128 generated in 1441 ms (88.8 tok/s), drafts accepted 71 of 116 (length)
+strata serve: session 0: prompt 29 tokens = 0 reused + 29 read in 260 ms (111.4 tok/s), 16 generated in 187 ms (85.4 tok/s), drafts accepted 7 of 18 (stop)
+strata serve: session 0: prompt 20 tokens = 0 reused + 20 read in 132 ms (151.2 tok/s), 128 generated in 1141 ms (112.2 tok/s), drafts accepted 78 of 98 (length)
+strata serve: session 0: prompt 25 tokens = 0 reused + 25 read in 190 ms (131.4 tok/s), 77 generated in 965 ms (79.8 tok/s), drafts accepted 37 of 82 (stop)
+strata serve: session 0: prompt 29 tokens = 0 reused + 29 read in 187 ms (154.7 tok/s), 69 generated in 650 ms (106.1 tok/s), drafts accepted 45 of 50 (stop)
+strata serve: session 0: prompt 40 tokens = 0 reused + 40 read in 234 ms (170.7 tok/s), 128 generated in 1108 ms (115.5 tok/s), drafts accepted 81 of 96 (length)
+strata serve: session 0: prompt 24 tokens = 0 reused + 24 read in 177 ms (135.2 tok/s), 23 generated in 258 ms (89.1 tok/s), drafts accepted 11 of 24 (stop)
+strata-q36: hybrid experts: 280123 of 472920 batch entries on the GPU (59.2%), 192797 on the CPU pool in 6695 ms, 10883 slot replacements

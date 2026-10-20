@@ -1,0 +1,116 @@
+{
+  "models": {
+    "object": "list",
+    "data": [
+      {
+        "id": "qwen3.6-35b-a3b-ud-q4_k_xl",
+        "object": "model",
+        "status": {
+          "value": "loaded"
+        },
+        "meta": {
+          "n_ctx": 131072
+        },
+        "architecture": {
+          "input_modalities": [
+            "text"
+          ],
+          "output_modalities": [
+            "text"
+          ]
+        }
+      }
+    ]
+  },
+  "web_status": 200,
+  "default_generation_settings": {
+    "n_ctx": 131072,
+    "params": {
+      "temperature": 0.0,
+      "top_p": 1.0,
+      "top_k": 20,
+      "presence_penalty": 0.0,
+      "min_p": 0.0,
+      "frequency_penalty": 0.0,
+      "repeat_penalty": 1.0,
+      "n_predict": -1
+    }
+  },
+  "requests": [
+    {
+      "reasoning_effort": "none",
+      "sampling_fields_omitted": true,
+      "usage": {
+        "prompt_tokens": 28,
+        "completion_tokens": 128,
+        "total_tokens": 156,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "projection": null,
+        "time": 1792510913.8371696,
+        "duration_s": 1.7,
+        "finish": "length",
+        "prompt_tokens": 28,
+        "reused": 0,
+        "output_tokens": 128,
+        "prompt_total": 28,
+        "prompt_read": 28,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 128,
+        "prompt_ms": 382.7,
+        "decode_ms": 1274.6,
+        "decode_tok_s": 100.4,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 98,
+        "drafts_accepted": 79
+      }
+    },
+    {
+      "reasoning_effort": "high",
+      "sampling_fields_omitted": true,
+      "usage": {
+        "prompt_tokens": 22,
+        "completion_tokens": 128,
+        "total_tokens": 150,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        }
+      },
+      "metrics": {
+        "projection": null,
+        "time": 1792510915.5052853,
+        "duration_s": 1.9,
+        "finish": "length",
+        "prompt_tokens": 22,
+        "reused": 0,
+        "output_tokens": 128,
+        "prompt_total": 22,
+        "prompt_read": 22,
+        "reasoning_recoveries": 0,
+        "reasoning_repeat_coverage": 0.0,
+        "engine_generated": 128,
+        "prompt_ms": 204.4,
+        "decode_ms": 1693.7,
+        "decode_tok_s": 75.6,
+        "hit_rate": null,
+        "pcie_share": null,
+        "ram_blobs": 0,
+        "file_blobs": 0,
+        "file_mb": 0,
+        "drafts_offered": 104,
+        "drafts_accepted": 76
+      }
+    }
+  ],
+  "server_started_through": "~/Workplace/llama-cli/qwen3.6-35b-a3b.sh",
+  "configuration": "strata-qwen36-ud-q4_k_xl.json",
+  "note": "Live functional verification with sampling omitted. These two requests are not a throughput benchmark."
+}

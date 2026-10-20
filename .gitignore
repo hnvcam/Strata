@@ -36,6 +36,9 @@ td.log
 /run-*.sh
 /strata-*.json
 /strata-*.log
+# This fork's measured Qwen3.6 runtime profile and its shared launcher.
+!/strata-qwen36-ud-q4_k_xl.json
+!/run-qwen36-ud-q4_k_xl.sh
 /build-strata.bat
 /build-strata-cuda12.bat
 /build-cuda12/

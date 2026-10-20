@@ -1,118 +1,138 @@
-# Qwen3.6 Q8 KV and K-quant prefill, 2026-10-20
+# Qwen3.6 shared engine, Q8 runtime and validation — 2026-10-20
 
-**Installed setting: Q8 KV, K-quant MMQ, 4,096-token prompt chunks, 131,072 context capacity.** It gives the fastest
-prefill of these local cases. The 2K Q8 setting gives faster fresh-chat generation, so both measurements are retained.
+## Active profile
 
-Fork change to the shared Strata 0.1.45 executable, installed locally after the user's approval. Related upstream issue:
-[Qwen3.6 always allocates FP32 KV, #3303](https://github.com/Niko1221/Strata/issues/3303).
-No issue comment or pull request was posted.
+The fork tracks one local Qwen3.6 configuration at
+[`strata-qwen36-ud-q4_k_xl.json`](../../../strata-qwen36-ud-q4_k_xl.json):
 
-## Change
+- UD-Q4_K_XL on RTX 5070 Ti (GPU 0), with the remaining experts in system RAM.
+- 131,072 context capacity, Q8 KV (`--kv int8`), 2,048-token prefill chunks.
+- 13 pool workers plus the host thread, `--mtp 2`, full draft vocabulary.
+- Greedy sampling with presence/frequency penalties off and repetition penalty 1.
+- Localhost only: web chat `http://127.0.0.1:1234/`, API `http://127.0.0.1:1234/v1`.
 
-`--kv int8` stores K and V in groups of 64 signed bytes with a two-byte FP16 scale per group. Both main attention
-and MTP use it. Prefill reconstructs the cache in the existing shared FP16 buffers; decode reads the Q8 groups
-and accumulates in FP32. Batch sessions and conversation copies retain the compressed representation. GDN state
-is unchanged. Without the flag the cache remains FP32; unsupported KV formats fail explicitly.
+`./run-qwen36-ud-q4_k_xl.sh` launches this configuration. The user's
+`~/Workplace/llama-cli/qwen3.6-35b-a3b.sh` delegates to that same launcher. Both
+serve the same engine and defaults. Requests with explicit sampling parameters
+can override the defaults; nonzero temperature or active penalties bypass this
+upstream Qwen3.6 engine's greedy-only MTP path.
 
-The candidate is also compiled with `STRATA_MMQ_KQUANTS=ON`. The installed build had that option off, so its
-Qwen3.6 prefill used native grouped kernels and the CPU pool for every prompt chunk. Startup of the candidate
-confirms `prompt experts on MMQ (int8)` and a 1.10 GiB staging pair for streamed experts. These are two changes
-to the complete configuration; the performance comparison does not isolate their separate contributions.
+Live verification through the `llama-cli` launcher is saved in
+[`runtime-verification.json`](runtime-verification.json) and
+[`runtime-startup.txt`](runtime-startup.txt): web root HTTP 200, API context 131072,
+and MTP drafts active for requests omitting sampling in both thinking modes.
+These functional requests are not a new throughput benchmark.
 
-The model header contains 10 full-attention main layers plus one MTP layer, two KV heads, and 256 values per
-head. At 131,072 cells, K/V allocation including scales changes from **5.50 GiB to 1.418 GiB**, freeing
-**4.082 GiB**. Context capacity stays 131,072. Shared FP16 prefill buffers, attention partials, GDN state and
-weights are additional allocations.
+This is the measured configuration for this Linux desktop, not a change to
+engine-wide defaults or other models. The GGUF path is local to this machine.
+Flash-Next's configuration, launcher and full 248,320-token Q2 draft list are unchanged.
 
-## Validation
+## Controlled decode measurements
 
-- CUDA build for sm_89 and sm_120, including the new engine and `libstrata_kq.so`.
-- Model-free Q8 code/scale, prefill gather, causal split attention, graph capture and batch-session selection
-  tests on both the RTX 5070 Ti and RTX 4060: zero errors under Compute Sanitizer memcheck. Maximum attention
-  absolute error against the host reference: 0.0000012493. The CMake/CTest target also passed.
-- FP32 opt-out compared with the installed binary using the same fixed 23 expert slots, 2,048-token chunk,
-  native prefill and 131,072 capacity: all 10 prompts gave identical token IDs, up to 64 generated tokens each
-  (551 tokens in total). See `baseline-fp32.json` and `candidate-fp32.json`.
-- Q8 versus FP32, fixed slots and native prefill, a shared English/Vietnamese prompt and teacher-forced
-  continuation: 22 rows, mean KL 0.002431, maximum 0.022979, top prediction identical in all 22. This small check
-  is not a general quality benchmark. Raw logits are the `quality-*.full` files; per-row KL is in `quality.json`.
-- Q8 solo/MTP versus two concurrent slots with batch MTP: identical outputs. Copying a held prefix into the
-  other session reused 99 of 100 prompt tokens and gave the fresh continuation's output. Simple arithmetic
-  returned 4; an 18,040-token retrieval prompt returned `STRATA-73921`. See `integration.json` and its log.
-- Final check of the exact staged binary, adjacent K-quant library, automatic expert placement and proposed
-  4K chunk config also retrieved `STRATA-73921` from 18,040 tokens (3,013 tok/s prompt reading). See
-  `candidate-smoke.json`. Every isolated engine exited normally; the production engine remains stopped.
-- A harder arithmetic smoke prompt returned the incorrect `425` instead of `403` on **both the installed
-  binary and Q8**. This was preserved as an existing model result, not marked as a correct answer.
-- Existing server Qwen3.6 config tests: 4 passed. `git diff --check` passed.
-- Before replacing the shared executable, the old and new binaries ran the saved Flash-Next IQ4_XS config:
-  GPU order `[1,0]`, split at layer 5, 131,072 context, INT8 KV, 4K prefill, 40 GiB resident RAM and the full
-  248,320-token Q2 MTP vocabulary. Profile saving and prompt/conversation caches were disabled only in the test
-  processes. Three short requests (up to 64 tokens each) and a 4K retrieval request gave identical token IDs,
-  123 generated tokens total. Both builds allocated 5,437 expert slots (2,354 on the primary stage). Saved
-  config, launcher, expert profile and draft vocabulary hashes were unchanged. See `flashnext-compat.json`,
-  `flashnext_compat.py` and the two engine logs. This checks those requests, not all possible Flash-Next behavior.
+Hardware: Intel i5-13500, RTX 5070 Ti 16 GB, 64 GB RAM, Linux. Each case uses a fresh
+process, normal engine warmup, then each of the ten upstream `parity_prompts.ids`
+lists once, up to 128 generated tokens each, greedy, MTP 2, 2K prefill, 14 CPU
+threads and automatic GPU expert placement. TPS is total generated tokens divided
+by summed engine decode time, excluding prefill and model loading.
 
-HIP configure failed because this PC has no ROCm toolchain; HIP compilation and AMD execution were not
-validated. This model's own engine path does not support SYCL. No review request was opened.
+The prompts contain 20-40 tokens. **Context below is allocated capacity, not a
+filled conversation. These are not measurements of decode after a 128K history.**
 
-## Performance method
-
-Hardware: Intel i5-13500, RTX 5070 Ti 16 GB, 64 GB system RAM, Linux. GPU 0 only; the RTX 4060 continues to host
-the user's other apps. Every case uses the same UD-Q4_K_XL GGUF, 131,072 context capacity, nine pool workers
-(plus the host thread), `--mtp 2`, and the same saved prompt IDs. All test engines run independently of the
-production server and exit on EOF. Expert-cache adaptation stays enabled.
-
-Cases: installed FP32 with 2K chunks; candidate Q8/MMQ with 2K chunks; candidate Q8/MMQ with 4K chunks. Each
-process warms with a 64-token generation, then reads two fresh 4,096-token prompts and one fresh 16,384-token
-prompt. Timed reads reuse zero cached prompt tokens. Next it generates three answers capped at 256 tokens
-from the same 34-token coding prompt, temperature 0.7 and seeds 100/101/102. These sampled generations make
-zero MTP draft attempts, matching the original slow sampled path; they do not measure greedy MTP throughput.
-
-Cases run sequentially, not as interleaved pairs. There is visible cache warming and system variation; the
-16K read has one timing per case. Results describe these local smoke measurements, not a sustained throughput
-guarantee or a 128K-history decode benchmark. The longest functional prompt checked was 18,040 tokens.
-Raw timings and aggregates are saved in `bench.json`, `bench.stdout` and the case logs.
-
-## Measurements
-
-Tokens per second; descriptive timings from one local session, without a confidence interval:
-
-| Setting | 4K prompt, median of 2 | 16K prompt, 1 read | Fresh-chat generation, median of 3 | Generation after unrelated long prompts, median of 3 |
+| Controlled comparison | First run TPS | Second run TPS | Combined TPS | GPU experts/layer |
 | --- | ---: | ---: | ---: | ---: |
-| Installed FP32, native prefill, 2K chunk | 221.7 | 276.8 | 68.4 | 54.2 |
-| Q8 KV + MMQ, 2K chunk | 1,722.1 | 1,824.1 | 91.2 | 56.0 |
-| Q8 KV + MMQ, 4K chunk | 3,304.1 | 3,532.3 | 80.7 | 51.8 |
+| Q8, 8K, against FP32 controls | 87.6 | 89.8 | 88.7 | 89/256 |
+| FP32, 8K, same comparison | 88.0 | 89.1 | 88.6 | 86/256 |
+| Q8, 8K, fresh capacity controls | 95.9 | 99.7 | 97.8 | 89/256 |
+| Q8, 128K, same capacity comparison | 78.8 | 83.6 | 81.1 | 62/256 |
 
-Fresh-chat timings were measured in separate new processes after a 128-token warmup on the same coding prompt,
-with no unrelated long document read before generation. All other generation settings are the same. Their raw
-rates were 64.8/68.4/71.0 (installed), 84.2/91.2/91.4 (Q8 2K), and 67.1/80.7/87.4 (Q8 4K).
-See `fresh-decode.json`. Startup placed 23 experts per layer in VRAM on the installed build, 62 on Q8 2K and
-49 on Q8 4K. The 4K buffers cost some expert slots compared with 2K. Retained routing scores/cache state are a
-plausible reason for the slower generation after an unrelated document; these runs do not isolate its exact cost.
+The first comparison ran Q8/FP32/FP32/Q8; the second ran 128K/8K/8K/128K. Q8 at
+8K matched FP32 within observed variation. Raising Q8 capacity to 128K reduced
+overall throughput 17.0% in the second comparison and held fewer GPU experts;
+MTP remained active. Per 128K process, 567/794 drafts were accepted and 963 tokens
+generated. Each format/capacity's two repeats generated identical token IDs.
+Quantization and changing CPU/GPU expert placement changed some outputs across
+cases; these comparisons do not establish bit-identical output or general quality.
 
-The installed 4K setting trades some fresh-chat generation speed for faster prompt reading. It does not guarantee
-faster generation after a long unrelated prompt: that case was slightly slower than the installed build here.
+There is visible variation between sessions, hence the fresh controls. Four runs
+per comparison do not establish a maximum rate or a confidence interval. The
+observed suite rate is not a minimum for every chat request.
 
-## Files and use
+[`decode/results.json`](decode/results.json) indexes all eight raw runs, including
+binary and prompt hashes, engine timings and draft counters. Each run's JSON
+preserves output token IDs; matching `.txt` files preserve engine startup and
+decode logs. No model binary is committed.
 
-The source change is committed with the engine/header/test/docs files. `source.patch` is a local generated copy,
-excluded from git. `build-manifest.json` records binary hashes and the protected original binary/config hashes.
-Full-vocabulary floating-point dumps are retained locally and excluded from git; the per-row KL is committed.
-`validate.py` reproduces the model checks and speed measurements;
-it refuses to run while another process named `strata` is running.
+To reproduce while production is already stopped by the user:
 
-`candidate-config.json` and `proposed-production-config.json` preserve the tested candidate and proposed config.
-After approval, the tested executable and matching `libstrata_kq.so` were installed in `engine/`; both saved
-launchers use the same `engine/strata`. The Qwen3.6 config now selects `--kv int8 --prefill 4096` at 131,072
-capacity. The Flash-Next config and full draft vocabulary remain unchanged. Engine-level defaults still use
-FP32 for Qwen3.6 unless `--kv int8` is passed; the Q8 setting is explicit in this PC's saved Qwen3.6 config.
+```sh
+.venv/bin/python bench/results/2026-10-20-qwen36-q8-kv/run_decode.py
+# Same setup at 8K; FP32 control also uses --kv fp32.
+.venv/bin/python bench/results/2026-10-20-qwen36-q8-kv/run_decode.py --context 8192 --kv int8
+```
 
-The prior binary, library, build metadata and Qwen3.6 config were backed up under `engine/.runtime-backups/`.
-`installation.json` records the exact backup path and installed hashes. Generated runtime binaries and the
-machine's saved configs remain excluded from git by the repository's existing policy. No production server
-was started or restarted; the user starts it with their existing launcher.
+The runner refuses to start while an engine named `strata` is running. It exits
+only its own benchmark process through stdin EOF and does not edit saved settings.
 
-After installation the validation scripts use the backed-up original executable for baseline comparisons.
-On another PC, set `STRATA_BASELINE_EXE` to an original build and adjust the machine/model paths before running;
-the scripts must not silently compare the new shared executable against itself.
+## Engine change and memory
+
+`--kv int8` stores K and V in groups of 64 signed bytes with one FP16 scale per
+group. Main attention, MTP, batch tables and conversation copies use it. Prefill
+gathers it into shared FP16 buffers; decode accumulates in FP32. GDN stays FP32.
+Without this opt-in flag the engine retains its FP32 path. Unsupported formats fail
+explicitly. Related upstream issue: [#3303](https://github.com/Niko1221/Strata/issues/3303).
+
+For this model's 10 main full-attention layers plus MTP, two KV heads and head
+dimension 256, main-plus-MTP KV allocation at 128K is 5.500 GiB FP32 versus
+1.418 GiB Q8, a 4.082 GiB saving. At 8K it is 0.344 versus 0.089 GiB. These counts
+exclude recurrent state, shared buffers, model weights and expert slots.
+
+The shared CUDA binary was built with `STRATA_MMQ_KQUANTS=ON`; its adjacent
+`libstrata_kq.so` supplies the existing upstream K-quant MMQ prefill kernels. Q8
+KV and MMQ prefill are separate features. Q8 is this fork's opt-in addition.
+No qwen4exp source or shared decode kernel was changed.
+
+## Engine validation retained from the original change
+
+- CUDA compiled for sm_89 and sm_120. Model-free Q8 codes/scales, FP16 gather,
+  causal attention, graph capture and batch-table checks passed on RTX 4060 and
+  RTX 5070 Ti under Compute Sanitizer with zero errors. Maximum attention absolute
+  error against the host reference: 0.0000012493. CTest also passed.
+- FP32 opt-out: ten prompts, up to 64 generated tokens, 551 total; output IDs
+  exactly matched the backed-up original binary with fixed expert slots.
+- Q8 versus FP32: 22 teacher-forced English/Vietnamese rows; mean KL 0.002431,
+  maximum 0.022979, same top prediction in all rows. This small check is not a
+  general quality benchmark. `validate.py quality` reproduces it; temporary full
+  vocabulary dumps were discarded after retaining metrics and inputs.
+- Q8 solo/MTP versus batch MTP and session copying passed. Copying reused 99/100
+  prompt tokens. An 18,040-token retrieval prompt returned `STRATA-73921`; the
+  original 4K-prefill staged-binary check read it at 3,013 TPS. This is historical
+  validation of the engine, not the current 2K profile's prefill measurement.
+- Flash-Next IQ4_XS old/new shared binary: dual GPU, 128K, INT8 KV, 4K prefill,
+  40 GiB resident and full Q2 draft vocabulary; three short requests plus 4K
+  retrieval gave identical output IDs, 123 tokens total, and equal expert slots.
+- A harder arithmetic smoke test returned incorrect `425` instead of `403` on
+  both original and Q8 engines; it is retained as a model failure, not a pass.
+- Existing Qwen3.6 server configuration tests passed. HIP configure failed because
+  this PC has no ROCm toolchain; HIP compile/execution were not validated. This
+  family does not support SYCL. No new engine source was changed for the runtime
+  profile update.
+
+`validate.py`, `flashnext_compat.py` and their JSON/log evidence remain for engine
+reproduction. Historical raw paths and `installation.json` describe the original
+installation and its rollback backup, not the current runtime settings. The
+rollback backup under `engine/.runtime-backups/` is preserved.
+
+## Earlier measurements and correction
+
+`bench.json`, `fresh-decode.json` and their logs retain the earlier installation
+checks: 128K capacity, nine workers, FP32/native versus Q8/MMQ, 2K versus 4K chunks.
+Their short coding prompt was sampled at temperature 0.7 and produced no MTP drafts.
+Repeated coding-prompt warmups reached 80.7 TPS with 4K chunks, while generation
+after unrelated long prompts was 51.8 TPS. That narrow 80.7 result was wrongly
+presented as representative chat speed. It is not the basis for the active profile.
+
+The initial FP32/128K setup still held 23 GPU experts/layer; saying it left no room
+for experts was incorrect. An 8K FP32 experiment also does not establish FP32
+performance at 128K. Those settings are no longer saved as alternate launchers.
+Duplicate configs, temporary benchmark folders, staged binary and diagnostic dumps
+were removed; the shared installed binary and the relevant measurements remain.

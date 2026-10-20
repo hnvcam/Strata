@@ -1,0 +1,20 @@
+{
+  "exe": "/home/hnvcam/Workplace/Strata/engine/candidates/qwen36-q8-kv/strata",
+  "args": [
+    "--native",
+    "/media/hnvcam/AI/LLAMA_Models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+    "--max-context",
+    "131072",
+    "--prefill",
+    "4096",
+    "--mtp",
+    "2",
+    "--pool-workers",
+    "9",
+    "--kv",
+    "int8"
+  ],
+  "prompt_tokens": 18040,
+  "answer": "STRATA-73921<|im_end|>",
+  "done": "DONE 9 18040 5987.0 176.7 stop 5 6 0 0 0 0 0 0.0 18040 0"
+}

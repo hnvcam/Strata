@@ -1,0 +1,10 @@
+{
+  "batch_matches_solo": true,
+  "copied_conversation_matches": true,
+  "arithmetic_baseline": "425<|im_end|>",
+  "arithmetic_q8": "425<|im_end|>",
+  "arithmetic_expected": "403",
+  "simple_arithmetic": "4<|im_end|>",
+  "retrieval_prompt_tokens": 18040,
+  "retrieval": "STRATA-73921<|im_end|>"
+}

@@ -1,0 +1,8 @@
+Internal ctest changing into directory: /tmp/strata-q36-kv-tests
+Test project /tmp/strata-q36-kv-tests
+    Start 28: q36_kv_parity
+1/1 Test #28: q36_kv_parity ....................   Passed    0.16 sec
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   0.17 sec

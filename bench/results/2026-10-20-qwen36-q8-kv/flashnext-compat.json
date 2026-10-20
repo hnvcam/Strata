@@ -1,0 +1,207 @@
+{
+  "args": [
+    "--pack",
+    "/home/hnvcam/Workplace/Strata-data/packs/ud-iq4_xs",
+    "--native",
+    "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf",
+    "--ple-gguf",
+    "/home/hnvcam/Workplace/Strata-data/models/UD-IQ4_XS/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00002-of-00003.gguf",
+    "--expert-profile",
+    "/home/hnvcam/Workplace/Strata/engine/profiles/expert-profile-iq4_xs.bin",
+    "--resident-experts",
+    "--resident-budget-gib",
+    "40",
+    "--expert-cache",
+    "auto",
+    "--prefill",
+    "4096",
+    "--spec",
+    "4",
+    "--mtp",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt",
+    "--max-context",
+    "131072",
+    "--kv",
+    "int8",
+    "--vram-reserve-mib",
+    "700,1152",
+    "--pcie-frac",
+    "0.20",
+    "--spec-min-p",
+    "0.70",
+    "--layer-split",
+    "5",
+    "--prompt-cache",
+    "0",
+    "--conversation-cache-mib",
+    "0"
+  ],
+  "gpu_order": [1, 0],
+  "protected_before": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3ebe903c3c3786e5c833b0d755763b15a44d8ba4eda3822f01e91d550f4ae756",
+    "/home/hnvcam/Workplace/Strata/run-iq4_xs.sh": "864d8390c2dbbdc10d6e6941f121b8ece12467b2d951648e4a0f04ed4fb16ead",
+    "/home/hnvcam/Workplace/Strata/engine/profiles/expert-profile-iq4_xs.bin": "77292dcf0d79cf85595dae42c67c4259721539e300ebefdf329e636fa2c2987f",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+  },
+  "cases": [
+    {
+      "name": "short-0",
+      "n": 64,
+      "ids": [248045, 846, 198, 20206, 440, 279, 3299, 5354, 13, 248046, 198, 248045, 74455, 198, 248068, 271, 248069, 271]
+    },
+    {
+      "name": "short-1",
+      "n": 64,
+      "ids": [248045, 846, 198, 814, 20139, 1204, 264, 43447, 4138, 303, 1330, 22157, 13, 248046, 198, 248045, 74455, 198, 248068, 271, 248069, 271]
+    },
+    {
+      "name": "short-2",
+      "n": 64,
+      "ids": [248045, 846, 198, 7734, 264, 12654, 709, 421, 4523, 279, 21853, 314, 264, 2397, 3092, 1103, 11, 7854, 539, 1330, 1992, 6813, 13, 248046, 198, 248045, 74455, 198, 248068, 271, 248069, 271]
+    },
+    {
+      "name": "retrieval-4k",
+      "n": 24,
+      "expected": "cobalt-714",
+      "fixture": "bench/results/2026-10-19-iq4-xs-prefill-chunks/prompt-4k.json",
+      "fixture_sha256": "cc356d648b18696e3818ae8940537c138f5b8d65ea14bafdb86d32d85f159bf4"
+    }
+  ],
+  "engines": {
+    "baseline": {
+      "exe": "/home/hnvcam/Workplace/Strata/engine/strata",
+      "sha256": "9058a7f76aeea91931b1e38b011c38fa74294ca7fb6ff8f82343d656669813fa",
+      "ready": "READY 131072 stop",
+      "info": {
+        "logit_bias": "1",
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "5437",
+        "expert_cache_mib": "13133",
+        "expert_slots_primary": "2354",
+        "expert_cache_primary_mib": "6118",
+        "spec": "6",
+        "mtp_max": "4",
+        "lookup": "3",
+        "vram_free_mib": "340",
+        "cvec": "0",
+        "arena_mib": "40959",
+        "pool_workers": "13",
+        "pcie_frac": "0.20",
+        "spec_min_p": "0.70",
+        "conversation_cache_mib": "0",
+        "conversation_cache_slots": "4",
+        "conversation_cache_min_free_mib": "2560",
+        "conversation_cache_min_tokens": "0",
+        "tail_role_token": "-1",
+        "vram_elastic": "0",
+        "prefill_cap": "4096",
+        "prefill_stages": "2",
+        "stream_all_min": "1024",
+        "prefill_pipe": "0",
+        "engine": "0.1.45"
+      },
+      "requests": [
+        {
+          "name": "short-0",
+          "tokens": [2232, 248046],
+          "text": "ready<|im_end|>",
+          "done": "DONE 2 18 619.5 189.8 stop 3 3 0 430 1746 1113 9 14.0 18 179 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "short-1",
+          "tokens": [32, 43447, 4138, 539, 51926, 264, 28417, 505, 421, 86914, 8364, 494, 279, 14362, 3594, 430, 424, 57054, 942, 1083, 264, 6605, 13, 1061, 8364, 369, 1179, 5698, 4732, 279, 4821, 430, 279, 6605, 369, 29648, 1142, 1083, 264, 14058, 11, 13057, 50376, 39026, 680, 314, 279, 36337, 13, 248046],
+          "text": "A refrigerator works by circulating a refrigerant that absorbs heat from the interior air as it evaporates into a gas. This heat is then released outside the unit as the gas is compressed back into a liquid, effectively pumping warmth out of the fridge.<|im_end|>",
+          "done": "DONE 50 22 616.3 2190.1 stop 26 36 0 12636 24350 9254 278 132.2 22 1217 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "short-2",
+          "tokens": [71093, 12305, 198, 727, 21853, 44509, 25, 1103, 8, 1411, 2153, 25, 198, 262, 4071, 198, 262, 5019, 279, 21853, 314, 264, 2397, 3092, 1103, 314, 4947, 13, 198, 1031, 262, 17167, 25, 198, 285, 18275, 25, 357, 2397, 3092, 1103, 314, 4947, 13, 198, 1726, 262, 5019, 25, 198, 285, 561, 21853, 869, 430, 264, 2153, 13, 198, 262, 4071, 198, 262, 413],
+          "text": "```python\ndef median(lst: list) -> float:\n    \"\"\"\n    Returns the median of a nonempty list of numbers.\n    \n    Args:\n        lst: A nonempty list of numbers.\n        \n    Returns:\n        The median value as a float.\n    \"\"\"\n    if",
+          "done": "DONE 64 32 605.5 1689.6 length 45 52 0 14202 28616 10919 162 75.5 32 1679 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "retrieval-4k",
+          "tokens": [82601, 3045, 12, 22, 16, 19, 248046],
+          "text": "cobalt-714<|im_end|>",
+          "done": "DONE 7 4096 9150.1 219.1 stop 4 5 0 1247 2973 1523 16 35.1 4096 250 chunk=4095 experts_streamed=20823"
+        }
+      ]
+    },
+    "candidate": {
+      "exe": "/home/hnvcam/Workplace/Strata/engine/candidates/qwen36-q8-kv/strata",
+      "sha256": "0ba22b19b91387e6b2624434b870697a63b28630c10e482d4843d918cd5daf7f",
+      "ready": "READY 131072 stop",
+      "info": {
+        "logit_bias": "1",
+        "context": "131072",
+        "kv": "int8",
+        "kv_resident": "0",
+        "expert_slots": "5437",
+        "expert_cache_mib": "13133",
+        "expert_slots_primary": "2354",
+        "expert_cache_primary_mib": "6118",
+        "spec": "6",
+        "mtp_max": "4",
+        "lookup": "3",
+        "vram_free_mib": "340",
+        "cvec": "0",
+        "arena_mib": "40959",
+        "pool_workers": "13",
+        "pcie_frac": "0.20",
+        "spec_min_p": "0.70",
+        "conversation_cache_mib": "0",
+        "conversation_cache_slots": "4",
+        "conversation_cache_min_free_mib": "2560",
+        "conversation_cache_min_tokens": "0",
+        "tail_role_token": "-1",
+        "vram_elastic": "0",
+        "prefill_cap": "4096",
+        "prefill_stages": "2",
+        "stream_all_min": "1024",
+        "prefill_pipe": "0",
+        "engine": "0.1.45"
+      },
+      "requests": [
+        {
+          "name": "short-0",
+          "tokens": [2232, 248046],
+          "text": "ready<|im_end|>",
+          "done": "DONE 2 18 414.6 168.5 stop 3 3 0 430 1746 1113 9 14.0 18 179 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "short-1",
+          "tokens": [32, 43447, 4138, 539, 51926, 264, 28417, 505, 421, 86914, 8364, 494, 279, 14362, 3594, 430, 424, 57054, 942, 1083, 264, 6605, 13, 1061, 8364, 369, 1179, 5698, 4732, 279, 4821, 430, 279, 6605, 369, 29648, 1142, 1083, 264, 14058, 11, 13057, 50376, 39026, 680, 314, 279, 36337, 13, 248046],
+          "text": "A refrigerator works by circulating a refrigerant that absorbs heat from the interior air as it evaporates into a gas. This heat is then released outside the unit as the gas is compressed back into a liquid, effectively pumping warmth out of the fridge.<|im_end|>",
+          "done": "DONE 50 22 552.0 1756.4 stop 26 36 0 12636 24350 9254 278 132.2 22 1217 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "short-2",
+          "tokens": [71093, 12305, 198, 727, 21853, 44509, 25, 1103, 8, 1411, 2153, 25, 198, 262, 4071, 198, 262, 5019, 279, 21853, 314, 264, 2397, 3092, 1103, 314, 4947, 13, 198, 1031, 262, 17167, 25, 198, 285, 18275, 25, 357, 2397, 3092, 1103, 314, 4947, 13, 198, 1726, 262, 5019, 25, 198, 285, 561, 21853, 869, 430, 264, 2153, 13, 198, 262, 4071, 198, 262, 413],
+          "text": "```python\ndef median(lst: list) -> float:\n    \"\"\"\n    Returns the median of a nonempty list of numbers.\n    \n    Args:\n        lst: A nonempty list of numbers.\n        \n    Returns:\n        The median value as a float.\n    \"\"\"\n    if",
+          "done": "DONE 64 32 545.1 1646.7 length 45 52 0 14202 28616 10919 162 75.5 32 1679 chunk=0 experts_streamed=0"
+        },
+        {
+          "name": "retrieval-4k",
+          "tokens": [82601, 3045, 12, 22, 16, 19, 248046],
+          "text": "cobalt-714<|im_end|>",
+          "done": "DONE 7 4096 9622.0 236.7 stop 6 6 0 1383 3334 1694 19 39.7 4096 291 chunk=4095 experts_streamed=20823"
+        }
+      ]
+    }
+  },
+  "identical_requests": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "protected_after": {
+    "/home/hnvcam/Workplace/Strata/strata-iq4_xs.json": "3ebe903c3c3786e5c833b0d755763b15a44d8ba4eda3822f01e91d550f4ae756",
+    "/home/hnvcam/Workplace/Strata/run-iq4_xs.sh": "864d8390c2dbbdc10d6e6941f121b8ece12467b2d951648e4a0f04ed4fb16ead",
+    "/home/hnvcam/Workplace/Strata/engine/profiles/expert-profile-iq4_xs.bin": "77292dcf0d79cf85595dae42c67c4259721539e300ebefdf329e636fa2c2987f",
+    "/home/hnvcam/Workplace/Strata-data/mtp/rt/draft_vocab.bin": "04e2cf36c8dbca2187a72a00956b204113e8a107478e8301c3982b6d960a29a2"
+  },
+  "passed": true
+}

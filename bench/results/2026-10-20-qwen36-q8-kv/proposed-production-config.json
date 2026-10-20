@@ -1,0 +1,30 @@
+{
+  "exe": "/home/hnvcam/Workplace/Strata/engine/strata",
+  "args": [
+    "--native",
+    "/media/hnvcam/AI/LLAMA_Models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf",
+    "--max-context",
+    "131072",
+    "--prefill",
+    "4096",
+    "--mtp",
+    "2",
+    "--pool-workers",
+    "9",
+    "--kv",
+    "int8"
+  ],
+  "cwd": "/home/hnvcam/Workplace/Strata",
+  "tokenizer": "/home/hnvcam/Workplace/Strata/packs/qwen36-ud-q4_k_xl/tokenizer",
+  "model_name": "qwen3.6-35b-a3b-ud-q4_k_xl",
+  "arch": "qwen35moe",
+  "log": "/home/hnvcam/Workplace/Strata/strata-qwen36-ud-q4_k_xl.log",
+  "lib_dirs": [
+    "/usr/local/cuda/bin",
+    "/usr/local/cuda/lib64"
+  ],
+  "host": "127.0.0.1",
+  "port": 1234,
+  "gpu": 0,
+  "gpus_asked": true
+}

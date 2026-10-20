@@ -1,0 +1,8 @@
+strata-q36: /media/hnvcam/AI/LLAMA_Models/Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf: 753 tensors (layout checked), 4.40 GiB on the GPU in 1.2 s (the routed experts are placed after the engine's buffers)
+strata-q36: prompt experts on the native grouped kernels
+strata-q36: context 131072 cells, prompt chunk 2048, MTP block loaded, 2.49 GiB of VRAM free
+strata-q36: hybrid experts: 23 of 256 per layer in VRAM (1.68 GiB), all 18.75 GiB in pinned host memory, the rest of a batch of <= 2048 rows on 10 CPU threads, bigger prompt chunks streamed (0.00 GiB staging); 7.9 s
+strata-q36: warmed up in 11.4 s (one prompt chunk, a decode step)
+gen: 32 12654 369 6679 310 2663 11 5954 4778 1353 11 271 169932 25 328 175506 169935 170432 191134 170228 13 248046
+strata-q36: prompt 34 tokens in 276.8 ms (122.8 tok/s), 22 generated in 497.1 ms (44.3 tok/s)
+strata-q36: hybrid experts: 1806 of 17600 batch entries on the GPU (10.3%), 15794 on the CPU pool in 624 ms, 0 slot replacements

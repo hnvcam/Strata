@@ -1,0 +1,10 @@
+# Full-vocabulary floating-point dumps are reproducible local diagnostics, not repository assets.
+*.full
+# Keep intermediate build/test attempts locally; final evidence is explicitly committed.
+*-initial.*
+*-equal-prefix.*
+*.stdout
+source.patch
+strata-q36-q8-build.log
+strata-q36-q8-build-final.log
+strata-q36-hip-check.log

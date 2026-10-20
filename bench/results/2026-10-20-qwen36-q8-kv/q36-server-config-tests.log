@@ -1,0 +1,6 @@
+[strata] the config has a "vision" section but no --vision in its args: added --vision (run setup again with --vision to write them)
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK

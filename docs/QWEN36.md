@@ -179,6 +179,27 @@ prompt's token ids are above 65,536), and a candidate list built from the tokens
 stream (captured into the decode graph) decodes at 36 tok/s instead of 117 with this ROCm. Chunked (WY) GDN and the PCIe-assisted hybrid decode
 were not attempted.
 
+## Optional Q8 KV storage
+
+The fork's shared `strata` executable runs both Flash-Next and Qwen3.6; no separate model executable is needed.
+
+`--kv int8` stores both K and V in signed 8-bit groups of 64 values, with one FP16 scale per group. Without
+`--kv` (or with `--kv fp32`) this engine keeps its FP32 cache. Q8 covers the main attention layers and the MTP
+block, including batch slots, copied conversation prefixes and speculative windows. The recurrent GDN state
+stays FP32. Prefill gathers the compressed cache into the existing shared FP16 attention buffers; decode reads
+the compressed cache directly and accumulates in FP32. Quantization can change the generated text.
+
+For the local UD-Q4_K_XL file (10 main attention layers, one MTP layer, two KV heads, 256 values per head), the
+allocated K/V storage at 131,072 cells is 5.50 GiB in FP32 or 1.418 GiB in Q8. These counts include the scales;
+they exclude recurrent state, attention work buffers and model weights. Q8 retains the configured context.
+`--kv q4_0` and `--kv k8v4` are not supported by this engine path.
+
+The CUDA build needs `STRATA_MMQ_KQUANTS=ON` and `libstrata_kq.so` beside the executable for its K-quant MMQ
+prefill path. Q8 storage and MMQ prefill are separate settings. `q36_kv_parity` (with `STRATA_BUILD_TESTS=ON`)
+checks Q8 codes/scales, prefill reconstruction and causal attention against host references, including CUDA
+graphs and different batch sessions. Local model checks and measurements are in
+`bench/results/2026-10-20-qwen36-q8-kv/`.
+
 ## Not done / limits
 
 - Eight slots at most (the window holds 8 rows); `--batch-mtp` shares those rows between slots and proposals.

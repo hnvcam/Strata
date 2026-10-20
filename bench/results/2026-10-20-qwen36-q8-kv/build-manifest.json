@@ -1,0 +1,23 @@
+{
+  "source_commit": "6e465ea8",
+  "cuda_architectures": [89, 120],
+  "kquant_mmq": true,
+  "context": 131072,
+  "kv": "int8",
+  "sha256": {
+    "engine/candidates/qwen36-q8-kv/strata": "0ba22b19b91387e6b2624434b870697a63b28630c10e482d4843d918cd5daf7f",
+    "engine/candidates/qwen36-q8-kv/libstrata_kq.so": "6916479d717624df7c1c8581b8ae033c51fb17d00aee8d5360e2014075956d84",
+    "engine/strata": "9058a7f76aeea91931b1e38b011c38fa74294ca7fb6ff8f82343d656669813fa",
+    "strata-qwen36-ud-q4_k_xl.json": "1d2aead0b2d7a8f7f73de7840b41b4a659969bfabe38a8708e0fc516629014e2"
+  },
+  "hip": "Not built: ROCm toolchain unavailable",
+  "sycl": "Qwen3.6 path unsupported",
+  "prefill_chunk": 4096,
+  "upstream_issue": "https://github.com/Niko1221/Strata/issues/3303",
+  "source_files_sha256": {
+    "CMakeLists.txt": "7a0049fe9dc24858af50ec8cc178bd1d84042a08fe419c978334193f5a297aba",
+    "src/qwen35/q36_engine.cu": "2f3f0ffade28c0784ae6154f995c30ded976f2f85ab7f459487e11e6db644555",
+    "src/qwen35/q36_attention.cuh": "a379201732a6fa5cdcc48ae67212fe89eb226ed7c9fe27332fad99470dad29f4",
+    "src/qwen35/q36_kv_parity.cu": "3a0b2354a8b9f3b4f3f8acc425809ae6ee38439ec969bfec1533241130b1b015"
+  }
+}

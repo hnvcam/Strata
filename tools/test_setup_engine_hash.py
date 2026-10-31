@@ -295,9 +295,10 @@ class WhatARefusalDoesToTheCaller(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
         (Path(self.tmp.name) / "engine").mkdir(parents=True, exist_ok=True)
-        for patcher in (mock.patch.object(setup, "ROOT", Path(self.tmp.name)),
-                        mock.patch.object(setup.urllib.request, "urlopen"),
-                        mock.patch.object(setup, "source_version", return_value="0.1.42")):
+        # get_prebuilt looks for the release with a HEAD request before it downloads (0.2.0), and keeps the engine in
+        # an engine folder of its own: no network, and never this checkout's engine folder.  A published release answers the probe.
+        for patcher in (mock.patch.object(setup, "engine_dir", lambda toolkit=13: Path(self.tmp.name) / "engine"),
+                        mock.patch.object(setup, "_urlopen", lambda req, timeout=None: mock.MagicMock())):
             patcher.start()
             self.addCleanup(patcher.stop)
 

@@ -71,6 +71,9 @@ Source setup does not make an unsupported model or backend compatible. Strata's 
   Replacing `engine/strata` or applying a config change that needs a restart means asking the user first and
   letting them restart it (their own terminal, or START-HERE). This also means a running engine holds
   `engine/strata` busy: copy the new binary only after the user has stopped it.
+- Deliver requested upstream updates on `main` and, when installation is requested, in `engine/strata`.
+  Temporary builds are fine for validation; do not leave the final update on a separate branch or as a staged
+  runtime unless the user asks. Keep the stop/restart rule above and preserve a rollback backup.
 - How the engine works, every measured number, the API and all settings: [docs/DETAILS.md](docs/DETAILS.md) and
   the [paper](docs/paper/Strata-Paper.pdf).
 - The Terminal: [docs/TERMINAL.md](docs/TERMINAL.md) and [docs/TERMINAL_LAUNCH.md](docs/TERMINAL_LAUNCH.md). The app,
